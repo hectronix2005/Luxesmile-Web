@@ -1,4 +1,16 @@
 {
+  "theme": {
+    "presetId": "custom",
+    "colors": {
+      "ivory": "#F7F8FA",
+      "porcelain": "#E7ECF2",
+      "rosegold": "#94c2b8",
+      "rosegoldDark": "#1F3A57",
+      "gold": "#9CA9B7",
+      "charcoal": "#161C26",
+      "softblack": "#202630"
+    }
+  },
   "brand": {
     "name": "Luxe-Smile",
     "tagline": "Odontología estética de alta gama !!",
