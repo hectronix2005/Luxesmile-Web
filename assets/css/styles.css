@@ -1,0 +1,320 @@
+/* =====================================================================
+   Luxe-Smile · Estilos personalizados
+   Pequeñas refinaciones sobre Tailwind: tipografía, animaciones suaves,
+   detalles decorativos (filete dorado, aura hero, hover de galería).
+   ===================================================================== */
+
+:root {
+  --ivory: #faf7f2;
+  --porcelain: #f5efe7;
+  --rosegold: #b76e79;
+  --rosegold-dark: #8f4f5a;
+  --gold: #c9a770;
+  --gold-soft: #e4cfa4;
+  --charcoal: #1f1b1a;
+  --softblack: #2b2523;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--charcoal);
+  background: var(--ivory);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.font-serif {
+  font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+  letter-spacing: -0.01em;
+}
+
+/* -------- Título principal ---------- */
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--rosegold);
+  font-weight: 400;
+}
+
+/* -------- Separador dorado ---------- */
+.gold-divider {
+  display: inline-block;
+  width: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  vertical-align: middle;
+}
+
+/* -------- Aura/gradiente del hero ---------- */
+.hero-aura {
+  background:
+    radial-gradient(60% 50% at 80% 10%, rgba(183, 110, 121, 0.18), transparent 60%),
+    radial-gradient(45% 40% at 10% 90%, rgba(201, 167, 112, 0.18), transparent 60%),
+    linear-gradient(180deg, var(--ivory) 0%, var(--porcelain) 100%);
+}
+
+/* -------- Link con subrayado animado ---------- */
+.nav-link {
+  position: relative;
+  padding: 0.25rem 0;
+  transition: color 0.2s ease;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 0;
+  background: var(--rosegold);
+  transition: width 0.3s ease;
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+.nav-link:hover {
+  color: var(--rosegold);
+}
+
+/* -------- Botón primario ---------- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: var(--charcoal);
+  color: var(--ivory);
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 8px 24px -12px rgba(31, 27, 26, 0.4);
+}
+.btn-primary:hover {
+  background: var(--rosegold);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -12px rgba(183, 110, 121, 0.55);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border: 1px solid rgba(31, 27, 26, 0.18);
+  color: var(--charcoal);
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.btn-ghost:hover {
+  background: rgba(31, 27, 26, 0.04);
+  border-color: var(--charcoal);
+}
+
+/* -------- Tarjeta servicio ---------- */
+.service-card {
+  background: #fff;
+  border: 1px solid rgba(31, 27, 26, 0.06);
+  padding: 2.5rem 2rem;
+  border-radius: 4px;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--rosegold), var(--gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px -24px rgba(31, 27, 26, 0.2);
+  border-color: transparent;
+}
+.service-card:hover::before {
+  transform: scaleX(1);
+}
+.service-icon {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  color: var(--rosegold);
+  line-height: 1;
+  margin-bottom: 1.25rem;
+}
+
+/* -------- Galería ---------- */
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  aspect-ratio: 4 / 5;
+}
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+.gallery-item:hover img {
+  transform: scale(1.06);
+}
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(31, 27, 26, 0.78) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.25rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: #fff;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.125rem;
+}
+.gallery-item:hover .gallery-overlay {
+  opacity: 1;
+}
+
+/* -------- Testimonio ---------- */
+.testimonial-card {
+  background: #fff;
+  border: 1px solid rgba(31, 27, 26, 0.06);
+  border-radius: 4px;
+  padding: 2.25rem 2rem;
+  position: relative;
+}
+.testimonial-card::before {
+  content: '"';
+  position: absolute;
+  top: -24px;
+  left: 20px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 5rem;
+  color: var(--gold);
+  line-height: 1;
+}
+
+/* -------- Fade-in on scroll ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* -------- WhatsApp flotante ---------- */
+.wa-float {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 32px -8px rgba(37, 211, 102, 0.55);
+  transition: transform 0.2s ease;
+  z-index: 50;
+}
+.wa-float:hover {
+  transform: scale(1.08);
+}
+.wa-float svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* -------- Admin ---------- */
+.admin-shell {
+  background: var(--porcelain);
+  min-height: 100vh;
+}
+.admin-card {
+  background: #fff;
+  border: 1px solid rgba(31, 27, 26, 0.08);
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+.admin-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--softblack);
+  font-weight: 500;
+}
+.admin-input,
+.admin-textarea {
+  width: 100%;
+  background: var(--ivory);
+  border: 1px solid rgba(31, 27, 26, 0.12);
+  border-radius: 4px;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.95rem;
+  color: var(--charcoal);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.admin-input:focus,
+.admin-textarea:focus {
+  outline: none;
+  border-color: var(--rosegold);
+  background: #fff;
+}
+.admin-textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+.admin-tab {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: var(--softblack);
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.admin-tab.active {
+  background: var(--charcoal);
+  color: var(--ivory);
+}
+.admin-tab:not(.active):hover {
+  background: rgba(31, 27, 26, 0.06);
+}
+
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 3rem !important;
+  }
+}
