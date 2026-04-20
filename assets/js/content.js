@@ -1,12 +1,21 @@
 /* =====================================================================
    Luxe-Smile · Contenido por defecto + capa de persistencia
    --------------------------------------------------------------------
-   Todo el contenido editable del sitio vive aquí. El panel /admin.html
-   guarda sobreescrituras en localStorage. Exporta / importa JSON para
-   llevar los cambios entre navegadores o hacer backup.
+   Fuente de verdad pública: assets/data/content.json (en el repo).
+   El admin commitea ese archivo vía GitHub API para publicar cambios.
+   DEFAULT_CONTENT actúa como fallback si el fetch falla.
    ===================================================================== */
 
-const STORAGE_KEY = 'luxesmile_content_v1';
+const CACHE_KEY = 'luxesmile_cache_v2';         // snapshot del último fetch (offline fallback)
+const GH_CFG_KEY = 'luxesmile_gh_config_v1';    // config de GitHub API (token + repo)
+const ADMIN_PW_KEY = 'luxesmile_admin_pw_v1';   // contraseña del panel (por navegador)
+const DEFAULT_PASSWORD = 'luxe2026';
+
+// URL del JSON resuelta relativa a este script (funciona desde / y desde /admin/)
+const SCRIPT_URL = document.currentScript ? document.currentScript.src : null;
+const CONTENT_URL = SCRIPT_URL
+  ? new URL('../data/content.json', SCRIPT_URL).href
+  : 'assets/data/content.json';
 
 const DEFAULT_CONTENT = {
   brand: {
@@ -14,7 +23,6 @@ const DEFAULT_CONTENT = {
     tagline: 'Odontología estética de alta gama',
     doctor: 'Dra. Angela Barbosa',
   },
-
   nav: [
     { label: 'Inicio', href: '#inicio' },
     { label: 'Sobre mí', href: '#sobre' },
@@ -23,7 +31,6 @@ const DEFAULT_CONTENT = {
     { label: 'Testimonios', href: '#testimonios' },
     { label: 'Contacto', href: '#contacto' },
   ],
-
   hero: {
     eyebrow: 'Odontología estética · Diseño de sonrisa',
     title: 'Tu sonrisa,\nnuestra obra de arte.',
@@ -34,7 +41,6 @@ const DEFAULT_CONTENT = {
     image:
       'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1400&q=80',
   },
-
   about: {
     title: 'Dra. Angela Barbosa',
     subtitle: 'Directora clínica · Luxe-Smile',
@@ -49,100 +55,22 @@ const DEFAULT_CONTENT = {
     image:
       'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=900&q=80',
   },
-
   services: [
-    {
-      icon: '✦',
-      title: 'Diseño de Sonrisa',
-      desc:
-        'Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro.',
-    },
-    {
-      icon: '◈',
-      title: 'Carillas de Porcelana',
-      desc:
-        'Carillas ultrafinas que corrigen forma, color y alineación en pocas sesiones, con resultados del más alto nivel estético.',
-    },
-    {
-      icon: '❋',
-      title: 'Blanqueamiento Premium',
-      desc:
-        'Tratamiento en consultorio con geles de última generación. Hasta 8 tonos más blanco sin sensibilidad.',
-    },
-    {
-      icon: '◇',
-      title: 'Ortodoncia Invisible',
-      desc:
-        'Alineadores transparentes removibles. Alinea tus dientes sin que nadie lo note y sin afectar tu estilo de vida.',
-    },
-    {
-      icon: '✧',
-      title: 'Implantes Dentales',
-      desc:
-        'Reemplaza dientes perdidos con implantes de titanio de grado médico. Función y estética para toda la vida.',
-    },
-    {
-      icon: '❖',
-      title: 'Odontología Preventiva',
-      desc:
-        'Profilaxis, detartraje y control periódico para mantener tu sonrisa saludable y prevenir tratamientos mayores.',
-    },
+    { icon: '✦', title: 'Diseño de Sonrisa', desc: 'Planificación digital personalizada para lograr una sonrisa natural.' },
+    { icon: '◈', title: 'Carillas de Porcelana', desc: 'Carillas ultrafinas que corrigen forma, color y alineación.' },
+    { icon: '❋', title: 'Blanqueamiento Premium', desc: 'Tratamiento en consultorio con geles de última generación.' },
+    { icon: '◇', title: 'Ortodoncia Invisible', desc: 'Alineadores transparentes removibles.' },
+    { icon: '✧', title: 'Implantes Dentales', desc: 'Implantes de titanio de grado médico.' },
+    { icon: '❖', title: 'Odontología Preventiva', desc: 'Profilaxis, detartraje y control periódico.' },
   ],
-
-  gallery: [
-    {
-      image:
-        'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80',
-      caption: 'Carillas de porcelana · 8 piezas',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?auto=format&fit=crop&w=800&q=80',
-      caption: 'Diseño digital de sonrisa',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=800&q=80',
-      caption: 'Blanqueamiento en consultorio',
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1581585504363-76cd81e1f8ff?auto=format&fit=crop&w=800&q=80',
-      caption: 'Ortodoncia invisible · caso finalizado',
-    },
-  ],
-
-  testimonials: [
-    {
-      name: 'Valentina R.',
-      role: 'Carillas de porcelana',
-      text:
-        'No puedo dejar de sonreír. La Dra. Angela logró justo lo que imaginaba, pero aún más natural. Cada detalle del proceso fue impecable.',
-      rating: 5,
-    },
-    {
-      name: 'Andrés M.',
-      role: 'Ortodoncia invisible',
-      text:
-        'Terminé mi tratamiento en 9 meses sin que nadie notara los alineadores. El acompañamiento fue cercano y muy profesional.',
-      rating: 5,
-    },
-    {
-      name: 'Camila P.',
-      role: 'Diseño de sonrisa',
-      text:
-        'La experiencia se sintió como ir a un spa. El consultorio es hermoso y el resultado superó mis expectativas.',
-      rating: 5,
-    },
-  ],
-
+  gallery: [],
+  testimonials: [],
   stats: [
     { value: '+1.200', label: 'Sonrisas transformadas' },
     { value: '+10', label: 'Años de experiencia' },
     { value: '100%', label: 'Casos planificados digitalmente' },
     { value: '5.0', label: 'Calificación promedio' },
   ],
-
   contact: {
     whatsapp: '573001234567',
     whatsappMessage: 'Hola Dra. Angela, me gustaría agendar una cita en Luxe-Smile.',
@@ -150,27 +78,18 @@ const DEFAULT_CONTENT = {
     email: 'contacto@luxe-smile.com',
     address: 'Calle 123 #45-67, Consultorio 802, Bogotá',
     hours: 'Lun a Vie · 8:00 am – 6:00 pm\nSábados · 9:00 am – 1:00 pm',
-    mapsEmbed:
-      'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31817.72!2d-74.08!3d4.65!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sBogota!5e0!3m2!1ses!2sco!4v1700000000000',
-    instagram: 'https://instagram.com/luxesmile',
+    mapsEmbed: '',
+    instagram: '',
     facebook: '',
     tiktok: '',
   },
-
   footer: {
     tagline: 'Odontología estética con alma. Sonrisas hechas a medida.',
     copyright: '© 2026 Luxe-Smile · Dra. Angela Barbosa. Todos los derechos reservados.',
   },
-
-  admin: {
-    // Contraseña del panel. Cámbiala desde el panel en la pestaña "Seguridad".
-    // No es criptográficamente segura: solo un portón básico para visitantes casuales.
-    password: 'luxe2026',
-  },
 };
 
-/* --------------------- Capa de persistencia --------------------- */
-
+/* --------------------- Merge profundo --------------------- */
 function deepMerge(base, override) {
   if (Array.isArray(override)) return override.slice();
   if (override && typeof override === 'object') {
@@ -183,28 +102,128 @@ function deepMerge(base, override) {
   return override !== undefined ? override : base;
 }
 
-function loadContent() {
+/* --------------------- Carga de contenido --------------------- */
+async function fetchRemoteContent() {
+  const url = `${CONTENT_URL}?v=${Date.now()}`;
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+async function loadContent() {
+  const defaults = structuredClone(DEFAULT_CONTENT);
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return structuredClone(DEFAULT_CONTENT);
-    const saved = JSON.parse(raw);
-    return deepMerge(structuredClone(DEFAULT_CONTENT), saved);
+    const remote = await fetchRemoteContent();
+    localStorage.setItem(CACHE_KEY, JSON.stringify(remote));
+    return deepMerge(defaults, remote);
   } catch (e) {
-    console.warn('No se pudo leer el contenido guardado, usando defaults.', e);
-    return structuredClone(DEFAULT_CONTENT);
+    console.warn('No se pudo obtener content.json remoto, intentando caché local.', e);
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (cached) return deepMerge(defaults, cached);
+    } catch {}
+    return defaults;
   }
 }
 
-function saveContent(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+/* --------------------- Config GitHub API --------------------- */
+function getGithubConfig() {
+  try {
+    return JSON.parse(localStorage.getItem(GH_CFG_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+function setGithubConfig(cfg) {
+  localStorage.setItem(GH_CFG_KEY, JSON.stringify(cfg));
+}
+function clearGithubConfig() {
+  localStorage.removeItem(GH_CFG_KEY);
 }
 
-function resetContent() {
-  localStorage.removeItem(STORAGE_KEY);
+/* --------------------- Publicación vía GitHub API --------------------- */
+function utf8ToBase64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
 }
 
-function exportContentJSON() {
-  const data = loadContent();
+async function githubRequest(path, opts = {}) {
+  const cfg = getGithubConfig();
+  if (!cfg.token) throw new Error('Falta el token de GitHub.');
+  const headers = {
+    Authorization: `Bearer ${cfg.token}`,
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    ...(opts.headers || {}),
+  };
+  if (opts.body && typeof opts.body !== 'string') {
+    headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(opts.body);
+  }
+  const res = await fetch(`https://api.github.com${path}`, { ...opts, headers });
+  const text = await res.text();
+  let data;
+  try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  if (!res.ok) {
+    const msg = data?.message || `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
+  return data;
+}
+
+async function testGithubConnection() {
+  const cfg = getGithubConfig();
+  if (!cfg.owner || !cfg.repo) throw new Error('Completa owner y repo.');
+  // repo access
+  await githubRequest(`/repos/${cfg.owner}/${cfg.repo}`);
+  // contents access
+  const branch = cfg.branch || 'main';
+  const path = cfg.path || 'assets/data/content.json';
+  await githubRequest(`/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${branch}`);
+  return true;
+}
+
+async function publishContent(data) {
+  const cfg = getGithubConfig();
+  if (!cfg.owner || !cfg.repo || !cfg.token) {
+    throw new Error('Configura GitHub primero (pestaña Publicación).');
+  }
+  const branch = cfg.branch || 'main';
+  const path = cfg.path || 'assets/data/content.json';
+  const apiPath = `/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+
+  // 1. obtener SHA actual (si existe)
+  let sha;
+  try {
+    const current = await githubRequest(`${apiPath}?ref=${branch}`);
+    sha = current.sha;
+  } catch (e) {
+    if (!/not found/i.test(e.message)) throw e;
+  }
+
+  // 2. PUT con contenido nuevo
+  const json = JSON.stringify(data, null, 2) + '\n';
+  const body = {
+    message: `admin: update content (${new Date().toISOString().slice(0, 16).replace('T', ' ')})`,
+    content: utf8ToBase64(json),
+    branch,
+  };
+  if (sha) body.sha = sha;
+
+  const result = await githubRequest(apiPath, { method: 'PUT', body });
+  localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  return result;
+}
+
+/* --------------------- Contraseña admin --------------------- */
+function getAdminPassword() {
+  return localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PASSWORD;
+}
+function setAdminPassword(pw) {
+  localStorage.setItem(ADMIN_PW_KEY, pw);
+}
+
+/* --------------------- Export / Import JSON --------------------- */
+function exportContentJSON(data) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -214,18 +233,12 @@ function exportContentJSON() {
   a.click();
   URL.revokeObjectURL(url);
 }
-
 function importContentJSON(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
-      try {
-        const parsed = JSON.parse(reader.result);
-        saveContent(parsed);
-        resolve(parsed);
-      } catch (e) {
-        reject(e);
-      }
+      try { resolve(JSON.parse(reader.result)); }
+      catch (e) { reject(e); }
     };
     reader.onerror = () => reject(reader.error);
     reader.readAsText(file);
@@ -233,11 +246,16 @@ function importContentJSON(file) {
 }
 
 window.LuxeContent = {
-  STORAGE_KEY,
+  CONTENT_URL,
   DEFAULT_CONTENT,
   loadContent,
-  saveContent,
-  resetContent,
+  publishContent,
+  testGithubConnection,
+  getGithubConfig,
+  setGithubConfig,
+  clearGithubConfig,
+  getAdminPassword,
+  setAdminPassword,
   exportContentJSON,
   importContentJSON,
 };

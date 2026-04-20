@@ -85,17 +85,36 @@
         <p class="text-xs uppercase tracking-[0.25em] text-softblack/60 mt-1">Panel administrativo</p>
       </div>
       <div class="flex items-center gap-3">
+        <span
+          x-show="dirty"
+          class="text-xs text-rosegold font-medium"
+          title="Tienes cambios sin publicar"
+        >● Cambios sin publicar</span>
         <a href="../index.html" target="_blank" class="btn-ghost text-xs">Ver sitio ↗</a>
-        <button @click="save()" class="btn-primary text-xs">Guardar cambios</button>
+        <button
+          @click="publish()"
+          :disabled="publishing || !dirty"
+          class="btn-primary text-xs"
+          :class="{ 'opacity-50 cursor-not-allowed': publishing || !dirty }"
+        >
+          <span x-show="!publishing">Publicar online</span>
+          <span x-show="publishing">Publicando…</span>
+        </button>
         <button @click="logout()" class="text-xs text-softblack/60 hover:text-rosegold px-2">Salir</button>
       </div>
+    </div>
+
+    <!-- Loading -->
+    <div x-show="loading" class="admin-card text-center text-softblack/60">
+      Cargando contenido desde el repo…
     </div>
 
     <!-- Toast -->
     <div
       x-show="toast"
       x-transition
-      class="fixed top-6 right-6 bg-charcoal text-ivory px-5 py-3 rounded-full text-sm shadow-xl z-50"
+      class="fixed top-6 right-6 px-5 py-3 rounded-full text-sm shadow-xl z-50"
+      :class="toastTone === 'err' ? 'bg-rosegoldDark text-ivory' : 'bg-charcoal text-ivory'"
       x-text="toast"
     ></div>
 
@@ -427,26 +446,82 @@
       </div>
     </div>
 
-    <!-- ============ BACKUP ============ -->
-    <div x-show="tab === 'backup'" class="admin-card space-y-6">
-      <h2 class="font-serif text-2xl">Backup & restauración</h2>
+    <!-- ============ PUBLICACIÓN (GitHub API) ============ -->
+    <div x-show="tab === 'publish'" class="admin-card space-y-5">
+      <h2 class="font-serif text-2xl">Publicación online (GitHub)</h2>
       <p class="text-sm text-softblack/70 leading-relaxed">
-        El contenido se guarda en este navegador. Para editar desde otro dispositivo, <strong>exporta</strong>
-        el JSON aquí e <strong>impórtalo</strong> donde lo necesites. También es tu copia de seguridad.
+        El sitio lee <code>assets/data/content.json</code> desde el repo. Al pulsar "Publicar online"
+        el admin hace un commit directo vía GitHub API. GitHub Pages rebuild el sitio en ~1 minuto.
       </p>
 
-      <div class="grid md:grid-cols-3 gap-4">
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="admin-label block mb-2">Owner (usuario u organización)</label>
+          <input class="admin-input" x-model="gh.owner" placeholder="hectronix2005" />
+        </div>
+        <div>
+          <label class="admin-label block mb-2">Repositorio</label>
+          <input class="admin-input" x-model="gh.repo" placeholder="Luxesmile-Web" />
+        </div>
+        <div>
+          <label class="admin-label block mb-2">Rama</label>
+          <input class="admin-input" x-model="gh.branch" placeholder="main" />
+        </div>
+        <div>
+          <label class="admin-label block mb-2">Ruta del JSON en el repo</label>
+          <input class="admin-input" x-model="gh.path" placeholder="assets/data/content.json" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="admin-label block mb-2">Fine-grained Personal Access Token</label>
+          <div class="flex gap-2">
+            <input type="password" class="admin-input flex-1" x-model="gh.token" placeholder="github_pat_..." autocomplete="off" />
+            <button class="btn-ghost text-xs whitespace-nowrap" @click="clearToken()">Borrar</button>
+          </div>
+          <p class="text-xs text-softblack/55 mt-2 leading-relaxed">
+            Crea el token en
+            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" class="underline hover:text-rosegold">github.com/settings/personal-access-tokens/new</a>
+            → <strong>Repository access: Only select repositories</strong> → elige este repo →
+            <strong>Permissions → Contents: Read and write</strong>. Expiración recomendada: 90 días.
+            <br>El token se guarda solo en este navegador; nunca se commitea al repo.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-charcoal/10">
+        <button class="btn-ghost text-xs" @click="saveGithubConfig()">Guardar configuración</button>
+        <button class="btn-ghost text-xs" @click="testConnection()">Probar conexión</button>
+        <button class="btn-ghost text-xs" @click="reloadFromRemote()">↻ Recargar desde repo</button>
+        <button
+          class="btn-primary text-xs ml-auto"
+          @click="publish()"
+          :disabled="publishing || !dirty"
+          :class="{ 'opacity-50 cursor-not-allowed': publishing || !dirty }"
+        >
+          <span x-show="!publishing">Publicar online</span>
+          <span x-show="publishing">Publicando…</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============ BACKUP ============ -->
+    <div x-show="tab === 'backup'" class="admin-card space-y-6">
+      <h2 class="font-serif text-2xl">Backup local</h2>
+      <p class="text-sm text-softblack/70 leading-relaxed">
+        Exporta el JSON actual (lo que ves en el formulario) a un archivo, o impórtalo para previsualizar
+        antes de publicar. Útil como copia de seguridad manual o para mover contenido entre navegadores
+        sin usar la API de GitHub.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-4">
         <button class="btn-primary justify-center" @click="exportJSON()">↓ Exportar JSON</button>
         <label class="btn-ghost justify-center cursor-pointer">
           ↑ Importar JSON
           <input type="file" accept="application/json" class="hidden" @change="importJSON($event)" />
         </label>
-        <button class="btn-ghost justify-center" @click="resetAll()">⟲ Restaurar defaults</button>
       </div>
 
-      <div class="pt-5 border-t border-charcoal/10 text-xs text-softblack/60 space-y-2 leading-relaxed">
-        <p><strong>Tip:</strong> guarda el archivo <code>luxesmile-contenido-YYYY-MM-DD.json</code> en Google Drive o Dropbox.</p>
-        <p>Si cambias de computador o limpias el navegador sin exportar antes, se pierden los cambios (solo los hechos tras el último export).</p>
+      <div class="pt-5 border-t border-charcoal/10 text-xs text-softblack/60 leading-relaxed">
+        <p>Importar solo carga el JSON al formulario; <strong>recuerda pulsar "Publicar online"</strong> para que el sitio refleje los cambios.</p>
       </div>
     </div>
 
@@ -481,8 +556,20 @@
 
     <!-- Sticky save bar -->
     <div class="mt-10 pt-6 border-t border-charcoal/10 flex flex-wrap items-center gap-3 justify-end">
+      <span
+        x-show="dirty"
+        class="text-xs text-rosegold font-medium mr-auto"
+      >● Cambios sin publicar</span>
       <a href="../index.html" target="_blank" class="btn-ghost text-xs">Previsualizar sitio ↗</a>
-      <button @click="save()" class="btn-primary">Guardar cambios</button>
+      <button
+        @click="publish()"
+        :disabled="publishing || !dirty"
+        class="btn-primary"
+        :class="{ 'opacity-50 cursor-not-allowed': publishing || !dirty }"
+      >
+        <span x-show="!publishing">Publicar online</span>
+        <span x-show="publishing">Publicando…</span>
+      </button>
     </div>
   </div>
 </body>

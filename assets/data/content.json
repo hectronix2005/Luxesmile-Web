@@ -1,0 +1,76 @@
+{
+  "brand": {
+    "name": "Luxe-Smile",
+    "tagline": "Odontología estética de alta gama",
+    "doctor": "Dra. Angela Barbosa"
+  },
+  "nav": [
+    { "label": "Inicio", "href": "#inicio" },
+    { "label": "Sobre mí", "href": "#sobre" },
+    { "label": "Servicios", "href": "#servicios" },
+    { "label": "Galería", "href": "#galeria" },
+    { "label": "Testimonios", "href": "#testimonios" },
+    { "label": "Contacto", "href": "#contacto" }
+  ],
+  "hero": {
+    "eyebrow": "Odontología estética · Diseño de sonrisa",
+    "title": "Tu sonrisa,\nnuestra obra de arte.",
+    "subtitle": "Creamos sonrisas naturales y armónicas con tecnología de vanguardia y un trato íntimo, cálido y personalizado.",
+    "ctaPrimary": "Agendar mi cita",
+    "ctaSecondary": "Conocer servicios",
+    "image": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1400&q=80"
+  },
+  "about": {
+    "title": "Dra. Angela Barbosa",
+    "subtitle": "Directora clínica · Luxe-Smile",
+    "text": "Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.",
+    "credentials": [
+      "Odontóloga · Universidad Nacional",
+      "Especialista en Estética Dental y Diseño de Sonrisa",
+      "Entrenamiento avanzado en carillas de porcelana",
+      "Miembro activo de la Sociedad Colombiana de Odontología Estética"
+    ],
+    "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=900&q=80"
+  },
+  "services": [
+    { "icon": "✦", "title": "Diseño de Sonrisa", "desc": "Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro." },
+    { "icon": "◈", "title": "Carillas de Porcelana", "desc": "Carillas ultrafinas que corrigen forma, color y alineación en pocas sesiones, con resultados del más alto nivel estético." },
+    { "icon": "❋", "title": "Blanqueamiento Premium", "desc": "Tratamiento en consultorio con geles de última generación. Hasta 8 tonos más blanco sin sensibilidad." },
+    { "icon": "◇", "title": "Ortodoncia Invisible", "desc": "Alineadores transparentes removibles. Alinea tus dientes sin que nadie lo note y sin afectar tu estilo de vida." },
+    { "icon": "✧", "title": "Implantes Dentales", "desc": "Reemplaza dientes perdidos con implantes de titanio de grado médico. Función y estética para toda la vida." },
+    { "icon": "❖", "title": "Odontología Preventiva", "desc": "Profilaxis, detartraje y control periódico para mantener tu sonrisa saludable y prevenir tratamientos mayores." }
+  ],
+  "gallery": [
+    { "image": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80", "caption": "Carillas de porcelana · 8 piezas" },
+    { "image": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?auto=format&fit=crop&w=800&q=80", "caption": "Diseño digital de sonrisa" },
+    { "image": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=800&q=80", "caption": "Blanqueamiento en consultorio" },
+    { "image": "https://images.unsplash.com/photo-1581585504363-76cd81e1f8ff?auto=format&fit=crop&w=800&q=80", "caption": "Ortodoncia invisible · caso finalizado" }
+  ],
+  "testimonials": [
+    { "name": "Valentina R.", "role": "Carillas de porcelana", "text": "No puedo dejar de sonreír. La Dra. Angela logró justo lo que imaginaba, pero aún más natural. Cada detalle del proceso fue impecable.", "rating": 5 },
+    { "name": "Andrés M.", "role": "Ortodoncia invisible", "text": "Terminé mi tratamiento en 9 meses sin que nadie notara los alineadores. El acompañamiento fue cercano y muy profesional.", "rating": 5 },
+    { "name": "Camila P.", "role": "Diseño de sonrisa", "text": "La experiencia se sintió como ir a un spa. El consultorio es hermoso y el resultado superó mis expectativas.", "rating": 5 }
+  ],
+  "stats": [
+    { "value": "+1.200", "label": "Sonrisas transformadas" },
+    { "value": "+10", "label": "Años de experiencia" },
+    { "value": "100%", "label": "Casos planificados digitalmente" },
+    { "value": "5.0", "label": "Calificación promedio" }
+  ],
+  "contact": {
+    "whatsapp": "573001234567",
+    "whatsappMessage": "Hola Dra. Angela, me gustaría agendar una cita en Luxe-Smile.",
+    "phone": "+57 300 123 4567",
+    "email": "contacto@luxe-smile.com",
+    "address": "Calle 123 #45-67, Consultorio 802, Bogotá",
+    "hours": "Lun a Vie · 8:00 am – 6:00 pm\nSábados · 9:00 am – 1:00 pm",
+    "mapsEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31817.72!2d-74.08!3d4.65!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sBogota!5e0!3m2!1ses!2sco!4v1700000000000",
+    "instagram": "https://instagram.com/luxesmile",
+    "facebook": "",
+    "tiktok": ""
+  },
+  "footer": {
+    "tagline": "Odontología estética con alma. Sonrisas hechas a medida.",
+    "copyright": "© 2026 Luxe-Smile · Dra. Angela Barbosa. Todos los derechos reservados."
+  }
+}

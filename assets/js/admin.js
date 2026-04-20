@@ -1,19 +1,20 @@
 /* =====================================================================
    Luxe-Smile · Panel admin
-   Edita el contenido mostrado en index.html. Los cambios se persisten
-   en localStorage. Usa Exportar/Importar JSON para moverlos entre
-   dispositivos o hacer backup.
+   Edita el contenido y publica directo al repo vía GitHub API.
    ===================================================================== */
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('admin', () => ({
     authed: false,
+    loading: true,
     passwordInput: '',
     loginError: '',
-    content: window.LuxeContent.loadContent(),
+    content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
+    snapshot: '',                          // JSON del último estado publicado/cargado (para detectar dirty)
     tab: 'brand',
-    saved: false,
     toast: '',
+    toastTone: 'ok',                       // 'ok' | 'err'
+    publishing: false,
 
     tabs: [
       { id: 'brand', label: 'Marca' },
@@ -25,21 +26,32 @@ document.addEventListener('alpine:init', () => {
       { id: 'stats', label: 'Stats' },
       { id: 'contact', label: 'Contacto' },
       { id: 'footer', label: 'Footer' },
+      { id: 'publish', label: 'Publicación' },
       { id: 'backup', label: 'Backup' },
       { id: 'security', label: 'Seguridad' },
     ],
 
-    init() {
-      // Sesión corta en sessionStorage para no volver a pedir contraseña
-      // al cambiar de pestaña dentro del mismo navegador.
+    // Config GitHub (en memoria, espejada a localStorage)
+    gh: { owner: 'hectronix2005', repo: 'Luxesmile-Web', branch: 'main', path: 'assets/data/content.json', token: '' },
+
+    async init() {
       if (sessionStorage.getItem('luxesmile_admin_ok') === '1') {
         this.authed = true;
       }
+      const cfg = window.LuxeContent.getGithubConfig();
+      this.gh = { ...this.gh, ...cfg };
+      this.content = await window.LuxeContent.loadContent();
+      this.snapshot = JSON.stringify(this.content);
+      this.loading = false;
+    },
+
+    get dirty() {
+      return JSON.stringify(this.content) !== this.snapshot;
     },
 
     /* ------------------- Auth ------------------- */
     login() {
-      if (this.passwordInput === (this.content.admin.password || '')) {
+      if (this.passwordInput === window.LuxeContent.getAdminPassword()) {
         this.authed = true;
         this.loginError = '';
         sessionStorage.setItem('luxesmile_admin_ok', '1');
@@ -53,25 +65,64 @@ document.addEventListener('alpine:init', () => {
       this.authed = false;
     },
 
-    /* ------------------- Guardar / reset ------------------- */
-    save() {
-      window.LuxeContent.saveContent(this.content);
-      this.flash('Cambios guardados ✓');
+    /* ------------------- Recarga desde remoto ------------------- */
+    async reloadFromRemote() {
+      if (this.dirty && !confirm('Tienes cambios sin publicar. ¿Descartar y recargar desde GitHub?')) return;
+      this.loading = true;
+      this.content = await window.LuxeContent.loadContent();
+      this.snapshot = JSON.stringify(this.content);
+      this.loading = false;
+      this.flash('Contenido recargado desde el repo');
     },
-    resetAll() {
-      if (!confirm('¿Restaurar TODO el contenido al estado original? Se perderán tus cambios.')) return;
-      window.LuxeContent.resetContent();
-      this.content = window.LuxeContent.loadContent();
-      this.flash('Contenido restaurado');
+
+    /* ------------------- Publicar ------------------- */
+    async publish() {
+      if (!this.gh.owner || !this.gh.repo || !this.gh.token) {
+        this.tab = 'publish';
+        this.flash('Completa la configuración de GitHub antes de publicar', 'err');
+        return;
+      }
+      if (!this.dirty) {
+        this.flash('No hay cambios nuevos para publicar');
+        return;
+      }
+      this.publishing = true;
+      try {
+        window.LuxeContent.setGithubConfig(this.gh);
+        await window.LuxeContent.publishContent(this.content);
+        this.snapshot = JSON.stringify(this.content);
+        this.flash('Publicado ✓ GitHub Pages actualizará el sitio en ~1 minuto');
+      } catch (e) {
+        this.flash('Error al publicar: ' + e.message, 'err');
+      } finally {
+        this.publishing = false;
+      }
+    },
+
+    async testConnection() {
+      window.LuxeContent.setGithubConfig(this.gh);
+      try {
+        await window.LuxeContent.testGithubConnection();
+        this.flash('Conexión OK — token y repo válidos');
+      } catch (e) {
+        this.flash('Conexión falló: ' + e.message, 'err');
+      }
+    },
+
+    saveGithubConfig() {
+      window.LuxeContent.setGithubConfig(this.gh);
+      this.flash('Configuración guardada en este navegador');
+    },
+
+    clearToken() {
+      this.gh.token = '';
+      window.LuxeContent.setGithubConfig(this.gh);
+      this.flash('Token borrado');
     },
 
     /* ------------------- Arrays: add/remove/move ------------------- */
     addService() {
-      this.content.services.push({
-        icon: '✦',
-        title: 'Nuevo servicio',
-        desc: 'Describe aquí el tratamiento, sus beneficios y duración.',
-      });
+      this.content.services.push({ icon: '✦', title: 'Nuevo servicio', desc: 'Describe el tratamiento.' });
     },
     addGalleryItem() {
       this.content.gallery.push({ image: '', caption: '' });
@@ -86,11 +137,9 @@ document.addEventListener('alpine:init', () => {
       this.content.nav.push({ label: 'Nueva sección', href: '#' });
     },
     addCredential() {
-      this.content.about.credentials.push('Nueva credencial o logro');
+      this.content.about.credentials.push('Nueva credencial');
     },
-    remove(arr, i) {
-      arr.splice(i, 1);
-    },
+    remove(arr, i) { arr.splice(i, 1); },
     move(arr, i, dir) {
       const j = i + dir;
       if (j < 0 || j >= arr.length) return;
@@ -98,7 +147,7 @@ document.addEventListener('alpine:init', () => {
       arr.splice(j, 0, it);
     },
 
-    /* ------------------- Imágenes ------------------- */
+    /* ------------------- Imágenes (base64, máx 900 KB) ------------------- */
     pickImage(callback, maxBytes = 900_000) {
       const input = document.createElement('input');
       input.type = 'file';
@@ -108,9 +157,7 @@ document.addEventListener('alpine:init', () => {
         if (!file) return;
         if (file.size > maxBytes) {
           alert(
-            `La imagen pesa ${(file.size / 1024).toFixed(0)} KB. Para no saturar el navegador,
-            sube imágenes de máximo ${(maxBytes / 1024).toFixed(0)} KB.
-            Consejo: comprime en tinypng.com o usa una URL externa.`,
+            `La imagen pesa ${(file.size / 1024).toFixed(0)} KB. Máximo recomendado: ${(maxBytes / 1024).toFixed(0)} KB. Comprímela en tinypng.com o usa una URL externa.`,
           );
           return;
         }
@@ -120,57 +167,40 @@ document.addEventListener('alpine:init', () => {
       };
       input.click();
     },
-    uploadHero() {
-      this.pickImage((b64) => (this.content.hero.image = b64));
-    },
-    uploadAbout() {
-      this.pickImage((b64) => (this.content.about.image = b64));
-    },
-    uploadGallery(i) {
-      this.pickImage((b64) => (this.content.gallery[i].image = b64));
-    },
+    uploadHero() { this.pickImage((b64) => (this.content.hero.image = b64)); },
+    uploadAbout() { this.pickImage((b64) => (this.content.about.image = b64)); },
+    uploadGallery(i) { this.pickImage((b64) => (this.content.gallery[i].image = b64)); },
 
-    /* ------------------- Backup ------------------- */
-    exportJSON() {
-      window.LuxeContent.saveContent(this.content);
-      window.LuxeContent.exportContentJSON();
-    },
-    importJSON(event) {
+    /* ------------------- Backup JSON ------------------- */
+    exportJSON() { window.LuxeContent.exportContentJSON(this.content); },
+    async importJSON(event) {
       const file = event.target.files?.[0];
       if (!file) return;
-      window.LuxeContent.importContentJSON(file).then((data) => {
-        this.content = window.LuxeContent.loadContent();
-        this.flash('JSON importado correctamente');
-      }).catch(() => {
-        alert('Archivo inválido: no es un JSON válido.');
-      });
+      try {
+        const data = await window.LuxeContent.importContentJSON(file);
+        this.content = data;
+        this.flash('JSON importado — revisa y pulsa Publicar para subirlo');
+      } catch {
+        this.flash('Archivo inválido: no es un JSON válido', 'err');
+      }
       event.target.value = '';
     },
 
-    /* ------------------- Contraseña ------------------- */
+    /* ------------------- Contraseña admin ------------------- */
     changePassword(current, next, confirmNext) {
-      if (current !== this.content.admin.password) {
-        alert('La contraseña actual no coincide.');
-        return false;
-      }
-      if (!next || next.length < 4) {
-        alert('La nueva contraseña debe tener al menos 4 caracteres.');
-        return false;
-      }
-      if (next !== confirmNext) {
-        alert('La confirmación no coincide.');
-        return false;
-      }
-      this.content.admin.password = next;
-      this.save();
-      alert('Contraseña actualizada.');
+      if (current !== window.LuxeContent.getAdminPassword()) { alert('Contraseña actual incorrecta.'); return false; }
+      if (!next || next.length < 4) { alert('La nueva contraseña debe tener al menos 4 caracteres.'); return false; }
+      if (next !== confirmNext) { alert('La confirmación no coincide.'); return false; }
+      window.LuxeContent.setAdminPassword(next);
+      alert('Contraseña actualizada en este navegador.');
       return true;
     },
 
-    flash(msg) {
+    flash(msg, tone = 'ok') {
       this.toast = msg;
+      this.toastTone = tone;
       clearTimeout(this._t);
-      this._t = setTimeout(() => (this.toast = ''), 2500);
+      this._t = setTimeout(() => (this.toast = ''), 3500);
     },
   }));
 });
