@@ -1,20 +1,8 @@
 {
-  "theme": {
-    "presetId": "rosegold",
-    "colors": {
-      "ivory": "#FAF7F2",
-      "porcelain": "#F5EFE7",
-      "rosegold": "#B76E79",
-      "rosegoldDark": "#8F4F5A",
-      "gold": "#C9A770",
-      "charcoal": "#1F1B1A",
-      "softblack": "#2B2523"
-    }
-  },
   "brand": {
     "name": "Luxe-Smile",
     "tagline": "Odontología estética de alta gama !!",
-    "doctor": "Dra. Sexy Angela Barbosa"
+    "doctor": "Dra. Angela Barbosa"
   },
   "nav": [
     {
@@ -51,14 +39,15 @@
     "image": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1400&q=80"
   },
   "about": {
-    "title": "Dra. Sexy Angela Barbosa",
-    "subtitle": "Directora clínica · Luxe-Smile",
+    "title": "Dra. Angela Barbosa",
+    "subtitle": "Directora clínica · Luxe-Smile ",
     "text": "Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.",
     "credentials": [
-      "Odontóloga · Universidad Nacional",
-      "Especialista en Estética Dental y Diseño de Sonrisa",
+      "Odontóloga · Universidad San Martin ",
+      "Especialista en Prostodoncia Colegio Odontológico Colombiano",
       "Entrenamiento avanzado en carillas de porcelana",
-      "Miembro activo de la Sociedad Colombiana de Odontología Estética"
+      "Miembro activo de la Sociedad Colombiana de Prostodoncia ",
+      "Docente Universitario Colegio Odontologico Colombiano Unicoc "
     ],
     "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=900&q=80"
   },
@@ -80,8 +69,8 @@
     },
     {
       "icon": "◇",
-      "title": "Ortodoncia Invisible",
-      "desc": "Alineadores transparentes removibles. Alinea tus dientes sin que nadie lo note y sin afectar tu estilo de vida."
+      "title": "Rehabilitación de Alta Complejidad ",
+      "desc": "La rehabilitación oral de alta complejidad en adultos es una especialidad odontológica integral diseñada para reconstruir la dentadura completa o parcial cuando existe un deterioro Severo, pérdida de piezas, enfermedades periodontales avanzadas o traumas. Su objetivo principal no es solo estético, sino devolver la funcionalidad masticatoria, fonética (habla) y mejorar la calidad de vida y autoestima del paciente."
     },
     {
       "icon": "✧",
