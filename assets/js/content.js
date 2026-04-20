@@ -173,16 +173,32 @@ async function githubRequest(path, opts = {}) {
 async function testGithubConnection() {
   const cfg = getGithubConfig();
   if (!cfg.owner || !cfg.repo) throw new Error('Completa owner y repo.');
-  // repo access
   await githubRequest(`/repos/${cfg.owner}/${cfg.repo}`);
-  // contents access
   const branch = cfg.branch || 'main';
   const path = cfg.path || 'assets/data/content.json';
   await githubRequest(`/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${branch}`);
   return true;
 }
 
-async function publishContent(data) {
+function base64ToUtf8(b64) {
+  return decodeURIComponent(escape(atob(b64.replace(/\s/g, ''))));
+}
+
+// Lee content.json directamente del repo vía API (siempre fresco, sin pasar por el CDN de Pages).
+// Devuelve { data, sha } para permitir detección de conflictos al publicar.
+async function fetchContentViaAPI() {
+  const cfg = getGithubConfig();
+  if (!cfg.owner || !cfg.repo) throw new Error('Falta configuración de GitHub.');
+  const branch = cfg.branch || 'main';
+  const path = cfg.path || 'assets/data/content.json';
+  const res = await githubRequest(
+    `/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}?ref=${branch}`,
+  );
+  const json = base64ToUtf8(res.content);
+  return { data: JSON.parse(json), sha: res.sha };
+}
+
+async function publishContent(data, expectedSha) {
   const cfg = getGithubConfig();
   if (!cfg.owner || !cfg.repo || !cfg.token) {
     throw new Error('Configura GitHub primero (pestaña Publicación).');
@@ -191,27 +207,37 @@ async function publishContent(data) {
   const path = cfg.path || 'assets/data/content.json';
   const apiPath = `/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
 
-  // 1. obtener SHA actual (si existe)
-  let sha;
+  // SHA actual en el repo
+  let currentSha;
   try {
     const current = await githubRequest(`${apiPath}?ref=${branch}`);
-    sha = current.sha;
+    currentSha = current.sha;
   } catch (e) {
     if (!/not found/i.test(e.message)) throw e;
   }
 
-  // 2. PUT con contenido nuevo
+  // Detección de conflicto: si cargamos el admin con sha X pero el repo ahora está en Y,
+  // otra sesión cambió algo. No pisamos sin avisar.
+  if (expectedSha && currentSha && currentSha !== expectedSha) {
+    const err = new Error(
+      'El contenido en GitHub cambió desde que abriste el panel. ' +
+      'Pulsa "Recargar desde repo" para ver los cambios nuevos y vuelve a aplicar los tuyos.',
+    );
+    err.code = 'STALE';
+    throw err;
+  }
+
   const json = JSON.stringify(data, null, 2) + '\n';
   const body = {
     message: `admin: update content (${new Date().toISOString().slice(0, 16).replace('T', ' ')})`,
     content: utf8ToBase64(json),
     branch,
   };
-  if (sha) body.sha = sha;
+  if (currentSha) body.sha = currentSha;
 
   const result = await githubRequest(apiPath, { method: 'PUT', body });
   localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-  return result;
+  return { result, newSha: result?.content?.sha };
 }
 
 /* --------------------- Contraseña admin --------------------- */
@@ -249,6 +275,7 @@ window.LuxeContent = {
   CONTENT_URL,
   DEFAULT_CONTENT,
   loadContent,
+  fetchContentViaAPI,
   publishContent,
   testGithubConnection,
   getGithubConfig,
@@ -258,4 +285,5 @@ window.LuxeContent = {
   setAdminPassword,
   exportContentJSON,
   importContentJSON,
+  deepMerge,
 };

@@ -34,15 +34,37 @@ document.addEventListener('alpine:init', () => {
     // Config GitHub (en memoria, espejada a localStorage)
     gh: { owner: 'hectronix2005', repo: 'Luxesmile-Web', branch: 'main', path: 'assets/data/content.json', token: '' },
 
+    // SHA del content.json en el momento en que cargamos (para detectar conflictos).
+    loadedSha: null,
+
     async init() {
       if (sessionStorage.getItem('luxesmile_admin_ok') === '1') {
         this.authed = true;
       }
       const cfg = window.LuxeContent.getGithubConfig();
       this.gh = { ...this.gh, ...cfg };
-      this.content = await window.LuxeContent.loadContent();
-      this.snapshot = JSON.stringify(this.content);
+      await this.loadFreshContent();
       this.loading = false;
+    },
+
+    // Carga content.json directamente del repo vía API (sin CDN cache).
+    // Si no hay token, cae al fetch público (que puede estar cacheado en Pages CDN).
+    async loadFreshContent() {
+      const defaults = structuredClone(window.LuxeContent.DEFAULT_CONTENT);
+      if (this.gh.token && this.gh.owner && this.gh.repo) {
+        try {
+          const { data, sha } = await window.LuxeContent.fetchContentViaAPI();
+          this.content = window.LuxeContent.deepMerge(defaults, data);
+          this.loadedSha = sha;
+          this.snapshot = JSON.stringify(this.content);
+          return;
+        } catch (e) {
+          console.warn('API load failed, falling back to public fetch:', e.message);
+        }
+      }
+      this.content = await window.LuxeContent.loadContent();
+      this.loadedSha = null;
+      this.snapshot = JSON.stringify(this.content);
     },
 
     get dirty() {
@@ -69,8 +91,7 @@ document.addEventListener('alpine:init', () => {
     async reloadFromRemote() {
       if (this.dirty && !confirm('Tienes cambios sin publicar. ¿Descartar y recargar desde GitHub?')) return;
       this.loading = true;
-      this.content = await window.LuxeContent.loadContent();
-      this.snapshot = JSON.stringify(this.content);
+      await this.loadFreshContent();
       this.loading = false;
       this.flash('Contenido recargado desde el repo');
     },
@@ -89,11 +110,16 @@ document.addEventListener('alpine:init', () => {
       this.publishing = true;
       try {
         window.LuxeContent.setGithubConfig(this.gh);
-        await window.LuxeContent.publishContent(this.content);
+        const { newSha } = await window.LuxeContent.publishContent(this.content, this.loadedSha);
+        this.loadedSha = newSha || null;
         this.snapshot = JSON.stringify(this.content);
         this.flash('Publicado ✓ GitHub Pages actualizará el sitio en ~1 minuto');
       } catch (e) {
-        this.flash('Error al publicar: ' + e.message, 'err');
+        if (e.code === 'STALE') {
+          this.flash(e.message, 'err');
+        } else {
+          this.flash('Error al publicar: ' + e.message, 'err');
+        }
       } finally {
         this.publishing = false;
       }
