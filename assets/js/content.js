@@ -17,7 +17,107 @@ const CONTENT_URL = SCRIPT_URL
   ? new URL('../data/content.json', SCRIPT_URL).href
   : 'assets/data/content.json';
 
+/* =========================================================
+   Temas (presets de color)
+   Cada preset guarda colores en hex. applyTheme() los inyecta
+   como CSS vars (hex + triplet RGB) para que tanto las reglas
+   de styles.css como las clases Tailwind con opacidad (/50,
+   /80, etc.) se actualicen en vivo.
+   ========================================================= */
+const THEME_PRESETS = [
+  {
+    id: 'rosegold',
+    name: 'Rosé Doré',
+    description: 'El clásico luxe: rose gold sobre marfil.',
+    colors: {
+      ivory: '#FAF7F2', porcelain: '#F5EFE7',
+      rosegold: '#B76E79', rosegoldDark: '#8F4F5A',
+      gold: '#C9A770', charcoal: '#1F1B1A', softblack: '#2B2523',
+    },
+  },
+  {
+    id: 'nude',
+    name: 'Nude Minimal',
+    description: 'Terracota y beige, cálido y moderno.',
+    colors: {
+      ivory: '#FCF8F2', porcelain: '#F2EADE',
+      rosegold: '#C77F64', rosegoldDark: '#96583E',
+      gold: '#D4AF8B', charcoal: '#2D231E', softblack: '#3C2D26',
+    },
+  },
+  {
+    id: 'emerald',
+    name: 'Esmeralda Lujo',
+    description: 'Verde esmeralda con acentos bronce.',
+    colors: {
+      ivory: '#F9F6F0', porcelain: '#EDE7DA',
+      rosegold: '#24634D', rosegoldDark: '#164433',
+      gold: '#C09546', charcoal: '#151A17', softblack: '#1F2420',
+    },
+  },
+  {
+    id: 'pearl',
+    name: 'Azul Perla',
+    description: 'Azul profundo, silver y perla. Fresco y clínico.',
+    colors: {
+      ivory: '#F7F8FA', porcelain: '#E7ECF2',
+      rosegold: '#2E5476', rosegoldDark: '#1F3A57',
+      gold: '#9CA9B7', charcoal: '#161C26', softblack: '#202630',
+    },
+  },
+  {
+    id: 'noir',
+    name: 'Noir Doré',
+    description: 'Negro mate con dorado vivo. Alta gama.',
+    colors: {
+      ivory: '#F8F4EC', porcelain: '#EAE4D7',
+      rosegold: '#B68D40', rosegoldDark: '#8C6C2F',
+      gold: '#D9B773', charcoal: '#0F0F0F', softblack: '#1C1C1C',
+    },
+  },
+  {
+    id: 'blush',
+    name: 'Blush Romance',
+    description: 'Rosas suaves y mauve. Muy femenino.',
+    colors: {
+      ivory: '#FDF9F7', porcelain: '#F7EAE8',
+      rosegold: '#C08491', rosegoldDark: '#945A69',
+      gold: '#D4AF9B', charcoal: '#2D1E26', softblack: '#3C2A34',
+    },
+  },
+];
+
+function hexToRgbTriplet(hex) {
+  const h = (hex || '').replace('#', '').trim();
+  if (h.length !== 6) return '0 0 0';
+  const n = parseInt(h, 16);
+  if (Number.isNaN(n)) return '0 0 0';
+  return `${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255}`;
+}
+
+function applyTheme(theme) {
+  if (!theme || !theme.colors) return;
+  const root = document.documentElement;
+  const c = theme.colors;
+  const set = (name, hex) => {
+    if (!hex) return;
+    root.style.setProperty(`--${name}`, hex);
+    root.style.setProperty(`--${name}-rgb`, hexToRgbTriplet(hex));
+  };
+  set('ivory', c.ivory);
+  set('porcelain', c.porcelain);
+  set('rosegold', c.rosegold);
+  set('rosegold-dark', c.rosegoldDark);
+  set('gold', c.gold);
+  set('charcoal', c.charcoal);
+  set('softblack', c.softblack);
+}
+
 const DEFAULT_CONTENT = {
+  theme: {
+    presetId: 'rosegold',
+    colors: { ...THEME_PRESETS[0].colors },
+  },
   brand: {
     name: 'Luxe-Smile',
     tagline: 'Odontología estética de alta gama',
@@ -274,6 +374,9 @@ function importContentJSON(file) {
 window.LuxeContent = {
   CONTENT_URL,
   DEFAULT_CONTENT,
+  THEME_PRESETS,
+  applyTheme,
+  hexToRgbTriplet,
   loadContent,
   fetchContentViaAPI,
   publishContent,
@@ -287,3 +390,10 @@ window.LuxeContent = {
   importContentJSON,
   deepMerge,
 };
+
+/* Aplica tema desde cache local al instante, antes de que Alpine inicialice,
+   para evitar flash de colores. Si falla, quedan los defaults del :root. */
+try {
+  const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+  if (cached?.theme) applyTheme(cached.theme);
+} catch {}

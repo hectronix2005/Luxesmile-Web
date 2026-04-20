@@ -5,14 +5,18 @@
    ===================================================================== */
 
 :root {
-  --ivory: #faf7f2;
-  --porcelain: #f5efe7;
-  --rosegold: #b76e79;
-  --rosegold-dark: #8f4f5a;
-  --gold: #c9a770;
+  /* Vars "hex" las usan las reglas CSS de este archivo.
+     Vars "-rgb" (triplet espacio-separado) las consume Tailwind para que
+     los modificadores de opacidad (bg-ivory/50, etc.) sigan funcionando.
+     applyTheme() actualiza ambos sets al cambiar de tema. */
+  --ivory: #faf7f2;        --ivory-rgb: 250 247 242;
+  --porcelain: #f5efe7;    --porcelain-rgb: 245 239 231;
+  --rosegold: #b76e79;     --rosegold-rgb: 183 110 121;
+  --rosegold-dark: #8f4f5a; --rosegold-dark-rgb: 143 79 90;
+  --gold: #c9a770;         --gold-rgb: 201 167 112;
   --gold-soft: #e4cfa4;
-  --charcoal: #1f1b1a;
-  --softblack: #2b2523;
+  --charcoal: #1f1b1a;     --charcoal-rgb: 31 27 26;
+  --softblack: #2b2523;    --softblack-rgb: 43 37 35;
 }
 
 html {

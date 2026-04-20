@@ -19,13 +19,13 @@
       theme: {
         extend: {
           colors: {
-            ivory: '#FAF7F2',
-            porcelain: '#F5EFE7',
-            rosegold: '#B76E79',
-            rosegoldDark: '#8F4F5A',
-            gold: '#C9A770',
-            charcoal: '#1F1B1A',
-            softblack: '#2B2523',
+            ivory:        'rgb(var(--ivory-rgb) / <alpha-value>)',
+            porcelain:    'rgb(var(--porcelain-rgb) / <alpha-value>)',
+            rosegold:     'rgb(var(--rosegold-rgb) / <alpha-value>)',
+            rosegoldDark: 'rgb(var(--rosegold-dark-rgb) / <alpha-value>)',
+            gold:         'rgb(var(--gold-rgb) / <alpha-value>)',
+            charcoal:     'rgb(var(--charcoal-rgb) / <alpha-value>)',
+            softblack:    'rgb(var(--softblack-rgb) / <alpha-value>)',
           },
           fontFamily: {
             serif: ['Cormorant Garamond', 'serif'],
@@ -164,6 +164,86 @@
                 <button class="admin-tab" @click="remove(content.nav, i)">✕</button>
               </div>
             </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TEMA ============ -->
+    <div x-show="tab === 'theme'" class="admin-card space-y-6">
+      <div>
+        <h2 class="font-serif text-2xl">Tema y colores</h2>
+        <p class="text-sm text-softblack/70 mt-2 leading-relaxed">
+          Elige un preset para aplicarlo al instante (vista previa en vivo en este mismo panel y en el sitio).
+          Luego pulsa <strong>Publicar online</strong> para que los visitantes lo vean.
+        </p>
+      </div>
+
+      <!-- Presets -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <template x-for="p in presets" :key="p.id">
+          <button
+            @click="applyPreset(p)"
+            class="text-left border rounded-lg p-4 transition hover:shadow-lg hover:-translate-y-0.5"
+            :class="content.theme?.presetId === p.id
+              ? 'border-rosegold ring-2 ring-rosegold/30'
+              : 'border-charcoal/10 hover:border-charcoal/30'"
+          >
+            <div class="flex gap-1.5 mb-3">
+              <span class="w-7 h-7 rounded-full border border-charcoal/10" :style="`background:${p.colors.ivory}`"></span>
+              <span class="w-7 h-7 rounded-full border border-charcoal/10" :style="`background:${p.colors.rosegold}`"></span>
+              <span class="w-7 h-7 rounded-full border border-charcoal/10" :style="`background:${p.colors.gold}`"></span>
+              <span class="w-7 h-7 rounded-full border border-charcoal/10" :style="`background:${p.colors.charcoal}`"></span>
+            </div>
+            <p class="font-serif text-lg leading-tight" x-text="p.name"></p>
+            <p class="text-xs text-softblack/60 mt-1 leading-snug" x-text="p.description"></p>
+            <p
+              x-show="content.theme?.presetId === p.id"
+              class="mt-3 text-[11px] uppercase tracking-[0.15em] text-rosegold"
+            >● Activo</p>
+          </button>
+        </template>
+      </div>
+
+      <!-- Ajuste fino -->
+      <div class="pt-5 border-t border-charcoal/10">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <div>
+            <h3 class="font-serif text-xl">Ajuste fino</h3>
+            <p class="text-xs text-softblack/60">Modifica colores específicos. Cambia el preset a "Personalizado" automáticamente.</p>
+          </div>
+          <p
+            x-show="content.theme?.presetId === 'custom'"
+            class="text-xs uppercase tracking-[0.15em] text-rosegold"
+          >Personalizado</p>
+        </div>
+        <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <template x-for="field in [
+            { key: 'ivory',        label: 'Fondo principal' },
+            { key: 'porcelain',    label: 'Fondo secundario' },
+            { key: 'rosegold',     label: 'Acento primario' },
+            { key: 'rosegoldDark', label: 'Acento primario (oscuro)' },
+            { key: 'gold',         label: 'Acento dorado' },
+            { key: 'charcoal',     label: 'Texto / botones' },
+            { key: 'softblack',    label: 'Texto suave' }
+          ]" :key="field.key">
+            <label class="block">
+              <span class="admin-label block mb-1" x-text="field.label"></span>
+              <span class="flex items-center gap-2">
+                <input
+                  type="color"
+                  class="w-10 h-10 rounded border border-charcoal/15 cursor-pointer bg-transparent"
+                  :value="content.theme?.colors?.[field.key] || '#000000'"
+                  @input="applyCustomColor(field.key, $event.target.value)"
+                />
+                <input
+                  type="text"
+                  class="admin-input font-mono text-xs uppercase"
+                  :value="content.theme?.colors?.[field.key] || ''"
+                  @change="applyCustomColor(field.key, $event.target.value)"
+                />
+              </span>
+            </label>
           </template>
         </div>
       </div>

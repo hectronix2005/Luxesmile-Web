@@ -10,6 +10,7 @@ document.addEventListener('alpine:init', () => {
 
     async init() {
       this.content = await window.LuxeContent.loadContent();
+      window.LuxeContent.applyTheme(this.content.theme);
       document.title = `${this.content.brand.name} · ${this.content.brand.doctor}`;
       this.$nextTick(() => this.setupReveal());
     },

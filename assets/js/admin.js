@@ -18,6 +18,7 @@ document.addEventListener('alpine:init', () => {
 
     tabs: [
       { id: 'brand', label: 'Marca' },
+      { id: 'theme', label: 'Tema' },
       { id: 'hero', label: 'Hero' },
       { id: 'about', label: 'Sobre mí' },
       { id: 'services', label: 'Servicios' },
@@ -30,6 +31,8 @@ document.addEventListener('alpine:init', () => {
       { id: 'backup', label: 'Backup' },
       { id: 'security', label: 'Seguridad' },
     ],
+
+    presets: window.LuxeContent.THEME_PRESETS,
 
     // Config GitHub (en memoria, espejada a localStorage)
     gh: { owner: 'hectronix2005', repo: 'Luxesmile-Web', branch: 'main', path: 'assets/data/content.json', token: '' },
@@ -57,6 +60,7 @@ document.addEventListener('alpine:init', () => {
           this.content = window.LuxeContent.deepMerge(defaults, data);
           this.loadedSha = sha;
           this.snapshot = JSON.stringify(this.content);
+          window.LuxeContent.applyTheme(this.content.theme);
           return;
         } catch (e) {
           console.warn('API load failed, falling back to public fetch:', e.message);
@@ -65,6 +69,22 @@ document.addEventListener('alpine:init', () => {
       this.content = await window.LuxeContent.loadContent();
       this.loadedSha = null;
       this.snapshot = JSON.stringify(this.content);
+      window.LuxeContent.applyTheme(this.content.theme);
+    },
+
+    /* ------------------- Tema ------------------- */
+    applyPreset(preset) {
+      this.content.theme = {
+        presetId: preset.id,
+        colors: { ...preset.colors },
+      };
+      window.LuxeContent.applyTheme(this.content.theme);
+    },
+    applyCustomColor(key, hex) {
+      if (!this.content.theme) this.content.theme = { presetId: 'custom', colors: {} };
+      this.content.theme.colors[key] = hex;
+      this.content.theme.presetId = 'custom';
+      window.LuxeContent.applyTheme(this.content.theme);
     },
 
     get dirty() {
