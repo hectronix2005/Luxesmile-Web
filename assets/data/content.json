@@ -5,15 +5,33 @@
     "doctor": "Dra. Angela Barbosa"
   },
   "nav": [
-    { "label": "Inicio", "href": "#inicio" },
-    { "label": "Sobre mí", "href": "#sobre" },
-    { "label": "Servicios", "href": "#servicios" },
-    { "label": "Galería", "href": "#galeria" },
-    { "label": "Testimonios", "href": "#testimonios" },
-    { "label": "Contacto", "href": "#contacto" }
+    {
+      "label": "Inicio",
+      "href": "#inicio"
+    },
+    {
+      "label": "Sobre mí",
+      "href": "#sobre"
+    },
+    {
+      "label": "Servicios",
+      "href": "#servicios"
+    },
+    {
+      "label": "Galería",
+      "href": "#galeria"
+    },
+    {
+      "label": "Testimonios",
+      "href": "#testimonios"
+    },
+    {
+      "label": "Contacto",
+      "href": "#contacto"
+    }
   ],
   "hero": {
-    "eyebrow": "Odontología estética · Diseño de sonrisa",
+    "eyebrow": "Odontología estética · Diseño de sonrisa !!",
     "title": "Tu sonrisa,\nnuestra obra de arte.",
     "subtitle": "Creamos sonrisas naturales y armónicas con tecnología de vanguardia y un trato íntimo, cálido y personalizado.",
     "ctaPrimary": "Agendar mi cita",
@@ -33,29 +51,92 @@
     "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=900&q=80"
   },
   "services": [
-    { "icon": "✦", "title": "Diseño de Sonrisa", "desc": "Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro." },
-    { "icon": "◈", "title": "Carillas de Porcelana", "desc": "Carillas ultrafinas que corrigen forma, color y alineación en pocas sesiones, con resultados del más alto nivel estético." },
-    { "icon": "❋", "title": "Blanqueamiento Premium", "desc": "Tratamiento en consultorio con geles de última generación. Hasta 8 tonos más blanco sin sensibilidad." },
-    { "icon": "◇", "title": "Ortodoncia Invisible", "desc": "Alineadores transparentes removibles. Alinea tus dientes sin que nadie lo note y sin afectar tu estilo de vida." },
-    { "icon": "✧", "title": "Implantes Dentales", "desc": "Reemplaza dientes perdidos con implantes de titanio de grado médico. Función y estética para toda la vida." },
-    { "icon": "❖", "title": "Odontología Preventiva", "desc": "Profilaxis, detartraje y control periódico para mantener tu sonrisa saludable y prevenir tratamientos mayores." }
+    {
+      "icon": "✦",
+      "title": "Diseño de Sonrisa",
+      "desc": "Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro."
+    },
+    {
+      "icon": "◈",
+      "title": "Carillas de Porcelana",
+      "desc": "Carillas ultrafinas que corrigen forma, color y alineación en pocas sesiones, con resultados del más alto nivel estético."
+    },
+    {
+      "icon": "❋",
+      "title": "Blanqueamiento Premium",
+      "desc": "Tratamiento en consultorio con geles de última generación. Hasta 8 tonos más blanco sin sensibilidad."
+    },
+    {
+      "icon": "◇",
+      "title": "Ortodoncia Invisible",
+      "desc": "Alineadores transparentes removibles. Alinea tus dientes sin que nadie lo note y sin afectar tu estilo de vida."
+    },
+    {
+      "icon": "✧",
+      "title": "Implantes Dentales",
+      "desc": "Reemplaza dientes perdidos con implantes de titanio de grado médico. Función y estética para toda la vida."
+    },
+    {
+      "icon": "❖",
+      "title": "Odontología Preventiva",
+      "desc": "Profilaxis, detartraje y control periódico para mantener tu sonrisa saludable y prevenir tratamientos mayores."
+    }
   ],
   "gallery": [
-    { "image": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80", "caption": "Carillas de porcelana · 8 piezas" },
-    { "image": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?auto=format&fit=crop&w=800&q=80", "caption": "Diseño digital de sonrisa" },
-    { "image": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=800&q=80", "caption": "Blanqueamiento en consultorio" },
-    { "image": "https://images.unsplash.com/photo-1581585504363-76cd81e1f8ff?auto=format&fit=crop&w=800&q=80", "caption": "Ortodoncia invisible · caso finalizado" }
+    {
+      "image": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80",
+      "caption": "Carillas de porcelana · 8 piezas"
+    },
+    {
+      "image": "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?auto=format&fit=crop&w=800&q=80",
+      "caption": "Diseño digital de sonrisa"
+    },
+    {
+      "image": "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=800&q=80",
+      "caption": "Blanqueamiento en consultorio"
+    },
+    {
+      "image": "https://images.unsplash.com/photo-1581585504363-76cd81e1f8ff?auto=format&fit=crop&w=800&q=80",
+      "caption": "Ortodoncia invisible · caso finalizado"
+    }
   ],
   "testimonials": [
-    { "name": "Valentina R.", "role": "Carillas de porcelana", "text": "No puedo dejar de sonreír. La Dra. Angela logró justo lo que imaginaba, pero aún más natural. Cada detalle del proceso fue impecable.", "rating": 5 },
-    { "name": "Andrés M.", "role": "Ortodoncia invisible", "text": "Terminé mi tratamiento en 9 meses sin que nadie notara los alineadores. El acompañamiento fue cercano y muy profesional.", "rating": 5 },
-    { "name": "Camila P.", "role": "Diseño de sonrisa", "text": "La experiencia se sintió como ir a un spa. El consultorio es hermoso y el resultado superó mis expectativas.", "rating": 5 }
+    {
+      "name": "Valentina R.",
+      "role": "Carillas de porcelana",
+      "text": "No puedo dejar de sonreír. La Dra. Angela logró justo lo que imaginaba, pero aún más natural. Cada detalle del proceso fue impecable.",
+      "rating": 5
+    },
+    {
+      "name": "Andrés M.",
+      "role": "Ortodoncia invisible",
+      "text": "Terminé mi tratamiento en 9 meses sin que nadie notara los alineadores. El acompañamiento fue cercano y muy profesional.",
+      "rating": 5
+    },
+    {
+      "name": "Camila P.",
+      "role": "Diseño de sonrisa",
+      "text": "La experiencia se sintió como ir a un spa. El consultorio es hermoso y el resultado superó mis expectativas.",
+      "rating": 5
+    }
   ],
   "stats": [
-    { "value": "+1.200", "label": "Sonrisas transformadas" },
-    { "value": "+10", "label": "Años de experiencia" },
-    { "value": "100%", "label": "Casos planificados digitalmente" },
-    { "value": "5.0", "label": "Calificación promedio" }
+    {
+      "value": "+1.200",
+      "label": "Sonrisas transformadas"
+    },
+    {
+      "value": "+10",
+      "label": "Años de experiencia"
+    },
+    {
+      "value": "100%",
+      "label": "Casos planificados digitalmente"
+    },
+    {
+      "value": "5.0",
+      "label": "Calificación promedio"
+    }
   ],
   "contact": {
     "whatsapp": "573001234567",
