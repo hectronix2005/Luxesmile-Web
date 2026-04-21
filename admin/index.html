@@ -492,10 +492,20 @@
           <textarea class="admin-textarea" rows="3" x-model="content.contact.hours"></textarea>
         </div>
         <div class="md:col-span-2">
-          <label class="admin-label block mb-2">URL embed de Google Maps</label>
-          <input class="admin-input" x-model="content.contact.mapsEmbed" placeholder="https://www.google.com/maps/embed?..." />
+          <label class="admin-label block mb-2">Embed de Google Maps</label>
+          <textarea
+            class="admin-textarea font-mono text-xs"
+            rows="3"
+            :value="content.contact.mapsEmbed"
+            @input="content.contact.mapsEmbed = (() => {
+              const v = $event.target.value.trim();
+              const m = v.match(/src=[\&quot;']([^\&quot;']+)[\&quot;']/i);
+              return m ? m[1] : v;
+            })()"
+            placeholder="Pega el iframe completo o solo el URL del src"
+          ></textarea>
           <p class="text-xs text-softblack/55 mt-1">
-            En Google Maps → Compartir → Insertar mapa → copia el valor del atributo <code>src</code>.
+            En Google Maps → Compartir → Insertar mapa → copia el iframe entero o solo el <code>src</code>. El admin extrae lo que necesita.
           </p>
         </div>
         <div>
