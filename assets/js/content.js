@@ -178,7 +178,7 @@ const DEFAULT_CONTENT = {
     email: 'contacto@luxe-smile.com',
     address: 'Calle 123 #45-67, Consultorio 802, Bogotá',
     hours: 'Lun a Vie · 8:00 am – 6:00 pm\nSábados · 9:00 am – 1:00 pm',
-    mapsEmbed: '',
+    mapsEmbed: '', // Pega aquí el src del iframe desde Google Maps → Compartir → Insertar mapa
     instagram: '',
     facebook: '',
     tiktok: '',
