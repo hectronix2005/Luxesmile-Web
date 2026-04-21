@@ -179,7 +179,8 @@ const DEFAULT_CONTENT = {
     address: 'Calle 123 #45-67, Consultorio 802, Bogotá',
     hours: 'Lun a Vie · 8:00 am – 6:00 pm\nSábados · 9:00 am – 1:00 pm',
     mapsEmbed: '', // Pega aquí el src del iframe desde Google Maps → Compartir → Insertar mapa
-    calendar: 'https://calendar.app.google/xvX6k3Zy4tsACvCr7', // link público de Google Calendar appointments
+    calendar: 'https://calendar.app.google/xvX6k3Zy4tsACvCr7',        // cita virtual (con Google Meet)
+    calendarOffice: 'https://calendar.app.google/xvX6k3Zy4tsACvCr7',  // cita presencial en consultorio
     instagram: '',
     facebook: '',
     tiktok: '',

@@ -25,6 +25,10 @@ document.addEventListener('alpine:init', () => {
       return this.content.contact.calendar || this.waLink();
     },
 
+    bookingOfficeLink() {
+      return this.content.contact.calendarOffice || this.content.contact.calendar || this.waLink();
+    },
+
     nl2br(str) {
       return (str || '').replace(/\n/g, '<br>');
     },

@@ -479,11 +479,18 @@
           <label class="admin-label block mb-2">Mensaje pre-cargado en WhatsApp</label>
           <input class="admin-input" x-model="content.contact.whatsappMessage" />
         </div>
-        <div class="md:col-span-2">
-          <label class="admin-label block mb-2">Link del calendario (botón "Agenda tu cita")</label>
+        <div>
+          <label class="admin-label block mb-2">Calendario · cita Virtual (con Meet)</label>
           <input class="admin-input" x-model="content.contact.calendar" placeholder="https://calendar.app.google/..." />
           <p class="text-xs text-softblack/55 mt-1">
-            Pega el link público de Google Calendar / Calendly / Booksy / etc. Si lo dejas vacío, el botón "Agenda tu cita" cae a WhatsApp.
+            Link de Google Calendar / Calendly para citas virtuales. Si está vacío, el botón cae a WhatsApp.
+          </p>
+        </div>
+        <div>
+          <label class="admin-label block mb-2">Calendario · cita en Consultorio (presencial)</label>
+          <input class="admin-input" x-model="content.contact.calendarOffice" placeholder="https://calendar.app.google/..." />
+          <p class="text-xs text-softblack/55 mt-1">
+            Link presencial. En Google Calendar crea otro tipo de cita sin Meet y con tu dirección como ubicación. Si está vacío, usa el calendario virtual.
           </p>
         </div>
         <div>
