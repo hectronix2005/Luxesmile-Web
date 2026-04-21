@@ -65,8 +65,8 @@
         </template>
       </nav>
 
-      <a :href="waLink()" target="_blank" rel="noopener" class="hidden lg:inline-flex btn-primary">
-        Agendar cita
+      <a :href="bookingLink()" target="_blank" rel="noopener" class="hidden lg:inline-flex btn-primary">
+        Agenda tu cita
       </a>
 
       <button
@@ -111,8 +111,11 @@
             @click="mobileOpen = false"
           ></a>
         </template>
-        <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary justify-center">
-          Agendar cita
+        <a :href="bookingLink()" target="_blank" rel="noopener" class="btn-primary justify-center">
+          Agenda tu cita
+        </a>
+        <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost justify-center">
+          Contáctanos
         </a>
       </div>
     </div>
@@ -136,13 +139,18 @@
         <p class="mt-8 text-lg text-softblack/75 max-w-xl leading-relaxed" x-text="content.hero.subtitle"></p>
 
         <div class="mt-10 flex flex-wrap gap-4">
-          <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary">
+          <a :href="bookingLink()" target="_blank" rel="noopener" class="btn-primary">
             <span x-text="content.hero.ctaPrimary"></span>
             <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
               <path d="M7 3l7 7-7 7" stroke="currentColor" stroke-width="1.5" fill="none" />
             </svg>
           </a>
-          <a href="#servicios" class="btn-ghost" x-text="content.hero.ctaSecondary"></a>
+          <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+              <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.49 0 .16 5.33.16 11.9c0 2.1.55 4.14 1.6 5.94L0 24l6.34-1.66a11.84 11.84 0 0 0 5.72 1.46c6.56 0 11.9-5.33 11.9-11.9 0-3.18-1.24-6.17-3.45-8.42Z" />
+            </svg>
+            <span x-text="content.hero.ctaSecondary"></span>
+          </a>
         </div>
 
         <div class="mt-14 flex items-center gap-6 text-sm text-softblack/70">
@@ -244,9 +252,12 @@
         </template>
       </div>
 
-      <div class="text-center mt-14 reveal">
-        <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary">
-          Consultar por mi caso
+      <div class="text-center mt-14 reveal flex flex-wrap gap-4 justify-center">
+        <a :href="bookingLink()" target="_blank" rel="noopener" class="btn-primary">
+          Agenda tu cita
+        </a>
+        <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost">
+          Contáctanos
         </a>
       </div>
     </div>
@@ -312,10 +323,15 @@
         <h2 class="font-serif text-5xl md:text-6xl leading-[1.05] mb-6">
           Agenda tu <em class="text-rosegold">cita</em>
         </h2>
-        <p class="text-softblack/70 leading-relaxed mb-10">
-          Cuéntanos qué te gustaría mejorar de tu sonrisa y te responderemos personalmente por
-          WhatsApp. Primera valoración 100% personalizada.
+        <p class="text-softblack/70 leading-relaxed mb-8">
+          Reserva tu valoración directamente en nuestra agenda online, o escríbenos por WhatsApp si
+          prefieres resolver tus dudas primero. Primera consulta 100% personalizada.
         </p>
+
+        <div class="flex flex-wrap gap-3 mb-10">
+          <a :href="bookingLink()" target="_blank" rel="noopener" class="btn-primary">Agenda tu cita</a>
+          <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost">Contáctanos</a>
+        </div>
 
         <ul class="space-y-5 text-softblack/85">
           <li class="flex gap-4 items-start">

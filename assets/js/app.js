@@ -21,6 +21,10 @@ document.addEventListener('alpine:init', () => {
       return `https://wa.me/${num}?text=${msg}`;
     },
 
+    bookingLink() {
+      return this.content.contact.calendar || this.waLink();
+    },
+
     nl2br(str) {
       return (str || '').replace(/\n/g, '<br>');
     },

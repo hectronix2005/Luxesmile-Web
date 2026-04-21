@@ -136,8 +136,8 @@ const DEFAULT_CONTENT = {
     title: 'Tu sonrisa,\nnuestra obra de arte.',
     subtitle:
       'Creamos sonrisas naturales y armónicas con tecnología de vanguardia y un trato íntimo, cálido y personalizado.',
-    ctaPrimary: 'Agendar mi cita',
-    ctaSecondary: 'Conocer servicios',
+    ctaPrimary: 'Agenda tu cita',     // botón principal → calendario (contact.calendar)
+    ctaSecondary: 'Contáctanos',      // botón secundario → WhatsApp
     image:
       'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1400&q=80',
   },
@@ -179,6 +179,7 @@ const DEFAULT_CONTENT = {
     address: 'Calle 123 #45-67, Consultorio 802, Bogotá',
     hours: 'Lun a Vie · 8:00 am – 6:00 pm\nSábados · 9:00 am – 1:00 pm',
     mapsEmbed: '', // Pega aquí el src del iframe desde Google Maps → Compartir → Insertar mapa
+    calendar: 'https://calendar.app.google/xvX6k3Zy4tsACvCr7', // link público de Google Calendar appointments
     instagram: '',
     facebook: '',
     tiktok: '',
