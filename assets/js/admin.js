@@ -4,6 +4,11 @@
    ===================================================================== */
 
 document.addEventListener('alpine:init', () => {
+  // Estado del editor de imagen mantenido fuera de Alpine para no observar
+  // el HTMLImageElement ni el estado transitorio de arrastre.
+  let editorImg = null;
+  let editorDrag = null;
+
   Alpine.data('admin', () => ({
     authed: false,
     loading: true,
@@ -15,6 +20,19 @@ document.addEventListener('alpine:init', () => {
     toast: '',
     toastTone: 'ok',                       // 'ok' | 'err'
     publishing: false,
+
+    // Editor de imagen (modal con zoom, recorte y compresión)
+    editor: {
+      open: false,
+      natW: 0, natH: 0,
+      aspect: '4:5',
+      outputW: 1000,
+      quality: 0.85,
+      zoom: 1,
+      offsetX: 0, offsetY: 0,
+      estimateKB: 0,
+      callback: null,
+    },
 
     tabs: [
       { id: 'brand', label: 'Marca' },
@@ -193,29 +211,223 @@ document.addEventListener('alpine:init', () => {
       arr.splice(j, 0, it);
     },
 
-    /* ------------------- Imágenes (base64, máx 900 KB) ------------------- */
-    pickImage(callback, maxBytes = 900_000) {
+    /* ------------------- Imágenes (editor con zoom, recorte y compresión) ------------------- */
+    pickImage(callback, opts = {}) {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
       input.onchange = () => {
         const file = input.files?.[0];
         if (!file) return;
-        if (file.size > maxBytes) {
-          alert(
-            `La imagen pesa ${(file.size / 1024).toFixed(0)} KB. Máximo recomendado: ${(maxBytes / 1024).toFixed(0)} KB. Comprímela en tinypng.com o usa una URL externa.`,
-          );
-          return;
-        }
         const reader = new FileReader();
-        reader.onload = () => callback(reader.result);
+        reader.onload = () => this.openEditor(reader.result, opts, callback);
         reader.readAsDataURL(file);
       };
       input.click();
     },
-    uploadHero() { this.pickImage((b64) => (this.content.hero.image = b64)); },
-    uploadAbout() { this.pickImage((b64) => (this.content.about.image = b64)); },
-    uploadGallery(i) { this.pickImage((b64) => (this.content.gallery[i].image = b64)); },
+    uploadHero() {
+      this.pickImage(
+        (b64) => (this.content.hero.image = b64),
+        { defaultAspect: 'free', defaultOutputW: 1600 },
+      );
+    },
+    uploadAbout() {
+      this.pickImage(
+        (b64) => (this.content.about.image = b64),
+        { defaultAspect: '4:5', defaultOutputW: 900 },
+      );
+    },
+    uploadGallery(i) {
+      this.pickImage(
+        (b64) => (this.content.gallery[i].image = b64),
+        { defaultAspect: '4:5', defaultOutputW: 1000 },
+      );
+    },
+
+    /* ------- Editor de imagen ------- */
+    openEditor(src, opts, callback) {
+      const img = new Image();
+      img.onload = () => {
+        editorImg = img;
+        this.editor.natW = img.naturalWidth;
+        this.editor.natH = img.naturalHeight;
+        this.editor.aspect = opts.defaultAspect ?? '4:5';
+        this.editor.outputW = opts.defaultOutputW ?? 1000;
+        this.editor.quality = 0.85;
+        this.editor.zoom = 1;
+        this.editor.offsetX = 0;
+        this.editor.offsetY = 0;
+        this.editor.callback = callback;
+        this.editor.open = true;
+        this.$nextTick(() => {
+          this.editorCenter();
+          this.editorRender();
+        });
+      };
+      img.onerror = () => this.flash('No se pudo leer la imagen', 'err');
+      img.src = src;
+    },
+    editorAspectRatio() {
+      switch (this.editor.aspect) {
+        case '1:1': return [1, 1];
+        case '16:9': return [16, 9];
+        case '3:4': return [3, 4];
+        case '4:5': return [4, 5];
+        case 'free': return [this.editor.natW || 1, this.editor.natH || 1];
+        default: return [4, 5];
+      }
+    },
+    editorCropSize() {
+      const maxW = 380, maxH = 480;
+      const [aw, ah] = this.editorAspectRatio();
+      let cw = maxW, ch = (cw * ah) / aw;
+      if (ch > maxH) { ch = maxH; cw = (ch * aw) / ah; }
+      return { w: Math.round(cw), h: Math.round(ch) };
+    },
+    editorOutputSize() {
+      const [aw, ah] = this.editorAspectRatio();
+      const w = this.editor.outputW;
+      const h = Math.round((w * ah) / aw);
+      return { w, h };
+    },
+    editorBaseScale() {
+      const { w: cw, h: ch } = this.editorCropSize();
+      return Math.max(cw / this.editor.natW, ch / this.editor.natH);
+    },
+    editorEffScale() {
+      return this.editorBaseScale() * this.editor.zoom;
+    },
+    editorCenter() {
+      const { w: cw, h: ch } = this.editorCropSize();
+      const eff = this.editorEffScale();
+      this.editor.offsetX = (cw - this.editor.natW * eff) / 2;
+      this.editor.offsetY = (ch - this.editor.natH * eff) / 2;
+    },
+    editorClamp() {
+      const { w: cw, h: ch } = this.editorCropSize();
+      const eff = this.editorEffScale();
+      const dispW = this.editor.natW * eff;
+      const dispH = this.editor.natH * eff;
+      const minX = cw - dispW;
+      const minY = ch - dispH;
+      if (this.editor.offsetX > 0) this.editor.offsetX = 0;
+      if (this.editor.offsetX < minX) this.editor.offsetX = minX;
+      if (this.editor.offsetY > 0) this.editor.offsetY = 0;
+      if (this.editor.offsetY < minY) this.editor.offsetY = minY;
+    },
+    editorRender() {
+      if (!editorImg) return;
+      const cnv = this.$refs.editorCanvas;
+      if (!cnv) return;
+      const { w: cw, h: ch } = this.editorCropSize();
+      cnv.width = cw; cnv.height = ch;
+      cnv.style.width = cw + 'px';
+      cnv.style.height = ch + 'px';
+      this.editorClamp();
+      const eff = this.editorEffScale();
+      const ctx = cnv.getContext('2d');
+      ctx.imageSmoothingQuality = 'high';
+      ctx.fillStyle = '#fafafa';
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.drawImage(
+        editorImg,
+        this.editor.offsetX,
+        this.editor.offsetY,
+        this.editor.natW * eff,
+        this.editor.natH * eff,
+      );
+      this.editorEstimate();
+    },
+    editorEstimate() {
+      // Heurística de tamaño JPEG ≈ ancho × alto × bytes/píxel
+      const { w, h } = this.editorOutputSize();
+      const bpp = 0.04 + (this.editor.quality - 0.5) * 0.4;
+      this.editor.estimateKB = Math.max(15, Math.round((w * h * bpp) / 1024));
+    },
+    editorOutputUpscale() {
+      // >1 cuando el resultado es mayor que el área fuente recortada (pierde nitidez)
+      const eff = this.editorEffScale();
+      const { w: cw } = this.editorCropSize();
+      const { w: ow } = this.editorOutputSize();
+      return (ow * eff) / cw;
+    },
+    editorChangeAspect(a) {
+      this.editor.aspect = a;
+      this.editor.zoom = 1;
+      this.$nextTick(() => { this.editorCenter(); this.editorRender(); });
+    },
+    editorChangeZoom(v) {
+      this.editor.zoom = +v;
+      this.editorRender();
+    },
+    editorMouseDown(e) {
+      editorDrag = { x: e.clientX, y: e.clientY, ox: this.editor.offsetX, oy: this.editor.offsetY };
+      e.preventDefault();
+    },
+    editorMouseMove(e) {
+      if (!editorDrag) return;
+      this.editor.offsetX = editorDrag.ox + (e.clientX - editorDrag.x);
+      this.editor.offsetY = editorDrag.oy + (e.clientY - editorDrag.y);
+      this.editorRender();
+    },
+    editorMouseUp() { editorDrag = null; },
+    editorTouchStart(e) {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      editorDrag = { x: t.clientX, y: t.clientY, ox: this.editor.offsetX, oy: this.editor.offsetY };
+    },
+    editorTouchMove(e) {
+      if (!editorDrag || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      this.editor.offsetX = editorDrag.ox + (t.clientX - editorDrag.x);
+      this.editor.offsetY = editorDrag.oy + (t.clientY - editorDrag.y);
+      this.editorRender();
+    },
+    editorTouchEnd() { editorDrag = null; },
+    editorWheel(e) {
+      const factor = e.deltaY > 0 ? 0.92 : 1.08;
+      const z = Math.max(1, Math.min(5, this.editor.zoom * factor));
+      this.editor.zoom = +z.toFixed(3);
+      this.editorRender();
+    },
+    editorApply() {
+      if (!editorImg) return;
+      const { w: cw } = this.editorCropSize();
+      const { w: ow, h: oh } = this.editorOutputSize();
+      const k = ow / cw;
+      const eff = this.editorEffScale();
+      const out = document.createElement('canvas');
+      out.width = ow; out.height = oh;
+      const ctx = out.getContext('2d');
+      ctx.imageSmoothingQuality = 'high';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, ow, oh);
+      ctx.drawImage(
+        editorImg,
+        this.editor.offsetX * k,
+        this.editor.offsetY * k,
+        this.editor.natW * eff * k,
+        this.editor.natH * eff * k,
+      );
+      const dataURL = out.toDataURL('image/jpeg', this.editor.quality);
+      const realKB = Math.round((dataURL.length * 0.75) / 1024);
+      if (realKB > 900) {
+        if (!confirm(`La imagen final pesa ${realKB} KB y supera el límite recomendado (900 KB). ¿Aplicarla igualmente? Sugerencia: baja la calidad o reduce el tamaño final.`)) {
+          this.editor.estimateKB = realKB;
+          return;
+        }
+      }
+      const cb = this.editor.callback;
+      this.editorClose();
+      if (cb) cb(dataURL);
+    },
+    editorCancel() { this.editorClose(); },
+    editorClose() {
+      this.editor.open = false;
+      this.editor.callback = null;
+      editorImg = null;
+      editorDrag = null;
+    },
 
     /* ------------------- Backup JSON ------------------- */
     exportJSON() { window.LuxeContent.exportContentJSON(this.content); },

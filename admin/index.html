@@ -676,5 +676,146 @@
       </button>
     </div>
   </div>
+
+  <!-- ====================== EDITOR DE IMAGEN ====================== -->
+  <div
+    x-show="editor.open"
+    x-cloak
+    x-transition.opacity
+    class="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6"
+    style="background: rgba(20, 14, 12, 0.65)"
+    @keydown.escape.window="editor.open && editorCancel()"
+  >
+    <div class="bg-ivory rounded-xl shadow-2xl w-full max-w-3xl max-h-[95vh] overflow-y-auto p-5 md:p-6 space-y-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="font-serif text-2xl leading-none">Editar imagen</h3>
+          <p class="text-xs text-softblack/55 mt-1">Encuadra, ajusta el zoom y elige tamaño/calidad final.</p>
+        </div>
+        <button
+          class="text-softblack/50 hover:text-rosegold text-2xl leading-none px-2"
+          @click="editorCancel()"
+          aria-label="Cerrar"
+        >✕</button>
+      </div>
+
+      <div class="grid md:grid-cols-[auto,1fr] gap-5 items-start">
+        <!-- Canvas con recorte -->
+        <div class="flex flex-col items-center gap-2">
+          <div
+            class="border border-charcoal/15 rounded-lg overflow-hidden bg-charcoal/5"
+            style="touch-action: none; cursor: grab"
+          >
+            <canvas
+              x-ref="editorCanvas"
+              class="block select-none"
+              @mousedown="editorMouseDown($event)"
+              @mousemove.window="editorMouseMove($event)"
+              @mouseup.window="editorMouseUp()"
+              @touchstart="editorTouchStart($event)"
+              @touchmove.prevent="editorTouchMove($event)"
+              @touchend="editorTouchEnd()"
+              @wheel.prevent="editorWheel($event)"
+            ></canvas>
+          </div>
+          <p class="text-[11px] text-softblack/55 text-center leading-snug">
+            Arrastra para encuadrar · rueda del ratón o slider para zoom
+          </p>
+        </div>
+
+        <!-- Controles -->
+        <div class="space-y-4">
+          <div>
+            <p class="admin-label mb-2">Proporción del recorte</p>
+            <div class="flex flex-wrap gap-1.5">
+              <template x-for="a in [
+                { v: '4:5',  l: 'Vertical 4:5' },
+                { v: '3:4',  l: 'Vertical 3:4' },
+                { v: '1:1',  l: 'Cuadrado' },
+                { v: '16:9', l: 'Horizontal 16:9' },
+                { v: 'free', l: 'Original' }
+              ]" :key="a.v">
+                <button
+                  type="button"
+                  class="admin-tab"
+                  :class="{ 'active': editor.aspect === a.v }"
+                  @click="editorChangeAspect(a.v)"
+                  x-text="a.l"
+                ></button>
+              </template>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <p class="admin-label">Zoom</p>
+              <span class="text-xs text-softblack/55" x-text="editor.zoom.toFixed(2) + '×'"></span>
+            </div>
+            <input
+              type="range"
+              min="1" max="5" step="0.05"
+              class="w-full accent-rosegold"
+              :value="editor.zoom"
+              @input="editorChangeZoom($event.target.value)"
+            />
+          </div>
+
+          <div>
+            <p class="admin-label mb-1">Tamaño final (ancho)</p>
+            <select
+              class="admin-input"
+              :value="editor.outputW"
+              @change="editor.outputW = +$event.target.value; editorEstimate()"
+            >
+              <option value="600">600 px (compacto)</option>
+              <option value="800">800 px</option>
+              <option value="1000">1000 px (recomendado)</option>
+              <option value="1200">1200 px</option>
+              <option value="1600">1600 px (alta resolución)</option>
+            </select>
+            <p class="text-[11px] text-softblack/55 mt-1">
+              Resultado:
+              <span x-text="editorOutputSize().w"></span> ×
+              <span x-text="editorOutputSize().h"></span> px
+              <span
+                x-show="editorOutputUpscale() > 1.1"
+                class="text-rosegoldDark"
+                title="El resultado es mayor que el área fuente — puede perder nitidez"
+              > · escala
+                <span x-text="editorOutputUpscale().toFixed(2) + '×'"></span>
+              </span>
+            </p>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <p class="admin-label">Calidad JPEG</p>
+              <span class="text-xs text-softblack/55" x-text="Math.round(editor.quality * 100) + '%'"></span>
+            </div>
+            <input
+              type="range"
+              min="0.5" max="0.95" step="0.05"
+              class="w-full accent-rosegold"
+              :value="editor.quality"
+              @input="editor.quality = +$event.target.value; editorEstimate()"
+            />
+          </div>
+
+          <p class="text-xs bg-porcelain/60 rounded px-3 py-2 leading-snug">
+            Tamaño aproximado: <strong x-text="editor.estimateKB + ' KB'"></strong>
+            <span
+              x-show="editor.estimateKB > 900"
+              class="text-rosegoldDark"
+            > · supera el límite recomendado (900 KB)</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 justify-end pt-3 border-t border-charcoal/10">
+        <button class="btn-ghost text-xs" @click="editorCancel()">Cancelar</button>
+        <button class="btn-primary text-xs" @click="editorApply()">Aplicar</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
