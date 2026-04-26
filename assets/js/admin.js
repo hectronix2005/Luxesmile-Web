@@ -366,7 +366,7 @@ document.addEventListener('alpine:init', () => {
       const base = this.editorBaseScale();
       const targetEff = Math.max(cw / bbox.w, ch / bbox.h);
       let z = targetEff / base;
-      if (z < 1) z = 1;
+      if (z < 0.1) z = 0.1;
       if (z > 5) z = 5;
       this.editor.zoom = +z.toFixed(3);
       const eff = this.editorEffScale();
@@ -425,12 +425,22 @@ document.addEventListener('alpine:init', () => {
       const eff = this.editorEffScale();
       const dispW = this.editor.natW * eff;
       const dispH = this.editor.natH * eff;
-      const minX = cw - dispW;
-      const minY = ch - dispH;
-      if (this.editor.offsetX > 0) this.editor.offsetX = 0;
-      if (this.editor.offsetX < minX) this.editor.offsetX = minX;
-      if (this.editor.offsetY > 0) this.editor.offsetY = 0;
-      if (this.editor.offsetY < minY) this.editor.offsetY = minY;
+      // Si la imagen cubre el recorte, mantenerla anclada a los bordes (modo cover).
+      // Si es menor (zoom < 1), permitir moverla dentro del recorte (modo contain).
+      if (dispW >= cw) {
+        if (this.editor.offsetX > 0) this.editor.offsetX = 0;
+        if (this.editor.offsetX < cw - dispW) this.editor.offsetX = cw - dispW;
+      } else {
+        if (this.editor.offsetX < 0) this.editor.offsetX = 0;
+        if (this.editor.offsetX > cw - dispW) this.editor.offsetX = cw - dispW;
+      }
+      if (dispH >= ch) {
+        if (this.editor.offsetY > 0) this.editor.offsetY = 0;
+        if (this.editor.offsetY < ch - dispH) this.editor.offsetY = ch - dispH;
+      } else {
+        if (this.editor.offsetY < 0) this.editor.offsetY = 0;
+        if (this.editor.offsetY > ch - dispH) this.editor.offsetY = ch - dispH;
+      }
     },
     editorRender() {
       if (!editorImg) return;
@@ -503,7 +513,7 @@ document.addEventListener('alpine:init', () => {
     editorTouchEnd() { editorDrag = null; },
     editorWheel(e) {
       const factor = e.deltaY > 0 ? 0.92 : 1.08;
-      const z = Math.max(1, Math.min(5, this.editor.zoom * factor));
+      const z = Math.max(0.1, Math.min(5, this.editor.zoom * factor));
       this.editor.zoom = +z.toFixed(3);
       this.editorRender();
     },

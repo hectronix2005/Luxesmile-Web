@@ -768,15 +768,23 @@
           <div>
             <div class="flex items-center justify-between mb-1">
               <p class="admin-label">Zoom</p>
-              <span class="text-xs text-softblack/55" x-text="editor.zoom.toFixed(2) + '×'"></span>
+              <span class="text-xs text-softblack/55">
+                <span x-text="editor.zoom.toFixed(2) + '×'"></span>
+                <span x-show="editor.zoom < 1" class="text-rosegoldDark"> · contiene</span>
+              </span>
             </div>
             <input
               type="range"
-              min="1" max="5" step="0.05"
+              min="0.1" max="5" step="0.05"
               class="w-full accent-rosegold"
               :value="editor.zoom"
               @input="editorChangeZoom($event.target.value)"
             />
+            <div class="flex justify-between text-[10px] text-softblack/45 mt-1 px-0.5">
+              <span>0.1×</span>
+              <span>1× (cubre)</span>
+              <span>5×</span>
+            </div>
           </div>
 
           <div>
