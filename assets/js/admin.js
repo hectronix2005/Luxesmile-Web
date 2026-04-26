@@ -244,6 +244,46 @@ document.addEventListener('alpine:init', () => {
       );
     },
 
+    /* ------- Re-edición de imágenes ya cargadas ------- */
+    async editHero() {
+      const src = await this.fetchEditableSrc(this.content.hero.image);
+      if (!src) return;
+      this.openEditor(src, { defaultAspect: 'free', defaultOutputW: 1600 },
+        (b64) => (this.content.hero.image = b64));
+    },
+    async editAbout() {
+      const src = await this.fetchEditableSrc(this.content.about.image);
+      if (!src) return;
+      this.openEditor(src, { defaultAspect: '4:5', defaultOutputW: 900 },
+        (b64) => (this.content.about.image = b64));
+    },
+    async editGallery(i) {
+      const src = await this.fetchEditableSrc(this.content.gallery[i].image);
+      if (!src) return;
+      this.openEditor(src, { defaultAspect: '4:5', defaultOutputW: 1000 },
+        (b64) => (this.content.gallery[i].image = b64));
+    },
+    // Convierte URLs externas a data URL para evitar canvas tainting (CORS).
+    // Las imágenes data: o blob: pasan tal cual.
+    async fetchEditableSrc(src) {
+      if (!src) { this.flash('No hay imagen para editar', 'err'); return null; }
+      if (src.startsWith('data:') || src.startsWith('blob:')) return src;
+      try {
+        const r = await fetch(src, { mode: 'cors' });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const blob = await r.blob();
+        return await new Promise((resolve, reject) => {
+          const fr = new FileReader();
+          fr.onload = () => resolve(fr.result);
+          fr.onerror = () => reject(fr.error);
+          fr.readAsDataURL(blob);
+        });
+      } catch (e) {
+        this.flash(`No se pudo cargar la imagen externa para editarla: ${e.message}`, 'err');
+        return null;
+      }
+    },
+
     /* ------- Editor de imagen ------- */
     openEditor(src, opts, callback) {
       const img = new Image();

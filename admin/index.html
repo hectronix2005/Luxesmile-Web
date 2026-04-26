@@ -277,9 +277,15 @@
       </div>
       <div>
         <label class="admin-label block mb-2">Imagen principal (URL o sube archivo)</label>
-        <div class="flex gap-3 items-start">
-          <input class="admin-input flex-1" x-model="content.hero.image" placeholder="https://..." />
+        <div class="flex flex-wrap gap-2 items-start">
+          <input class="admin-input flex-1 min-w-[160px]" x-model="content.hero.image" placeholder="https://..." />
           <button class="btn-ghost text-xs whitespace-nowrap" @click="uploadHero()">↑ Subir</button>
+          <button
+            class="btn-ghost text-xs whitespace-nowrap"
+            :disabled="!content.hero.image"
+            :class="{ 'opacity-40 cursor-not-allowed': !content.hero.image }"
+            @click="editHero()"
+          >✂ Recortar</button>
         </div>
         <template x-if="content.hero.image">
           <img :src="content.hero.image" class="mt-3 rounded h-40 object-cover" />
@@ -306,9 +312,15 @@
       </div>
       <div>
         <label class="admin-label block mb-2">Imagen</label>
-        <div class="flex gap-3 items-start">
-          <input class="admin-input flex-1" x-model="content.about.image" placeholder="URL o sube archivo" />
+        <div class="flex flex-wrap gap-2 items-start">
+          <input class="admin-input flex-1 min-w-[160px]" x-model="content.about.image" placeholder="URL o sube archivo" />
           <button class="btn-ghost text-xs whitespace-nowrap" @click="uploadAbout()">↑ Subir</button>
+          <button
+            class="btn-ghost text-xs whitespace-nowrap"
+            :disabled="!content.about.image"
+            :class="{ 'opacity-40 cursor-not-allowed': !content.about.image }"
+            @click="editAbout()"
+          >✂ Recortar</button>
         </div>
         <template x-if="content.about.image">
           <img :src="content.about.image" class="mt-3 rounded h-40 object-cover" />
@@ -377,6 +389,7 @@
       </div>
       <p class="text-xs text-softblack/60 leading-relaxed">
         Recomendado: imágenes verticales (4:5), máximo ~900 KB. Puedes pegar una URL o subir desde tu equipo.
+        Si una imagen tiene bordes blancos sobrantes, usa <strong>✂ Recortar</strong> para reencuadrarla.
       </p>
       <div class="grid md:grid-cols-2 gap-4">
         <template x-for="(g, i) in content.gallery" :key="i">
@@ -386,9 +399,15 @@
             </template>
             <div>
               <label class="admin-label block mb-1">Imagen (URL)</label>
-              <div class="flex gap-2">
-                <input class="admin-input flex-1" x-model="g.image" placeholder="https://..." />
+              <div class="flex flex-wrap gap-2">
+                <input class="admin-input flex-1 min-w-[140px]" x-model="g.image" placeholder="https://..." />
                 <button class="btn-ghost text-xs whitespace-nowrap" @click="uploadGallery(i)">↑ Subir</button>
+                <button
+                  class="btn-ghost text-xs whitespace-nowrap"
+                  :disabled="!g.image"
+                  :class="{ 'opacity-40 cursor-not-allowed': !g.image }"
+                  @click="editGallery(i)"
+                >✂ Recortar</button>
               </div>
             </div>
             <div>
