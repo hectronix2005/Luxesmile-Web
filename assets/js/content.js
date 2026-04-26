@@ -288,16 +288,35 @@ function base64ToUtf8(b64) {
 
 // Lee content.json directamente del repo vía API (siempre fresco, sin pasar por el CDN de Pages).
 // Devuelve { data, sha } para permitir detección de conflictos al publicar.
+// Para archivos > 1 MB la API contents devuelve content vacío; en ese caso bajamos
+// el blob crudo, que sí soporta archivos grandes.
 async function fetchContentViaAPI() {
   const cfg = getGithubConfig();
   if (!cfg.owner || !cfg.repo) throw new Error('Falta configuración de GitHub.');
   const branch = cfg.branch || 'main';
   const path = cfg.path || 'assets/data/content.json';
-  const res = await githubRequest(
+  const meta = await githubRequest(
     `/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}?ref=${branch}`,
   );
-  const json = base64ToUtf8(res.content);
-  return { data: JSON.parse(json), sha: res.sha };
+  let json;
+  if (meta.content) {
+    json = base64ToUtf8(meta.content);
+  } else if (meta.sha) {
+    const blobUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/blobs/${meta.sha}`;
+    const r = await fetch(blobUrl, {
+      headers: {
+        Authorization: `Bearer ${cfg.token}`,
+        Accept: 'application/vnd.github.raw',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status} al leer blob`);
+    json = await r.text();
+  } else {
+    throw new Error('Respuesta inesperada de GitHub (sin content ni sha).');
+  }
+  if (!json) throw new Error('Archivo vacío en el repo.');
+  return { data: JSON.parse(json), sha: meta.sha };
 }
 
 async function publishContent(data, expectedSha) {
