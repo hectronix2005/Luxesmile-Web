@@ -831,6 +831,11 @@
       </div>
 
       <div class="flex flex-wrap gap-2 justify-end pt-3 border-t border-charcoal/10">
+        <button
+          class="btn-ghost text-xs mr-auto"
+          @click="editorAutoFit()"
+          title="Detecta bordes blancos/uniformes y los recorta"
+        >✨ Auto-encuadrar</button>
         <button class="btn-ghost text-xs" @click="editorCancel()">Cancelar</button>
         <button class="btn-primary text-xs" @click="editorApply()">Aplicar</button>
       </div>

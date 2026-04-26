@@ -299,13 +299,90 @@ document.addEventListener('alpine:init', () => {
         this.editor.offsetY = 0;
         this.editor.callback = callback;
         this.editor.open = true;
+        const bbox = this.detectContentBBox(img);
         this.$nextTick(() => {
-          this.editorCenter();
+          if (bbox) this.editorFitBBox(bbox);
+          else this.editorCenter();
           this.editorRender();
+          if (bbox) this.flash('Bordes uniformes detectados — recorte ajustado automáticamente');
         });
       };
       img.onerror = () => this.flash('No se pudo leer la imagen', 'err');
       img.src = src;
+    },
+    // Detecta un borde de color uniforme alrededor del contenido (blanco, melocotón, etc.)
+    // y devuelve el bbox del contenido real. null si no hay borde claro.
+    detectContentBBox(img) {
+      const W = img.naturalWidth, H = img.naturalHeight;
+      if (!W || !H) return null;
+      const c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      let data;
+      try { data = ctx.getImageData(0, 0, W, H).data; }
+      catch { return null; }   // canvas tainted (CORS)
+      const cornerIdx = [
+        0,
+        (W - 1) * 4,
+        (H - 1) * W * 4,
+        ((H - 1) * W + W - 1) * 4,
+      ];
+      let R = 0, G = 0, B = 0;
+      for (const i of cornerIdx) { R += data[i]; G += data[i + 1]; B += data[i + 2]; }
+      R /= 4; G /= 4; B /= 4;
+      for (const i of cornerIdx) {
+        if (Math.abs(data[i] - R) > 22 || Math.abs(data[i + 1] - G) > 22 || Math.abs(data[i + 2] - B) > 22) {
+          return null;          // las 4 esquinas no coinciden → no hay borde uniforme
+        }
+      }
+      const tol = 24;
+      const isBg = (idx) => {
+        if (data[idx + 3] < 10) return true;
+        return Math.abs(data[idx] - R) < tol
+            && Math.abs(data[idx + 1] - G) < tol
+            && Math.abs(data[idx + 2] - B) < tol;
+      };
+      const rowHasContent = (y) => {
+        const base = y * W * 4;
+        for (let x = 0; x < W; x++) if (!isBg(base + x * 4)) return true;
+        return false;
+      };
+      const colHasContent = (x) => {
+        for (let y = 0; y < H; y++) if (!isBg((y * W + x) * 4)) return true;
+        return false;
+      };
+      let top = 0; while (top < H && !rowHasContent(top)) top++;
+      if (top >= H) return null;
+      let bot = H - 1; while (bot > top && !rowHasContent(bot)) bot--;
+      let left = 0; while (left < W && !colHasContent(left)) left++;
+      let right = W - 1; while (right > left && !colHasContent(right)) right--;
+      const margin = Math.max(top, H - 1 - bot, left, W - 1 - right);
+      if (margin < Math.max(W, H) * 0.04) return null;   // <4% borde → no merece la pena
+      return { x: left, y: top, w: right - left + 1, h: bot - top + 1 };
+    },
+    editorFitBBox(bbox) {
+      const { w: cw, h: ch } = this.editorCropSize();
+      const base = this.editorBaseScale();
+      const targetEff = Math.max(cw / bbox.w, ch / bbox.h);
+      let z = targetEff / base;
+      if (z < 1) z = 1;
+      if (z > 5) z = 5;
+      this.editor.zoom = +z.toFixed(3);
+      const eff = this.editorEffScale();
+      this.editor.offsetX = cw / 2 - (bbox.x + bbox.w / 2) * eff;
+      this.editor.offsetY = ch / 2 - (bbox.y + bbox.h / 2) * eff;
+    },
+    editorAutoFit() {
+      if (!editorImg) return;
+      const bbox = this.detectContentBBox(editorImg);
+      if (bbox) {
+        this.editorFitBBox(bbox);
+        this.editorRender();
+        this.flash('Auto-encuadrado');
+      } else {
+        this.flash('No detecto bordes uniformes; encuadra a mano', 'err');
+      }
     },
     editorAspectRatio() {
       switch (this.editor.aspect) {
