@@ -36,10 +36,12 @@
     };
   </script>
 
-  <link rel="stylesheet" href="../assets/css/styles.css" />
-  <script src="../assets/js/content.js"></script>
-  <script defer src="../assets/js/admin.js"></script>
+  <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260426d" />
+  <script src="../assets/js/content.js?v=20260426d"></script>
+  <script defer src="../assets/js/admin.js?v=20260426d"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260426d';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">

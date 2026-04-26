@@ -3,6 +3,10 @@
    Edita el contenido y publica directo al repo vía GitHub API.
    ===================================================================== */
 
+// Diagnóstico de versión: si vuelves a ver el alerta viejo "tinypng/879 KB",
+// abre la consola y comprueba que el commit aquí sea el último.
+console.log('[Luxe-Smile admin] commit 857b7c9+ · pre-compresión activa · sin alertas bloqueantes');
+
 document.addEventListener('alpine:init', () => {
   // Estado del editor de imagen mantenido fuera de Alpine para no observar
   // el HTMLImageElement ni el estado transitorio de arrastre.
