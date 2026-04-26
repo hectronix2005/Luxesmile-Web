@@ -216,14 +216,62 @@ document.addEventListener('alpine:init', () => {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
-      input.onchange = () => {
+      input.onchange = async () => {
         const file = input.files?.[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => this.openEditor(reader.result, opts, callback);
-        reader.readAsDataURL(file);
+        const origKB = Math.round(file.size / 1024);
+        try {
+          let src = await this.readFileAsDataURL(file);
+          // Pre-compresión interna: imágenes > 4 MB o > 3000 px de lado se reducen
+          // antes de abrir el editor. El editor manda en el resultado final; esto
+          // solo evita cargar canvases gigantes que ralentizan la edición.
+          if (file.size > 4_000_000) {
+            src = await this.downscaleDataURL(src, 2400, 0.9);
+          } else {
+            src = await this.downscaleDataURL(src, 3500, 0.95);
+          }
+          const newKB = Math.round((src.length * 0.75) / 1024);
+          this.openEditor(src, opts, callback);
+          if (origKB > 1500 && newKB < origKB * 0.9) {
+            this.flash(`Imagen pre-comprimida: ${origKB} KB → ${newKB} KB para edición`);
+          }
+        } catch (e) {
+          this.flash('No se pudo leer la imagen: ' + e.message, 'err');
+        }
       };
       input.click();
+    },
+    readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = () => reject(r.error || new Error('FileReader error'));
+        r.readAsDataURL(file);
+      });
+    },
+    // Devuelve el data URL original si ya está bajo `maxDim`; si no, lo
+    // re-encoda como JPEG escalado proporcionalmente.
+    downscaleDataURL(dataURL, maxDim, quality) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const w = img.naturalWidth, h = img.naturalHeight;
+          const longest = Math.max(w, h);
+          if (longest <= maxDim) { resolve(dataURL); return; }
+          const k = maxDim / longest;
+          const nw = Math.round(w * k), nh = Math.round(h * k);
+          const c = document.createElement('canvas');
+          c.width = nw; c.height = nh;
+          const ctx = c.getContext('2d');
+          ctx.imageSmoothingQuality = 'high';
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, nw, nh);
+          ctx.drawImage(img, 0, 0, nw, nh);
+          resolve(c.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = () => resolve(dataURL);
+        img.src = dataURL;
+      });
     },
     uploadHero() {
       this.pickImage(
@@ -520,33 +568,64 @@ document.addEventListener('alpine:init', () => {
     editorApply() {
       if (!editorImg) return;
       const { w: cw } = this.editorCropSize();
-      const { w: ow, h: oh } = this.editorOutputSize();
-      const k = ow / cw;
       const eff = this.editorEffScale();
-      const out = document.createElement('canvas');
-      out.width = ow; out.height = oh;
-      const ctx = out.getContext('2d');
-      ctx.imageSmoothingQuality = 'high';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, ow, oh);
-      ctx.drawImage(
-        editorImg,
-        this.editor.offsetX * k,
-        this.editor.offsetY * k,
-        this.editor.natW * eff * k,
-        this.editor.natH * eff * k,
-      );
-      const dataURL = out.toDataURL('image/jpeg', this.editor.quality);
-      const realKB = Math.round((dataURL.length * 0.75) / 1024);
-      if (realKB > 900) {
-        if (!confirm(`La imagen final pesa ${realKB} KB y supera el límite recomendado (900 KB). ¿Aplicarla igualmente? Sugerencia: baja la calidad o reduce el tamaño final.`)) {
-          this.editor.estimateKB = realKB;
-          return;
+      const TARGET_KB = 900;
+
+      // Renderiza el recorte al tamaño + calidad pedidos.
+      const renderAt = (outW, quality) => {
+        const [aw, ah] = this.editorAspectRatio();
+        const outH = Math.round((outW * ah) / aw);
+        const k = outW / cw;
+        const out = document.createElement('canvas');
+        out.width = outW; out.height = outH;
+        const ctx = out.getContext('2d');
+        ctx.imageSmoothingQuality = 'high';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, outW, outH);
+        ctx.drawImage(
+          editorImg,
+          this.editor.offsetX * k,
+          this.editor.offsetY * k,
+          this.editor.natW * eff * k,
+          this.editor.natH * eff * k,
+        );
+        const url = out.toDataURL('image/jpeg', quality);
+        const kb = Math.round((url.length * 0.75) / 1024);
+        return { url, kb, w: outW, h: outH };
+      };
+
+      // 1) Intento con los parámetros del usuario.
+      let result = renderAt(this.editor.outputW, this.editor.quality);
+      let autoCompressed = false;
+
+      // 2) Si supera el target, baja calidad en escalones hasta 0.55 manteniendo el tamaño.
+      if (result.kb > TARGET_KB) {
+        autoCompressed = true;
+        const qSteps = [0.8, 0.72, 0.65, 0.58];
+        for (const q of qSteps) {
+          if (q >= this.editor.quality) continue;
+          result = renderAt(this.editor.outputW, q);
+          if (result.kb <= TARGET_KB) break;
         }
       }
+
+      // 3) Si sigue sin caber, baja también el ancho (pero nunca por debajo de 600 px).
+      if (result.kb > TARGET_KB) {
+        const wSteps = [1200, 1000, 800, 700, 600];
+        for (const w of wSteps) {
+          if (w >= this.editor.outputW) continue;
+          result = renderAt(w, 0.7);
+          if (result.kb <= TARGET_KB) break;
+        }
+      }
+
+      if (autoCompressed) {
+        this.flash(`Comprimida automáticamente a ${result.kb} KB (${result.w}×${result.h})`);
+      }
+
       const cb = this.editor.callback;
       this.editorClose();
-      if (cb) cb(dataURL);
+      if (cb) cb(result.url);
     },
     editorCancel() { this.editorClose(); },
     editorClose() {
