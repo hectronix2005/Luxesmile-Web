@@ -2,8 +2,10 @@
 
 Landing y panel administrativo para **Luxe-Smile** (Dra. Angela Barbosa), clínica de odontología estética.
 
-- **Sitio público**: https://hectronix2005.github.io/Luxesmile-Web/
-- **Panel admin**: https://hectronix2005.github.io/Luxesmile-Web/admin/
+- **Sitio público**: https://luxesmilee.com/
+- **Panel admin**: https://luxesmilee.com/admin/
+
+> URLs alternas (mismo contenido): https://hectronix2005.github.io/Luxesmile-Web/ y `/admin/`. Útiles si el dominio falla.
 
 ## Stack
 
@@ -66,7 +68,7 @@ Cualquier servidor estático sirve (`npx serve`, extensión Live Server, etc.). 
 
 ### Setup único (2 min)
 
-1. Abre https://hectronix2005.github.io/Luxesmile-Web/admin/
+1. Abre https://luxesmilee.com/admin/
 2. Login con la contraseña (default: `luxe2026` — cámbiala en pestaña **Seguridad**)
 3. Pestaña **Publicación** → necesitas un **Fine-grained Personal Access Token**:
    - Entra a https://github.com/settings/personal-access-tokens/new
@@ -157,6 +159,15 @@ Para restaurar un backup: **Importar JSON** → revisa los campos → **Publicar
 ## Despliegue
 
 Cualquier push a `main` dispara un rebuild de GitHub Pages automáticamente. No hay CI/CD que configurar.
+
+### Dominio
+
+`luxesmilee.com` está registrado en **Name.com** y su DNS está delegado a **Netlify DNS** (cuenta `hectorn.personal@gmail.com`). El sitio se sirve desde GitHub Pages vía custom domain (archivo `CNAME` en raíz del repo + `https_enforced=true`). Los registros DNS son:
+
+- `A` apex → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+- `CNAME` `www` → `hectronix2005.github.io.`
+
+GitHub redirige automáticamente `www.luxesmilee.com` → `luxesmilee.com` con 301. El certificado TLS lo emite Let's Encrypt automáticamente; renueva sin intervención.
 
 ### Cache-busting
 
