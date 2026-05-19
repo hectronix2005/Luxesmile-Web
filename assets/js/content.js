@@ -252,8 +252,11 @@ function utf8ToBase64(str) {
 async function githubRequest(path, opts = {}) {
   const cfg = getGithubConfig();
   if (!cfg.token) throw new Error('Falta el token de GitHub.');
+  // Trim defensivo: previene 401 cuando el token tiene espacios o saltos invisibles
+  // por copy-paste desde algunos gestores de contraseñas.
+  const token = String(cfg.token).trim();
   const headers = {
-    Authorization: `Bearer ${cfg.token}`,
+    Authorization: `Bearer ${token}`,
     Accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
     ...(opts.headers || {}),

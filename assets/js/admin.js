@@ -239,6 +239,12 @@ document.addEventListener('alpine:init', () => {
     },
 
     saveGithubConfig() {
+      // Trim defensivo: muchos gestores de contraseñas (y copiar/pegar) dejan espacios
+      // o saltos de línea al inicio/final del token. GitHub responde 401 con eso.
+      if (typeof this.gh.token === 'string') this.gh.token = this.gh.token.trim();
+      if (typeof this.gh.owner === 'string') this.gh.owner = this.gh.owner.trim();
+      if (typeof this.gh.repo === 'string') this.gh.repo = this.gh.repo.trim();
+      if (typeof this.gh.path === 'string') this.gh.path = this.gh.path.trim();
       window.LuxeContent.setGithubConfig(this.gh);
       this.flash('Configuración guardada en este navegador');
     },
@@ -247,6 +253,37 @@ document.addEventListener('alpine:init', () => {
       this.gh.token = '';
       window.LuxeContent.setGithubConfig(this.gh);
       this.flash('Token borrado');
+    },
+
+    // Diagnóstico explícito del token: detecta los errores más comunes
+    // (espacios invisibles, formato inválido, prefijo incorrecto) y los muestra
+    // antes de llegar siquiera a la GitHub API.
+    async diagnoseToken() {
+      const t = this.gh.token || '';
+      if (!t) { this.flash('No hay token configurado. Pégalo en el campo de arriba.', 'err', 8000); return; }
+      const trimmed = t.trim();
+      if (t !== trimmed) {
+        this.gh.token = trimmed;
+        window.LuxeContent.setGithubConfig(this.gh);
+        this.flash('Encontré espacios o saltos de línea en el token — los quité y guardé. Reintenta "Probar conexión".', 'err', 10000);
+        return;
+      }
+      if (!/^github_pat_/.test(t) && !/^ghp_/.test(t)) {
+        this.flash('El token no empieza con "github_pat_" ni "ghp_". Probablemente copiaste un texto que no era el token.', 'err', 10000);
+        return;
+      }
+      if (t.length < 40) {
+        this.flash(`El token es muy corto (${t.length} caracteres). Los fine-grained tokens tienen ~90+ caracteres. Probablemente se cortó al copiar.`, 'err', 10000);
+        return;
+      }
+      // Si el formato local se ve bien, probamos contra GitHub.
+      window.LuxeContent.setGithubConfig(this.gh);
+      try {
+        await window.LuxeContent.testGithubConnection();
+        this.flash('Conexión OK — token y repo válidos', 'ok', 6000);
+      } catch (e) {
+        this.flash(this.friendlyGithubError(e, 'Falló'), 'err', 10000);
+      }
     },
 
     /* ------------------- Arrays: add/remove/move ------------------- */

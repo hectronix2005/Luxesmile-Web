@@ -38,10 +38,10 @@
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260426d" />
-  <script src="../assets/js/content.js?v=20260518c"></script>
-  <script defer src="../assets/js/admin.js?v=20260518c"></script>
+  <script src="../assets/js/content.js?v=20260518d"></script>
+  <script defer src="../assets/js/admin.js?v=20260518d"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260518c';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260518d';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -676,6 +676,7 @@
       <div class="flex flex-wrap gap-3 pt-4 border-t border-charcoal/10">
         <button class="btn-ghost text-xs" @click="saveGithubConfig()">Guardar configuración</button>
         <button class="btn-ghost text-xs" @click="testConnection()">Probar conexión</button>
+        <button class="btn-ghost text-xs" @click="diagnoseToken()" title="Detecta espacios invisibles, formato incorrecto y verifica contra GitHub">🩺 Diagnosticar token</button>
         <button class="btn-ghost text-xs" @click="reloadFromRemote()">↻ Recargar desde repo</button>
         <button
           class="btn-primary text-xs ml-auto"
