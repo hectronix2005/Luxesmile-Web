@@ -36,6 +36,8 @@ document.addEventListener('alpine:init', () => {
       offsetX: 0, offsetY: 0,
       estimateKB: 0,
       callback: null,
+      // 'jpeg' (default) o 'png' (preserva transparencia, útil para logos).
+      outputFormat: 'jpeg',
     },
 
     tabs: [
@@ -160,7 +162,8 @@ document.addEventListener('alpine:init', () => {
         if (e.code === 'STALE') {
           this.flash(e.message, 'err');
         } else {
-          this.flash('Error al publicar: ' + e.message, 'err');
+          this.flash(this.friendlyGithubError(e, 'Error al publicar'), 'err', 8000);
+          if (e.code === 'BAD_CREDENTIALS' || e.code === 'FORBIDDEN') this.tab = 'publish';
         }
       } finally {
         this.publishing = false;
@@ -173,8 +176,21 @@ document.addEventListener('alpine:init', () => {
         await window.LuxeContent.testGithubConnection();
         this.flash('Conexión OK — token y repo válidos');
       } catch (e) {
-        this.flash('Conexión falló: ' + e.message, 'err');
+        this.flash(this.friendlyGithubError(e, 'Conexión falló'), 'err', 8000);
       }
+    },
+
+    friendlyGithubError(e, prefix) {
+      if (e.code === 'BAD_CREDENTIALS') {
+        return 'Tu token expiró o es inválido. Genera uno nuevo en github.com/settings/personal-access-tokens y pégalo en Publicación.';
+      }
+      if (e.code === 'FORBIDDEN') {
+        return 'Token sin permisos suficientes. Debe tener acceso al repo Luxesmile-Web con "Contents: Read and write".';
+      }
+      if (e.code === 'NOT_FOUND') {
+        return 'Repo o archivo no encontrado. Revisa owner / repo / path en Publicación.';
+      }
+      return `${prefix}: ${e.message}`;
     },
 
     saveGithubConfig() {
@@ -229,10 +245,13 @@ document.addEventListener('alpine:init', () => {
           // Pre-compresión interna: imágenes > 4 MB o > 3000 px de lado se reducen
           // antes de abrir el editor. El editor manda en el resultado final; esto
           // solo evita cargar canvases gigantes que ralentizan la edición.
+          // Para outputFormat='png' (logos) preservamos la transparencia: la pre-compresión
+          // a JPEG rellenaría el alpha con blanco antes del editor.
+          const preserveAlpha = opts.outputFormat === 'png';
           if (file.size > 4_000_000) {
-            src = await this.downscaleDataURL(src, 2400, 0.9);
+            src = await this.downscaleDataURL(src, 2400, 0.9, preserveAlpha);
           } else {
-            src = await this.downscaleDataURL(src, 3500, 0.95);
+            src = await this.downscaleDataURL(src, 3500, 0.95, preserveAlpha);
           }
           const newKB = Math.round((src.length * 0.75) / 1024);
           this.openEditor(src, opts, callback);
@@ -254,8 +273,9 @@ document.addEventListener('alpine:init', () => {
       });
     },
     // Devuelve el data URL original si ya está bajo `maxDim`; si no, lo
-    // re-encoda como JPEG escalado proporcionalmente.
-    downscaleDataURL(dataURL, maxDim, quality) {
+    // re-encoda escalado proporcionalmente. Con preserveAlpha=true exporta PNG
+    // (sin rellenar fondo) para no destruir la transparencia de logos.
+    downscaleDataURL(dataURL, maxDim, quality, preserveAlpha = false) {
       return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
@@ -268,10 +288,12 @@ document.addEventListener('alpine:init', () => {
           c.width = nw; c.height = nh;
           const ctx = c.getContext('2d');
           ctx.imageSmoothingQuality = 'high';
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, nw, nh);
+          if (!preserveAlpha) {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, nw, nh);
+          }
           ctx.drawImage(img, 0, 0, nw, nh);
-          resolve(c.toDataURL('image/jpeg', quality));
+          resolve(preserveAlpha ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', quality));
         };
         img.onerror = () => resolve(dataURL);
         img.src = dataURL;
@@ -295,6 +317,15 @@ document.addEventListener('alpine:init', () => {
         { defaultAspect: '4:5', defaultOutputW: 1000 },
       );
     },
+    uploadLogo() {
+      // 'free' preserva la proporción horizontal del logo original.
+      // outputFormat='png' conserva la transparencia (logos suelen ser PNG).
+      this.pickImage(
+        (b64) => (this.content.brand.logo = b64),
+        { defaultAspect: 'free', defaultOutputW: 600, outputFormat: 'png' },
+      );
+    },
+    clearLogo() { this.content.brand.logo = ''; },
 
     /* ------- Re-edición de imágenes ya cargadas ------- */
     async editHero() {
@@ -314,6 +345,12 @@ document.addEventListener('alpine:init', () => {
       if (!src) return;
       this.openEditor(src, { defaultAspect: '4:5', defaultOutputW: 1000 },
         (b64) => (this.content.gallery[i].image = b64));
+    },
+    async editLogo() {
+      const src = await this.fetchEditableSrc(this.content.brand.logo);
+      if (!src) return;
+      this.openEditor(src, { defaultAspect: 'free', defaultOutputW: 600, outputFormat: 'png' },
+        (b64) => (this.content.brand.logo = b64));
     },
     // Convierte URLs externas a data URL para evitar canvas tainting (CORS).
     // Las imágenes data: o blob: pasan tal cual.
@@ -350,8 +387,11 @@ document.addEventListener('alpine:init', () => {
         this.editor.offsetX = 0;
         this.editor.offsetY = 0;
         this.editor.callback = callback;
+        this.editor.outputFormat = opts.outputFormat ?? 'jpeg';
         this.editor.open = true;
-        const bbox = this.detectContentBBox(img);
+        // El auto-encuadre por borde uniforme está pensado para fotos: cortaría
+        // bordes intencionales en logos. Para PNG transparente lo desactivamos.
+        const bbox = this.editor.outputFormat === 'png' ? null : this.detectContentBBox(img);
         this.$nextTick(() => {
           if (bbox) this.editorFitBBox(bbox);
           else this.editorCenter();
@@ -506,8 +546,11 @@ document.addEventListener('alpine:init', () => {
       const eff = this.editorEffScale();
       const ctx = cnv.getContext('2d');
       ctx.imageSmoothingQuality = 'high';
-      ctx.fillStyle = '#fafafa';
-      ctx.fillRect(0, 0, cw, ch);
+      ctx.clearRect(0, 0, cw, ch);
+      if (this.editor.outputFormat !== 'png') {
+        ctx.fillStyle = '#fafafa';
+        ctx.fillRect(0, 0, cw, ch);
+      }
       ctx.drawImage(
         editorImg,
         this.editor.offsetX,
@@ -574,6 +617,7 @@ document.addEventListener('alpine:init', () => {
       const { w: cw } = this.editorCropSize();
       const eff = this.editorEffScale();
       const TARGET_KB = 900;
+      const isPNG = this.editor.outputFormat === 'png';
 
       // Renderiza el recorte al tamaño + calidad pedidos.
       const renderAt = (outW, quality) => {
@@ -584,8 +628,10 @@ document.addEventListener('alpine:init', () => {
         out.width = outW; out.height = outH;
         const ctx = out.getContext('2d');
         ctx.imageSmoothingQuality = 'high';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, outW, outH);
+        if (!isPNG) {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, outW, outH);
+        }
         ctx.drawImage(
           editorImg,
           this.editor.offsetX * k,
@@ -593,7 +639,7 @@ document.addEventListener('alpine:init', () => {
           this.editor.natW * eff * k,
           this.editor.natH * eff * k,
         );
-        const url = out.toDataURL('image/jpeg', quality);
+        const url = isPNG ? out.toDataURL('image/png') : out.toDataURL('image/jpeg', quality);
         const kb = Math.round((url.length * 0.75) / 1024);
         return { url, kb, w: outW, h: outH };
       };
@@ -602,8 +648,9 @@ document.addEventListener('alpine:init', () => {
       let result = renderAt(this.editor.outputW, this.editor.quality);
       let autoCompressed = false;
 
-      // 2) Si supera el target, baja calidad en escalones hasta 0.55 manteniendo el tamaño.
-      if (result.kb > TARGET_KB) {
+      // PNG no soporta el escalado de calidad: si pesa demasiado, solo bajamos ancho.
+      // 2) Si supera el target (solo JPEG), baja calidad en escalones manteniendo el tamaño.
+      if (!isPNG && result.kb > TARGET_KB) {
         autoCompressed = true;
         const qSteps = [0.8, 0.72, 0.65, 0.58];
         for (const q of qSteps) {
@@ -613,8 +660,9 @@ document.addEventListener('alpine:init', () => {
         }
       }
 
-      // 3) Si sigue sin caber, baja también el ancho (pero nunca por debajo de 600 px).
+      // 3) Si sigue sin caber, baja también el ancho (PNG entra acá directo si excede).
       if (result.kb > TARGET_KB) {
+        autoCompressed = true;
         const wSteps = [1200, 1000, 800, 700, 600];
         for (const w of wSteps) {
           if (w >= this.editor.outputW) continue;
@@ -664,11 +712,11 @@ document.addEventListener('alpine:init', () => {
       return true;
     },
 
-    flash(msg, tone = 'ok') {
+    flash(msg, tone = 'ok', duration = 3500) {
       this.toast = msg;
       this.toastTone = tone;
       clearTimeout(this._t);
-      this._t = setTimeout(() => (this.toast = ''), 3500);
+      this._t = setTimeout(() => (this.toast = ''), duration);
     },
   }));
 });

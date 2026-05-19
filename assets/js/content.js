@@ -122,6 +122,7 @@ const DEFAULT_CONTENT = {
     name: 'Luxe-Smile',
     tagline: 'Odontología estética de alta gama',
     doctor: 'Dra. Angela Barbosa',
+    logo: '',
   },
   nav: [
     { label: 'Inicio', href: '#inicio' },
@@ -267,7 +268,12 @@ async function githubRequest(path, opts = {}) {
   try { data = text ? JSON.parse(text) : null; } catch { data = text; }
   if (!res.ok) {
     const msg = data?.message || `HTTP ${res.status}`;
-    throw new Error(msg);
+    const err = new Error(msg);
+    err.status = res.status;
+    if (res.status === 401) err.code = 'BAD_CREDENTIALS';
+    else if (res.status === 403) err.code = 'FORBIDDEN';
+    else if (res.status === 404) err.code = 'NOT_FOUND';
+    throw err;
   }
   return data;
 }

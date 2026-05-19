@@ -38,10 +38,10 @@
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260426d" />
-  <script src="../assets/js/content.js?v=20260426d"></script>
-  <script defer src="../assets/js/admin.js?v=20260426d"></script>
+  <script src="../assets/js/content.js?v=20260518b"></script>
+  <script defer src="../assets/js/admin.js?v=20260518b"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260426d';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260518b';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -147,6 +147,33 @@
         <div class="md:col-span-2">
           <label class="admin-label block mb-2">Doctor/a</label>
           <input class="admin-input" x-model="content.brand.doctor" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="admin-label block mb-2">Logo (PNG con fondo transparente recomendado)</label>
+          <div class="flex flex-wrap gap-2 items-center">
+            <button class="btn-ghost text-xs" @click="uploadLogo()">↑ Subir</button>
+            <button
+              class="btn-ghost text-xs"
+              @click="editLogo()"
+              :disabled="!content.brand.logo"
+              :class="{ 'opacity-40 cursor-not-allowed': !content.brand.logo }"
+            >✂ Recortar</button>
+            <button
+              class="btn-ghost text-xs"
+              @click="clearLogo()"
+              :disabled="!content.brand.logo"
+              :class="{ 'opacity-40 cursor-not-allowed': !content.brand.logo }"
+            >✕ Quitar</button>
+          </div>
+          <template x-if="content.brand.logo">
+            <div class="mt-3 inline-block rounded border border-charcoal/10 bg-[repeating-conic-gradient(#e5e5e5_0%_25%,#fff_0%_50%)] bg-[length:16px_16px] p-3">
+              <img :src="content.brand.logo" class="h-16 max-w-[260px] object-contain" alt="Logo" />
+            </div>
+          </template>
+          <p class="text-xs text-softblack/60 mt-2 leading-relaxed">
+            Se mostrará en la barra superior (junto al nombre) y en un bloque centrado debajo del header.
+            Si no subes nada, se mantiene el texto del nombre solamente.
+          </p>
         </div>
       </div>
 
