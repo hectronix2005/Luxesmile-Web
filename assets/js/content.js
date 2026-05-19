@@ -354,6 +354,11 @@ async function publishContent(data, expectedSha) {
     throw err;
   }
 
+  // Marca de tiempo para que el admin pueda verificar que el sitio público
+  // ya está sirviendo esta misma versión (no una cacheada por el CDN de Pages).
+  const publishedAt = new Date().toISOString();
+  data._publishedAt = publishedAt;
+
   const json = JSON.stringify(data, null, 2) + '\n';
   const body = {
     message: `admin: update content (${new Date().toISOString().slice(0, 16).replace('T', ' ')})`,
@@ -364,7 +369,31 @@ async function publishContent(data, expectedSha) {
 
   const result = await githubRequest(apiPath, { method: 'PUT', body });
   localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-  return { result, newSha: result?.content?.sha };
+  return { result, newSha: result?.content?.sha, publishedAt };
+}
+
+// Hace polling al content.json público (con cache-buster) hasta que aparezca
+// la marca _publishedAt esperada — confirma que GitHub Pages ya está sirviendo
+// la versión recién publicada. Llama a onProgress(seconds) cada intento.
+// Resuelve { ok: true } cuando coincide, { ok: false, reason: 'timeout' } si pasan timeoutMs.
+async function waitForPublished(expectedPublishedAt, { timeoutMs = 180000, intervalMs = 8000, onProgress } = {}) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    const elapsed = Math.round((Date.now() - start) / 1000);
+    if (onProgress) onProgress(elapsed);
+    try {
+      const url = `${CONTENT_URL}?t=${Date.now()}`;
+      const r = await fetch(url, { cache: 'no-store' });
+      if (r.ok) {
+        const fresh = await r.json();
+        if (fresh._publishedAt === expectedPublishedAt) {
+          return { ok: true, elapsed };
+        }
+      }
+    } catch { /* reintentar */ }
+    await new Promise((res) => setTimeout(res, intervalMs));
+  }
+  return { ok: false, reason: 'timeout', elapsed: Math.round((Date.now() - start) / 1000) };
 }
 
 /* --------------------- Contraseña admin --------------------- */
@@ -407,6 +436,7 @@ window.LuxeContent = {
   loadContent,
   fetchContentViaAPI,
   publishContent,
+  waitForPublished,
   testGithubConnection,
   getGithubConfig,
   setGithubConfig,

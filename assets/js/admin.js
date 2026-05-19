@@ -64,6 +64,11 @@ document.addEventListener('alpine:init', () => {
     // SHA del content.json en el momento en que cargamos (para detectar conflictos).
     loadedSha: null,
 
+    // Estado de la verificación post-publicación (banner persistente con cronómetro).
+    // active=true mientras hacemos polling al sitio público para confirmar que GitHub
+    // Pages ya está sirviendo la versión recién publicada.
+    verifying: { active: false, elapsed: 0, status: '', tone: 'info' },
+
     async init() {
       if (sessionStorage.getItem('luxesmile_admin_ok') === '1') {
         this.authed = true;
@@ -154,13 +159,16 @@ document.addEventListener('alpine:init', () => {
       this.publishing = true;
       try {
         window.LuxeContent.setGithubConfig(this.gh);
-        const { newSha } = await window.LuxeContent.publishContent(this.content, this.loadedSha);
+        const { newSha, publishedAt } = await window.LuxeContent.publishContent(this.content, this.loadedSha);
         this.loadedSha = newSha || null;
         this.snapshot = JSON.stringify(this.content);
-        this.flash('Publicado ✓ GitHub Pages actualizará el sitio en ~1 minuto');
+        // El PUT a GitHub fue exitoso. Disparamos en background la verificación
+        // contra el sitio público (que pasa por el CDN de Pages). El botón "Publicar"
+        // se desbloquea ya — el banner persistente arriba muestra el progreso.
+        this.verifyPublishedOnSite(publishedAt);
       } catch (e) {
         if (e.code === 'STALE') {
-          this.flash(e.message, 'err');
+          this.flash(e.message, 'err', 10000);
         } else {
           this.flash(this.friendlyGithubError(e, 'Error al publicar'), 'err', 8000);
           if (e.code === 'BAD_CREDENTIALS' || e.code === 'FORBIDDEN') this.tab = 'publish';
@@ -168,6 +176,43 @@ document.addEventListener('alpine:init', () => {
       } finally {
         this.publishing = false;
       }
+    },
+
+    async verifyPublishedOnSite(publishedAt) {
+      this.verifying = { active: true, elapsed: 0, status: 'Subido a GitHub. Esperando que el sitio público actualice…', tone: 'info' };
+      const result = await window.LuxeContent.waitForPublished(publishedAt, {
+        timeoutMs: 180000,
+        intervalMs: 8000,
+        onProgress: (sec) => {
+          this.verifying.elapsed = sec;
+          this.verifying.status = `Subido a GitHub. Esperando que el sitio público actualice… (${sec}s)`;
+        },
+      });
+      if (result.ok) {
+        this.verifying = {
+          active: true,
+          elapsed: result.elapsed,
+          status: `Publicado y visible en luxesmilee.com ✓ (verificado en ${result.elapsed}s)`,
+          tone: 'ok',
+        };
+        // El banner permanece visible 6s para que la doctora confirme y luego se cierra.
+        clearTimeout(this._verifyT);
+        this._verifyT = setTimeout(() => { this.verifying.active = false; }, 6000);
+      } else {
+        this.verifying = {
+          active: true,
+          elapsed: result.elapsed,
+          status: 'Los cambios quedaron en GitHub pero el sitio público aún no los muestra (puede ser caché del CDN). Recarga el sitio en unos minutos.',
+          tone: 'warn',
+        };
+        clearTimeout(this._verifyT);
+        this._verifyT = setTimeout(() => { this.verifying.active = false; }, 12000);
+      }
+    },
+
+    dismissVerifying() {
+      clearTimeout(this._verifyT);
+      this.verifying.active = false;
     },
 
     async testConnection() {

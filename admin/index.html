@@ -38,10 +38,10 @@
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260426d" />
-  <script src="../assets/js/content.js?v=20260518b"></script>
-  <script defer src="../assets/js/admin.js?v=20260518b"></script>
+  <script src="../assets/js/content.js?v=20260518c"></script>
+  <script defer src="../assets/js/admin.js?v=20260518c"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260518b';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260518c';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -119,6 +119,40 @@
       :class="toastTone === 'err' ? 'bg-rosegoldDark text-ivory' : 'bg-charcoal text-ivory'"
       x-text="toast"
     ></div>
+
+    <!-- Banner de verificación post-publicación.
+         Se queda fijo arriba mientras hacemos polling al sitio público y nos confirma
+         visualmente cuando los cambios ya son visibles en luxesmilee.com. -->
+    <div
+      x-show="verifying.active"
+      x-transition
+      class="fixed top-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-lg shadow-2xl z-50 flex items-center gap-3 max-w-[92vw]"
+      :class="{
+        'bg-charcoal text-ivory': verifying.tone === 'info',
+        'bg-emerald-700 text-ivory': verifying.tone === 'ok',
+        'bg-amber-600 text-ivory': verifying.tone === 'warn'
+      }"
+    >
+      <!-- Spinner cuando todavía está esperando -->
+      <svg
+        x-show="verifying.tone === 'info'"
+        class="animate-spin h-5 w-5"
+        viewBox="0 0 24 24"
+        fill="none"
+      >
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"/>
+        <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span x-show="verifying.tone === 'ok'" class="text-lg leading-none">✓</span>
+      <span x-show="verifying.tone === 'warn'" class="text-lg leading-none">⚠</span>
+      <span class="text-sm leading-relaxed" x-text="verifying.status"></span>
+      <button
+        @click="dismissVerifying()"
+        class="ml-2 text-ivory/80 hover:text-ivory text-lg leading-none"
+        aria-label="Cerrar"
+        x-show="verifying.tone !== 'info'"
+      >×</button>
+    </div>
 
     <!-- Tabs -->
     <div class="flex gap-2 overflow-x-auto pb-3 mb-6 -mx-4 px-4 md:mx-0 md:px-0">
