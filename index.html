@@ -40,9 +40,9 @@
     };
   </script>
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260426d" />
-  <script src="assets/js/content.js?v=20260518d"></script>
-  <script defer src="assets/js/app.js?v=20260426d"></script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260518e" />
+  <script src="assets/js/content.js?v=20260518e"></script>
+  <script defer src="assets/js/app.js?v=20260518e"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
@@ -329,26 +329,39 @@
   </section>
 
   <!-- ============================ TESTIMONIALS ============================ -->
-  <section id="testimonios" class="py-24 lg:py-32 bg-porcelain/50 border-y border-charcoal/5">
+  <section
+    id="testimonios"
+    class="py-24 lg:py-32 bg-porcelain/50 border-y border-charcoal/5"
+    x-show="content.reviews?.elfsightWidgetId || content.reviews?.googleReviewUrl"
+  >
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
-      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
-        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Testimonios</p>
+      <div class="text-center max-w-2xl mx-auto mb-12 reveal">
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Reseñas en Google</p>
         <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]">
           Lo que dicen <em class="text-rosegold">de nosotros</em>
         </h2>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-6">
-        <template x-for="(t, i) in content.testimonials" :key="i">
-          <div class="testimonial-card reveal">
-            <p class="text-gold tracking-widest mb-3" x-text="stars(t.rating)"></p>
-            <p class="font-serif italic text-lg leading-relaxed text-softblack" x-text="t.text"></p>
-            <div class="mt-6 pt-4 border-t border-charcoal/10">
-              <p class="font-medium" x-text="t.name"></p>
-              <p class="text-xs uppercase tracking-[0.2em] text-softblack/60 mt-1" x-text="t.role"></p>
-            </div>
-          </div>
-        </template>
+      <!-- Widget de Elfsight con reseñas vivas de Google.
+           El script platform.js detecta el div por su clase elfsight-app-XXX y lo monta. -->
+      <template x-if="content.reviews?.elfsightWidgetId">
+        <div class="reveal">
+          <div :class="'elfsight-app-' + content.reviews.elfsightWidgetId" data-elfsight-app-lazy></div>
+        </div>
+      </template>
+
+      <div class="text-center mt-12" x-show="content.reviews?.googleReviewUrl">
+        <a
+          :href="content.reviews?.googleReviewUrl"
+          target="_blank"
+          rel="noopener"
+          class="btn-primary inline-flex items-center gap-2"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.5l2.59 5.24 5.78.84-4.18 4.07.99 5.75-5.18-2.72-5.18 2.72.99-5.75-4.18-4.07 5.78-.84z"/>
+          </svg>
+          Deja tu reseña en Google
+        </a>
       </div>
     </div>
   </section>
@@ -462,6 +475,18 @@
             <li x-text="content.contact.email"></li>
             <li x-text="content.contact.address"></li>
           </ul>
+          <a
+            x-show="content.reviews?.googleReviewUrl"
+            :href="content.reviews?.googleReviewUrl"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 mt-5 text-sm text-ivory/85 hover:text-rosegold transition"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.5l2.59 5.24 5.78.84-4.18 4.07.99 5.75-5.18-2.72-5.18 2.72.99-5.75-4.18-4.07 5.78-.84z"/>
+            </svg>
+            Deja tu reseña en Google
+          </a>
         </div>
       </div>
       <div class="pt-6 flex flex-wrap items-center justify-between gap-3 text-xs text-ivory/50">
@@ -471,7 +496,22 @@
     </div>
   </footer>
 
-  <!-- ============================ WHATSAPP FLOAT ============================ -->
+  <!-- ============================ FLOATING ACTIONS ============================ -->
+  <!-- Botón flotante "Deja tu reseña en Google", justo encima del de WhatsApp. -->
+  <a
+    x-show="content.reviews?.googleReviewUrl"
+    :href="content.reviews?.googleReviewUrl"
+    target="_blank"
+    rel="noopener"
+    class="google-float"
+    aria-label="Deja tu reseña en Google"
+    title="Deja tu reseña en Google"
+  >
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M11.48 3.5l2.59 5.24 5.78.84-4.18 4.07.99 5.75-5.18-2.72-5.18 2.72.99-5.75-4.18-4.07 5.78-.84z"/>
+    </svg>
+  </a>
+
   <a :href="waLink()" target="_blank" rel="noopener" class="wa-float" aria-label="Chatear por WhatsApp">
     <svg viewBox="0 0 24 24" fill="currentColor">
       <path

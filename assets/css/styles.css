@@ -260,6 +260,31 @@ body {
   height: 28px;
 }
 
+/* -------- Google reviews flotante (encima del WhatsApp) ---------- */
+.google-float {
+  position: fixed;
+  right: 1.25rem;
+  bottom: calc(1.25rem + 58px + 14px);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fbbc04;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 28px -8px rgba(251, 188, 4, 0.6);
+  transition: transform 0.2s ease;
+  z-index: 50;
+}
+.google-float:hover {
+  transform: scale(1.08);
+}
+.google-float svg {
+  width: 24px;
+  height: 24px;
+}
+
 /* -------- Admin ---------- */
 .admin-shell {
   background: var(--porcelain);

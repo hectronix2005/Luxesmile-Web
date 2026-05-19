@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260426d" />
-  <script src="../assets/js/content.js?v=20260518d"></script>
-  <script defer src="../assets/js/admin.js?v=20260518d"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260518e" />
+  <script src="../assets/js/content.js?v=20260518e"></script>
+  <script defer src="../assets/js/admin.js?v=20260518e"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260518d';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260518e';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -487,40 +487,60 @@
       </div>
     </div>
 
-    <!-- ============ TESTIMONIOS ============ -->
-    <div x-show="tab === 'testimonials'" class="admin-card space-y-5">
-      <div class="flex items-center justify-between">
-        <h2 class="font-serif text-2xl">Testimonios</h2>
-        <button class="btn-ghost text-xs" @click="addTestimonial()">+ Agregar</button>
+    <!-- ============ TESTIMONIOS (Reseñas de Google) ============ -->
+    <div x-show="tab === 'testimonials'" class="admin-card space-y-6">
+      <div>
+        <h2 class="font-serif text-2xl">Reseñas de Google</h2>
+        <p class="text-sm text-softblack/70 mt-2 leading-relaxed">
+          Las reseñas se traen automáticamente de Google Business mediante un widget de
+          <a href="https://elfsight.com/google-reviews-widget/" target="_blank" rel="noopener" class="underline hover:text-rosegold">Elfsight</a>.
+          El botón <strong>Deja tu reseña en Google</strong> aparecerá en el sitio,
+          en el footer y en el menú flotante.
+        </p>
       </div>
-      <div class="space-y-4">
-        <template x-for="(t, i) in content.testimonials" :key="i">
-          <div class="border border-charcoal/10 rounded p-4 bg-ivory/50 space-y-3">
-            <div class="grid md:grid-cols-3 gap-3">
-              <div>
-                <label class="admin-label block mb-1">Nombre</label>
-                <input class="admin-input" x-model="t.name" />
-              </div>
-              <div>
-                <label class="admin-label block mb-1">Tratamiento / rol</label>
-                <input class="admin-input" x-model="t.role" />
-              </div>
-              <div>
-                <label class="admin-label block mb-1">Rating (1–5)</label>
-                <input type="number" min="1" max="5" class="admin-input" x-model.number="t.rating" />
-              </div>
-            </div>
-            <div>
-              <label class="admin-label block mb-1">Testimonio</label>
-              <textarea class="admin-textarea" rows="3" x-model="t.text"></textarea>
-            </div>
-            <div class="flex justify-end gap-1">
-              <button class="admin-tab" @click="move(content.testimonials, i, -1)">↑</button>
-              <button class="admin-tab" @click="move(content.testimonials, i, 1)">↓</button>
-              <button class="admin-tab" @click="remove(content.testimonials, i)">✕</button>
-            </div>
-          </div>
-        </template>
+
+      <div class="space-y-5">
+        <div>
+          <label class="admin-label block mb-2">URL para dejar reseña en Google</label>
+          <input class="admin-input" x-model="content.reviews.googleReviewUrl" placeholder="https://g.page/r/..../review  ó  https://search.google.com/local/writereview?placeid=..." />
+          <p class="text-xs text-softblack/60 mt-2 leading-relaxed">
+            Cómo obtenerla: entra a <a href="https://business.google.com" target="_blank" rel="noopener" class="underline hover:text-rosegold">business.google.com</a>
+            → tu negocio → <strong>Pedir reseñas</strong> → copia el enlace corto que aparece (formato <code>https://g.page/r/.../review</code>).
+            Si no aparece esa opción, usa el formato con tu Place ID.
+          </p>
+        </div>
+
+        <div>
+          <label class="admin-label block mb-2">ID del widget de Elfsight</label>
+          <input class="admin-input" x-model="content.reviews.elfsightWidgetId" placeholder="Ej: 1a2b3c4d-5e6f-7890-abcd-ef1234567890" />
+          <p class="text-xs text-softblack/60 mt-2 leading-relaxed">
+            Cómo obtenerlo:
+            1) Crea cuenta gratuita en <a href="https://elfsight.com" target="_blank" rel="noopener" class="underline hover:text-rosegold">elfsight.com</a>.
+            2) Apps → <strong>Google Reviews</strong> → conecta tu Google Business Profile.
+            3) Personaliza la apariencia (recomendado: limit 5 reseñas, ordenar por más recientes, mostrar rating).
+            4) Al guardar, te darán un código <code>&lt;div class="elfsight-app-XXXXXXXX"&gt;&lt;/div&gt;</code> —
+            <strong>solo copia la parte XXXXXXXX (sin "elfsight-app-")</strong> y pégala aquí.
+          </p>
+        </div>
+
+        <div class="bg-ivory/60 border border-charcoal/10 rounded p-4">
+          <p class="text-xs uppercase tracking-[0.25em] text-rosegold mb-3">Vista previa</p>
+          <template x-if="content.reviews?.elfsightWidgetId">
+            <p class="text-sm text-softblack/70">
+              ✓ Widget configurado: <code class="text-xs" x-text="content.reviews.elfsightWidgetId"></code><br>
+              <span class="text-xs">(la vista real se ve en luxesmilee.com tras publicar)</span>
+            </p>
+          </template>
+          <template x-if="!content.reviews?.elfsightWidgetId">
+            <p class="text-sm text-softblack/60">Sin widget configurado — la sección Testimonios del sitio quedará oculta.</p>
+          </template>
+          <template x-if="content.reviews?.googleReviewUrl">
+            <p class="text-sm text-softblack/70 mt-3">
+              ✓ Botón "Deja tu reseña" activo —
+              <a :href="content.reviews.googleReviewUrl" target="_blank" rel="noopener" class="underline hover:text-rosegold">probar enlace</a>
+            </p>
+          </template>
+        </div>
       </div>
     </div>
 

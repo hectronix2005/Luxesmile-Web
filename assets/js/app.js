@@ -12,7 +12,22 @@ document.addEventListener('alpine:init', () => {
       this.content = await window.LuxeContent.loadContent();
       window.LuxeContent.applyTheme(this.content.theme);
       document.title = `${this.content.brand.name} · ${this.content.brand.doctor}`;
-      this.$nextTick(() => this.setupReveal());
+      this.$nextTick(() => {
+        this.setupReveal();
+        this.loadElfsightIfNeeded();
+      });
+    },
+
+    // Inyecta el script de Elfsight platform.js solo si hay widget ID configurado.
+    // El script detecta automáticamente cualquier div con clase elfsight-app-XXX y lo monta.
+    loadElfsightIfNeeded() {
+      if (!this.content?.reviews?.elfsightWidgetId) return;
+      if (document.querySelector('script[data-elfsight-platform]')) return;
+      const s = document.createElement('script');
+      s.src = 'https://static.elfsight.com/platform/platform.js';
+      s.defer = true;
+      s.setAttribute('data-elfsight-platform', '');
+      document.head.appendChild(s);
     },
 
     waLink() {

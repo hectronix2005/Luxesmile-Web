@@ -124,6 +124,13 @@ const DEFAULT_CONTENT = {
     doctor: 'Dra. Angela Barbosa',
     logo: '',
   },
+  reviews: {
+    // URL para que el visitante deje reseña en Google (se obtiene desde Google Business Profile
+    // o construyendo "https://search.google.com/local/writereview?placeid=PLACE_ID").
+    googleReviewUrl: '',
+    // ID del widget de Elfsight (Google Reviews) — solo el UUID, sin el div completo.
+    elfsightWidgetId: '',
+  },
   nav: [
     { label: 'Inicio', href: '#inicio' },
     { label: 'Sobre mí', href: '#sobre' },
