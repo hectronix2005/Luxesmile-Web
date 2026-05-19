@@ -132,24 +132,8 @@
     </div>
   </header>
 
-  <!-- Logo central (bajo el header fijo). Solo se muestra si hay logo cargado. -->
-  <div
-    x-show="content.brand.logo"
-    class="pt-28 lg:pt-32 pb-2 flex justify-center bg-ivory"
-  >
-    <img
-      :src="content.brand.logo"
-      alt="Logo Luxe-Smile"
-      class="h-20 lg:h-24 w-auto max-w-[420px] object-contain"
-    />
-  </div>
-
   <!-- ============================ HERO ============================ -->
-  <section
-    id="inicio"
-    class="relative pb-24 lg:pb-32 hero-aura overflow-hidden"
-    :class="content.brand.logo ? 'pt-6 lg:pt-10' : 'pt-32 lg:pt-40'"
-  >
+  <section id="inicio" class="relative pt-32 pb-24 lg:pt-40 lg:pb-32 hero-aura overflow-hidden">
     <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-12 items-center">
       <div class="lg:col-span-7 reveal">
         <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-6" x-text="content.hero.eyebrow"></p>
