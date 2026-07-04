@@ -11,7 +11,9 @@ document.addEventListener('alpine:init', () => {
     async init() {
       this.content = await window.LuxeContent.loadContent();
       window.LuxeContent.applyTheme(this.content.theme);
-      document.title = `${this.content.brand.name} · ${this.content.brand.doctor}`;
+      // Título optimizado para SEO (keyword + ciudad). Se mantiene fijo aquí
+      // para que coincida con el <title> del HTML y no lo pise con uno genérico.
+      document.title = 'Diseño de Sonrisa en Bogotá | Dra. Angela Barbosa — Luxe-Smile';
       this.$nextTick(() => {
         this.setupReveal();
         this.loadElfsightIfNeeded();
