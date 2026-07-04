@@ -1,0 +1,46 @@
+name: Pre-render SEO
+
+# Regenera el contenido SEO estático de index.html a partir de content.json.
+# Se dispara cuando el admin publica cambios (content.json) o cuando cambia el
+# propio script de pre-render. NO se dispara con cambios en index.html, para
+# evitar un bucle con su propio commit.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/data/content.json'
+      - 'scripts/prerender.mjs'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+# Evita solapamientos si llegan varias publicaciones seguidas.
+concurrency:
+  group: prerender
+  cancel-in-progress: false
+
+jobs:
+  prerender:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Regenerar HTML pre-renderizado
+        run: node scripts/prerender.mjs
+
+      - name: Commit si index.html cambió
+        run: |
+          if [ -n "$(git status --porcelain index.html)" ]; then
+            git config user.name "luxe-prerender[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add index.html
+            git commit -m "chore(prerender): regenerar SEO estático desde content.json"
+            git push
+          else
+            echo "index.html sin cambios; nada que commitear."
+          fi

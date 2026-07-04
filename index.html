@@ -102,6 +102,9 @@
     };
   </script>
 
+  <!-- Sin JS (algunos crawlers): revela el contenido pre-renderizado que x-cloak ocultaría -->
+  <noscript><style>[x-cloak]{display:revert !important}</style></noscript>
+
   <link rel="stylesheet" href="assets/css/styles.css?v=20260518e" />
   <script src="assets/js/content.js?v=20260518e"></script>
   <script defer src="assets/js/app.js?v=20260704a"></script>
@@ -198,10 +201,11 @@
   <section id="inicio" class="relative pt-32 pb-24 lg:pt-40 lg:pb-32 hero-aura overflow-hidden">
     <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-12 items-center">
       <div class="lg:col-span-7 reveal">
-        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-6" x-text="content.hero.eyebrow"></p>
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-6" x-text="content.hero.eyebrow"><!--PR:eyebrow-->Odontología estética · Diseño de sonrisa<!--/PR:eyebrow--></p>
         <h1
           class="hero-title text-6xl md:text-7xl lg:text-[5.5rem]"
         >
+          <!--PR:h1--><span class="block" data-prerendered>Tu sonrisa,</span><span class="block" data-prerendered><em>nuestra obra de arte.</em></span><!--/PR:h1-->
           <template x-for="(line, i) in content.hero.title.split('\n')" :key="i">
             <span class="block">
               <template x-if="i === 1"><em x-text="line"></em></template>
@@ -209,7 +213,7 @@
             </span>
           </template>
         </h1>
-        <p class="mt-8 text-lg text-softblack/75 max-w-xl leading-relaxed" x-text="content.hero.subtitle"></p>
+        <p class="mt-8 text-lg text-softblack/75 max-w-xl leading-relaxed" x-text="content.hero.subtitle"><!--PR:subtitle-->Creamos sonrisas naturales y armónicas con tecnología de vanguardia y un trato íntimo, cálido y personalizado.<!--/PR:subtitle--></p>
 
         <div class="mt-10 flex flex-wrap gap-3">
           <a :href="bookingOfficeLink()" target="_blank" rel="noopener" class="btn-primary">
@@ -236,7 +240,7 @@
 
         <div class="mt-14 flex items-center gap-6 text-sm text-softblack/70">
           <span class="gold-divider"></span>
-          <span class="font-serif italic text-lg" x-text="content.brand.doctor"></span>
+          <span class="font-serif italic text-lg" x-text="content.brand.doctor"><!--PR:doctor-->Dra. Angela Barbosa Gómez<!--/PR:doctor--></span>
         </div>
       </div>
 
@@ -293,9 +297,9 @@
 
       <div class="lg:col-span-7 order-1 lg:order-2 reveal">
         <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Sobre mí</p>
-        <h2 class="font-serif text-5xl md:text-6xl leading-[1] mb-3" x-text="content.about.title"></h2>
-        <p class="font-serif italic text-xl text-softblack/70 mb-8" x-text="content.about.subtitle"></p>
-        <p class="text-softblack/80 leading-relaxed text-lg" x-text="content.about.text"></p>
+        <h2 class="font-serif text-5xl md:text-6xl leading-[1] mb-3" x-text="content.about.title"><!--PR:aboutTitle-->Dra. Angela Barbosa<!--/PR:aboutTitle--></h2>
+        <p class="font-serif italic text-xl text-softblack/70 mb-8" x-text="content.about.subtitle"><!--PR:aboutSubtitle-->Directora clínica · Luxe-Smile <!--/PR:aboutSubtitle--></p>
+        <p class="text-softblack/80 leading-relaxed text-lg" x-text="content.about.text"><!--PR:aboutText-->Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.<!--/PR:aboutText--></p>
 
         <ul class="mt-8 space-y-3">
           <template x-for="cred in content.about.credentials" :key="cred">
@@ -324,6 +328,7 @@
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!--PR:services--><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Diseño de Sonrisa</h3><p class="text-softblack/70 leading-relaxed text-sm">Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Carillas de Porcelana</h3><p class="text-softblack/70 leading-relaxed text-sm">Carillas ultrafinas que corrigen forma, color y alineación en pocas sesiones, con resultados del más alto nivel estético.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Blanqueamiento Premium</h3><p class="text-softblack/70 leading-relaxed text-sm">Tratamiento en consultorio con geles de última generación. Hasta 3 tonos más blanco sin sensibilidad.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Rehabilitación de Alta Complejidad </h3><p class="text-softblack/70 leading-relaxed text-sm">Tratamiento para reconstruir la dentadura completa o parcial cuando existe un deterioro Severo, pérdida de piezas, enfermedades periodontales avanzadas o traumas. </p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Implantes Dentales</h3><p class="text-softblack/70 leading-relaxed text-sm">Reemplaza dientes perdidos con implantes de titanio de grado médico. Función y estética para toda la vida.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Odontología Preventiva</h3><p class="text-softblack/70 leading-relaxed text-sm">Profilaxis, detartraje y control periódico para mantener tu sonrisa saludable y prevenir tratamientos mayores.</p></div><!--/PR:services-->
         <template x-for="(service, i) in content.services" :key="i">
           <div class="service-card reveal">
             <div class="service-icon" x-text="service.icon"></div>
@@ -565,5 +570,9 @@
       />
     </svg>
   </a>
+
+  <!-- Pre-render: quita el contenido estático de las listas (H1, servicios) antes de que
+       Alpine hidrate, para no duplicarlo. Corre durante el parseo, antes de los scripts defer. -->
+  <script>document.querySelectorAll('[data-prerendered]').forEach(function(n){n.remove();});</script>
 </body>
 </html>
