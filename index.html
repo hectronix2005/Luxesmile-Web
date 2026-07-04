@@ -290,6 +290,8 @@
           <img
             :src="content.about.image"
             :alt="content.about.title"
+            loading="lazy"
+            decoding="async"
             class="w-full h-full object-cover"
           />
         </div>
@@ -371,7 +373,7 @@
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
         <template x-for="(item, i) in content.gallery" :key="i">
           <figure class="gallery-item reveal">
-            <img :src="item.image" :alt="item.caption || 'Caso Luxe-Smile'" />
+            <img :src="item.image" :alt="item.caption || 'Caso Luxe-Smile'" loading="lazy" decoding="async" />
             <figcaption class="gallery-overlay" x-text="item.caption"></figcaption>
           </figure>
         </template>

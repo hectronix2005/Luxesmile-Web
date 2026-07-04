@@ -1,0 +1,15 @@
+{
+  "name": "luxe-smile-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sitio Luxe-Smile: build de imágenes (base64 → WebP) y pre-render SEO.",
+  "scripts": {
+    "build:images": "node scripts/extract-images.mjs",
+    "build:prerender": "node scripts/prerender.mjs",
+    "build": "npm run build:images && npm run build:prerender"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5"
+  }
+}
