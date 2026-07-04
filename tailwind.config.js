@@ -7,6 +7,7 @@ module.exports = {
   content: [
     './index.html',
     './diseno-de-sonrisa/**/*.html',
+    './en/**/*.html',
     './assets/js/app.js',
     './scripts/prerender.mjs',
   ],
