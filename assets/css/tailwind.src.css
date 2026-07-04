@@ -1,0 +1,6 @@
+/* Entrada de Tailwind compilado (sitio público). Se genera a assets/css/tailwind.css.
+   Los estilos propios (btn-primary, wa-float, temas, etc.) viven en styles.css,
+   que se carga DESPUÉS para poder sobreescribir utilidades. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

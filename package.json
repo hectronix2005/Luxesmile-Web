@@ -7,9 +7,11 @@
   "scripts": {
     "build:images": "node scripts/extract-images.mjs",
     "build:prerender": "node scripts/prerender.mjs",
-    "build": "npm run build:images && npm run build:prerender"
+    "build:css": "tailwindcss -c tailwind.config.js -i assets/css/tailwind.src.css -o assets/css/tailwind.css --minify",
+    "build": "npm run build:images && npm run build:prerender && npm run build:css"
   },
   "devDependencies": {
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "tailwindcss": "^3.4.19"
   }
 }

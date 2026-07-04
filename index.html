@@ -79,28 +79,8 @@
     rel="stylesheet"
   />
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            ivory:        'rgb(var(--ivory-rgb) / <alpha-value>)',
-            porcelain:    'rgb(var(--porcelain-rgb) / <alpha-value>)',
-            rosegold:     'rgb(var(--rosegold-rgb) / <alpha-value>)',
-            rosegoldDark: 'rgb(var(--rosegold-dark-rgb) / <alpha-value>)',
-            gold:         'rgb(var(--gold-rgb) / <alpha-value>)',
-            charcoal:     'rgb(var(--charcoal-rgb) / <alpha-value>)',
-            softblack:    'rgb(var(--softblack-rgb) / <alpha-value>)',
-          },
-          fontFamily: {
-            serif: ['Cormorant Garamond', 'serif'],
-            sans: ['Inter', 'sans-serif'],
-          },
-        },
-      },
-    };
-  </script>
+  <!-- Tailwind compilado (reemplaza el CDN, no apto para producción). Se genera en build. -->
+  <link rel="stylesheet" href="assets/css/tailwind.css?v=20260704a" />
 
   <!-- Sin JS (algunos crawlers): revela el contenido pre-renderizado que x-cloak ocultaría -->
   <noscript><style>[x-cloak]{display:revert !important}</style></noscript>

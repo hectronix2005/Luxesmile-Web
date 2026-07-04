@@ -60,28 +60,8 @@
     rel="stylesheet"
   />
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            ivory:        'rgb(var(--ivory-rgb) / <alpha-value>)',
-            porcelain:    'rgb(var(--porcelain-rgb) / <alpha-value>)',
-            rosegold:     'rgb(var(--rosegold-rgb) / <alpha-value>)',
-            rosegoldDark: 'rgb(var(--rosegold-dark-rgb) / <alpha-value>)',
-            gold:         'rgb(var(--gold-rgb) / <alpha-value>)',
-            charcoal:     'rgb(var(--charcoal-rgb) / <alpha-value>)',
-            softblack:    'rgb(var(--softblack-rgb) / <alpha-value>)',
-          },
-          fontFamily: {
-            serif: ['Cormorant Garamond', 'serif'],
-            sans: ['Inter', 'sans-serif'],
-          },
-        },
-      },
-    };
-  </script>
+  <!-- Tailwind compilado (mismo build que el sitio principal) -->
+  <link rel="stylesheet" href="../assets/css/tailwind.css?v=20260704a" />
 
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260518e" />
   <script src="../assets/js/content.js?v=20260518e"></script>

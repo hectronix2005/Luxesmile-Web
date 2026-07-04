@@ -41,9 +41,12 @@ jobs:
       - name: Regenerar HTML pre-renderizado
         run: node scripts/prerender.mjs
 
+      - name: Compilar Tailwind CSS
+        run: npm run build:css
+
       - name: Commit si hubo cambios
         run: |
-          git add assets/data/content.json assets/img/content index.html
+          git add assets/data/content.json assets/img/content index.html assets/css/tailwind.css
           if git diff --cached --quiet; then
             echo "Sin cambios; nada que commitear."
           else
