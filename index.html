@@ -363,15 +363,33 @@
   <section
     id="testimonios"
     class="py-24 lg:py-32 bg-porcelain/50 border-y border-charcoal/5"
-    x-show="content.reviews?.elfsightWidgetId || content.reviews?.googleReviewUrl"
+    x-show="content.reviews?.elfsightWidgetId || content.reviews?.googleReviewUrl || content.testimonials?.length"
   >
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
       <div class="text-center max-w-2xl mx-auto mb-12 reveal">
-        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Reseñas en Google</p>
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Testimonios</p>
         <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]">
           Lo que dicen <em class="text-rosegold">de nosotros</em>
         </h2>
       </div>
+
+      <!-- Testimonios manuales -->
+      <template x-if="content.testimonials?.length">
+        <div class="grid md:grid-cols-3 gap-8 mb-12">
+          <template x-for="t in content.testimonials" :key="t.name">
+            <div class="testimonial-card reveal">
+              <div class="flex items-center gap-1 mb-4">
+                <span x-text="stars(t.rating)" class="text-sm text-gold"></span>
+              </div>
+              <p class="text-softblack/80 leading-relaxed mb-6" x-text="t.text"></p>
+              <div>
+                <p class="font-medium text-charcoal" x-text="t.name"></p>
+                <p class="text-xs text-softblack/60 uppercase tracking-wide" x-text="t.role"></p>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
 
       <!-- Widget de Elfsight con reseñas vivas de Google.
            El script platform.js detecta el div por su clase elfsight-app-XXX y lo monta. -->
@@ -381,7 +399,7 @@
         </div>
       </template>
 
-      <div class="text-center mt-12" x-show="content.reviews?.googleReviewUrl">
+      <div class="text-center" x-show="content.reviews?.googleReviewUrl" :class="{'mt-12': content.reviews?.elfsightWidgetId || content.testimonials?.length}">
         <a
           :href="content.reviews?.googleReviewUrl"
           target="_blank"
