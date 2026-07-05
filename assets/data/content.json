@@ -131,21 +131,27 @@
   ],
   "testimonials": [
     {
+      "name": "SINLIMITES COM",
+      "role": "Cliente verificado",
+      "text": "Excelente experiencia. La doctora es muy profesional, amable y perfeccionista en cada detalle. Desde la primera cita transmite mucha confianza y el resultado del tratamiento superó mis expectativas. Muy buena atención, precios justos y excelente calidad.",
+      "rating": 5
+    },
+    {
+      "name": "Hector Neira",
+      "role": "Cliente verificado",
+      "text": "Excelente servicio, llevo 1 año y no volví a sufrir con las carillas que tenía porque ahora uso las carillas en cerámica que la doctora me recomendó. La mejor decisión.",
+      "rating": 5
+    },
+    {
+      "name": "Personal Financial Dreams",
+      "role": "Cliente verificado",
+      "text": "Gracias a la Doctora Angela, hoy en día puedo comer y hablar tranquilamente, los implantes dentales fijados a mi prótesis cambiaron mi calidad de vida. Dios la bendiga.",
+      "rating": 5
+    },
+    {
       "name": "Valentina R.",
       "role": "Carillas de porcelana",
       "text": "No puedo dejar de sonreír. La Dra. Angela logró justo lo que imaginaba, pero aún más natural. Cada detalle del proceso fue impecable.",
-      "rating": 5
-    },
-    {
-      "name": "Andrés M.",
-      "role": "Diseño de Sonrisa Digital ",
-      "text": "Pude ver mi tratamiento antes de que me colocaran las carillas donde pude ver como iba a quedar mi cambio ,  El acompañamiento de la Dra Angela en todo momento fue muy profesional ",
-      "rating": 5
-    },
-    {
-      "name": "Camila P.",
-      "role": "Diseño de sonrisa",
-      "text": "El consultorio es hermoso y el resultado superó mis expectativas.",
       "rating": 5
     }
   ],
