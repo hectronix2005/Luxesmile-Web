@@ -3,8 +3,11 @@
    Carga el contenido desde assets/data/content.json (vía LuxeContent).
    ===================================================================== */
 
-// Register data immediately (don't wait for alpine:init event)
-Alpine.data('site', () => ({
+// Wait for Alpine to be available (it loads via defer, after HTML parsing)
+const waitForAlpine = setInterval(() => {
+  if (typeof Alpine !== 'undefined') {
+    clearInterval(waitForAlpine);
+    Alpine.data('site', () => ({
   content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
   mobileOpen: false,
   bookingModalOpen: false,
@@ -104,3 +107,5 @@ Alpine.data('site', () => ({
       els.forEach((el) => io.observe(el));
     },
   }));
+  }
+}, 50);
