@@ -96,7 +96,8 @@
   <header
     class="fixed top-0 inset-x-0 z-40 backdrop-blur bg-ivory/80 border-b border-charcoal/5"
   >
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-20">
+    <!-- Logo row -->
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
       <a href="#inicio" class="flex items-center gap-2 lg:gap-3 flex-shrink-0">
         <template x-if="content.brand.logo">
           <img :src="content.brand.logo" alt="" style="height: 44px; width: auto; max-width: 140px;" class="object-contain" />
@@ -106,20 +107,6 @@
           >Odontología</span
         >
       </a>
-
-      <nav class="hidden lg:flex items-center gap-6 text-sm flex-wrap">
-        <template x-for="link in content.nav" :key="link.href">
-          <a :href="link.href" class="nav-link" x-text="link.label"></a>
-        </template>
-        <div class="flex items-center gap-4 ml-2 pl-2 border-l border-charcoal/10">
-          <button @click="bookingModalOpen = true" class="btn-ghost">
-            Agenda Virtual
-          </button>
-          <button @click="officeModalOpen = true" class="btn-primary">
-            Agenda en Consultorio
-          </button>
-        </div>
-      </nav>
 
       <button
         class="lg:hidden p-2 -mr-2"
@@ -146,6 +133,24 @@
           />
         </svg>
       </button>
+    </div>
+
+    <!-- Nav + Buttons row -->
+    <div class="hidden lg:flex max-w-7xl mx-auto px-6 lg:px-8 items-center justify-between gap-6 h-14 border-t border-charcoal/5">
+      <nav class="flex items-center gap-6 text-sm">
+        <template x-for="link in content.nav" :key="link.href">
+          <a :href="link.href" class="nav-link" x-text="link.label"></a>
+        </template>
+      </nav>
+
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <button @click="bookingModalOpen = true" class="btn-ghost">
+          Agenda Virtual
+        </button>
+        <button @click="officeModalOpen = true" class="btn-primary">
+          Agenda en Consultorio
+        </button>
+      </div>
     </div>
 
     <!-- Mobile menu -->
