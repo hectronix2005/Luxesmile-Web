@@ -19,13 +19,13 @@
   'use strict';
 
   var TRACKING = {
-    ga4: 'G-4CPWLE6HFM',          // GA4
-    googleAds: 'AW-XXXXXXXXX',   // Google Ads
-    metaPixel: 'TU_PIXEL_ID',    // Meta Pixel (Instagram / Facebook)
+    ga4: 'G-4CPWLE6HFM',            // GA4
+    googleAds: 'AW-18224708687',   // Google Ads
+    metaPixel: 'TU_PIXEL_ID',      // Meta Pixel (Instagram / Facebook)
     labels: {
-      whatsapp: 'ETIQUETA_WHATSAPP',
-      agenda: 'ETIQUETA_AGENDA',
-      llamada: 'ETIQUETA_LLAMADA',
+      whatsapp: 'A2slCKTB-cocEM_4m_JD',    // Clic WhatsApp
+      agenda: 'icl7CKfB-cocEM_4m_JD',      // Clic Agendar
+      llamada: 'uX22CKrB-cocEM_4m_JD',     // Clic Llamada
     },
   };
 
