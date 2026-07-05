@@ -28,16 +28,16 @@ html {
 }
 
 /* -------- Header logo sizing (fix for oversized logo) ---------- */
-header img {
-  height: 32px;
-  width: auto;
-  max-width: 120px;
+header a img {
+  height: 32px !important;
+  width: auto !important;
+  max-width: 120px !important;
 }
 
 @media (min-width: 1024px) {
-  header img {
-    height: 40px;
-    max-width: 140px;
+  header a img {
+    height: 40px !important;
+    max-width: 140px !important;
   }
 }
 
