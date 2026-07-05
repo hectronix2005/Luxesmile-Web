@@ -96,24 +96,24 @@
   <header
     class="fixed top-0 inset-x-0 z-40 backdrop-blur bg-ivory/80 border-b border-charcoal/5"
   >
-    <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-20">
-      <a href="#inicio" class="flex items-center gap-3">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-24">
+      <a href="#inicio" class="flex items-center gap-5 flex-shrink-0">
         <template x-if="content.brand.logo">
           <img :src="content.brand.logo" alt="" class="h-10 w-auto max-w-[140px] object-contain" />
         </template>
-        <span class="font-serif text-2xl tracking-tight" x-text="content.brand.name"></span>
+        <span class="font-serif text-2xl tracking-tight whitespace-nowrap" x-text="content.brand.name"></span>
         <span class="hidden sm:inline text-xs uppercase tracking-[0.25em] text-softblack/60"
           >Odontología</span
         >
       </a>
 
-      <nav class="hidden lg:flex items-center gap-8 text-sm">
+      <nav class="hidden lg:flex items-center gap-10 text-sm">
         <template x-for="link in content.nav" :key="link.href">
           <a :href="link.href" class="nav-link" x-text="link.label"></a>
         </template>
       </nav>
 
-      <div class="hidden lg:flex items-center gap-3">
+      <div class="hidden lg:flex items-center gap-4 flex-shrink-0">
         <button @click="bookingModalOpen = true" class="btn-ghost">
           Agenda Virtual
         </button>
