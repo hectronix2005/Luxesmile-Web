@@ -115,12 +115,7 @@
       </button>
     </div>
 
-    <!-- Line 2: Brand name -->
-    <div class="hidden lg:flex w-full items-center justify-center h-12 border-b border-charcoal/5">
-      <span class="font-serif text-2xl tracking-tight" x-text="content.brand.name"></span>
-    </div>
-
-    <!-- Line 3: Navigation links -->
+    <!-- Line 2: Navigation links -->
     <div class="hidden lg:flex w-full items-center justify-center h-14 border-b border-charcoal/5">
       <nav class="flex items-center gap-10 text-sm">
         <template x-for="link in content.nav" :key="link.href">
@@ -129,7 +124,7 @@
       </nav>
     </div>
 
-    <!-- Line 4: Agenda buttons -->
+    <!-- Line 3: Agenda buttons -->
     <div class="hidden lg:flex w-full items-center justify-center gap-6 h-14 border-t border-charcoal/5 bg-porcelain/20">
       <button @click="bookingModalOpen = true" class="btn-ghost inline-flex items-center gap-2 text-sm whitespace-nowrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 flex-shrink-0">
