@@ -9,6 +9,8 @@ document.addEventListener('alpine:init', () => {
     mobileOpen: false,
     bookingModalOpen: false,
     officeModalOpen: false,
+    diagnosticReminderOpen: false,
+    diagnosticReminderType: null,
 
     async init() {
       this.content = await window.LuxeContent.loadContent();
@@ -55,6 +57,21 @@ document.addEventListener('alpine:init', () => {
 
     bookingOfficeLink() {
       return this.content.contact.calendarOffice || this.waLink('consultorio');
+    },
+
+    showDiagnosticReminder(type) {
+      this.diagnosticReminderType = type;
+      this.diagnosticReminderOpen = true;
+    },
+
+    proceedToBooking() {
+      if (this.diagnosticReminderType === 'virtual') {
+        this.bookingModalOpen = true;
+      } else if (this.diagnosticReminderType === 'office') {
+        this.officeModalOpen = true;
+      }
+      this.diagnosticReminderOpen = false;
+      this.diagnosticReminderType = null;
     },
 
     nl2br(str) {

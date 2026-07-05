@@ -126,14 +126,14 @@
 
     <!-- Line 3: Agenda buttons -->
     <div class="hidden lg:flex w-full items-center justify-center gap-6 h-14 border-t border-charcoal/5 bg-porcelain/20">
-      <button @click="bookingModalOpen = true" class="btn-ghost inline-flex items-center gap-2 text-sm whitespace-nowrap">
+      <button @click="showDiagnosticReminder('virtual')" class="btn-ghost inline-flex items-center gap-2 text-sm whitespace-nowrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 flex-shrink-0">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
         </svg>
         Agenda Virtual
       </button>
-      <button @click="officeModalOpen = true" class="btn-primary inline-flex items-center gap-2 text-sm whitespace-nowrap">
+      <button @click="showDiagnosticReminder('office')" class="btn-primary inline-flex items-center gap-2 text-sm whitespace-nowrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 flex-shrink-0">
           <path d="M12 21s-7-7.5-7-12a7 7 0 1 1 14 0c0 4.5-7 12-7 12Z"></path>
           <circle cx="12" cy="9" r="2.5"></circle>
@@ -157,10 +157,10 @@
             @click="mobileOpen = false"
           ></a>
         </template>
-        <button @click="mobileOpen = false; officeModalOpen = true" class="btn-primary justify-center">
+        <button @click="mobileOpen = false; showDiagnosticReminder('office')" class="btn-primary justify-center">
           Agenda en Consultorio
         </button>
-        <button @click="mobileOpen = false; bookingModalOpen = true" class="btn-ghost justify-center">
+        <button @click="mobileOpen = false; showDiagnosticReminder('virtual')" class="btn-ghost justify-center">
           Agenda Virtual
         </button>
         <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost justify-center">
@@ -425,8 +425,8 @@
         </p>
 
         <div class="flex flex-wrap gap-3 mb-10">
-          <a :href="bookingOfficeLink()" target="_blank" rel="noopener" class="btn-primary">Agenda en Consultorio</a>
-          <a :href="bookingLink()" target="_blank" rel="noopener" class="btn-ghost">Agenda Virtual</a>
+          <button @click="showDiagnosticReminder('office')" class="btn-primary">Agenda en Consultorio</button>
+          <button @click="showDiagnosticReminder('virtual')" class="btn-ghost">Agenda Virtual</button>
           <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost">Contáctanos</a>
         </div>
 
@@ -565,6 +565,36 @@
   </a>
 
   <!-- ===================== MODALES ===================== -->
+  <!-- Modal Recordatorio de Diagnóstico -->
+  <div x-show="diagnosticReminderOpen" x-transition class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div @click.away="diagnosticReminderOpen = false" class="bg-ivory rounded-lg shadow-2xl max-w-2xl w-full">
+      <div class="flex items-center justify-between p-6 border-b border-charcoal/10">
+        <h2 class="text-2xl font-serif text-charcoal">Antes de agendar</h2>
+        <button @click="diagnosticReminderOpen = false" class="text-charcoal/60 hover:text-charcoal">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="p-6">
+        <p class="text-softblack/80 leading-relaxed mb-6">
+          Te recomendamos tengas a la mano imágenes de diagnóstico recientes, esto nos ayuda para brindar una orientación más precisa para el tratamiento y el presupuesto.
+        </p>
+        <p class="text-softblack/80 leading-relaxed mb-8">
+          Si no cuentas con ellos, agenda y la Dra. Angela te indicará cuáles necesitas.
+        </p>
+        <div class="flex gap-4 justify-end">
+          <button @click="diagnosticReminderOpen = false" class="btn-ghost">
+            Cancelar
+          </button>
+          <button @click="proceedToBooking()" class="btn-primary">
+            Continuar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Agenda Virtual (Calendly) -->
   <div x-show="bookingModalOpen" x-transition class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
     <div @click.away="bookingModalOpen = false" class="bg-ivory rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
