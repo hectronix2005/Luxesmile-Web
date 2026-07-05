@@ -133,4 +133,7 @@ function registerAndInitialize() {
   } else if (window.Alpine && window.Alpine.init) {
     window.Alpine.init(document.body);
   }
+
+  // Remove x-cloak to show the page
+  document.body.removeAttribute('x-cloak');
 }
