@@ -27,6 +27,20 @@ html {
   display: none !important;
 }
 
+/* -------- Header logo sizing (fix for oversized logo) ---------- */
+header img {
+  height: 32px;
+  width: auto;
+  max-width: 120px;
+}
+
+@media (min-width: 1024px) {
+  header img {
+    height: 40px;
+    max-width: 140px;
+  }
+}
+
 body {
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--charcoal);
