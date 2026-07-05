@@ -786,13 +786,43 @@ document.addEventListener('alpine:init', () => {
     },
 
     /* ------------------- Contraseña admin ------------------- */
-    changePassword(current, next, confirmNext) {
-      if (current !== window.LuxeContent.getAdminPassword()) { alert('Contraseña actual incorrecta.'); return false; }
-      if (!next || next.length < 4) { alert('La nueva contraseña debe tener al menos 4 caracteres.'); return false; }
-      if (next !== confirmNext) { alert('La confirmación no coincide.'); return false; }
-      window.LuxeContent.setAdminPassword(next);
-      alert('Contraseña actualizada en este navegador.');
-      return true;
+    async changePassword(current, next, confirmNext) {
+      try {
+        const correctPassword = await window.LuxeContent.getAdminPassword();
+        if (current !== correctPassword) {
+          this.flash('Contraseña actual incorrecta.', 'err');
+          return false;
+        }
+
+        // Validar contraseña segura: mínimo 12 caracteres, mayúscula, minúscula, número
+        const minLength = 12;
+        const hasUppercase = /[A-Z]/.test(next);
+        const hasLowercase = /[a-z]/.test(next);
+        const hasNumber = /[0-9]/.test(next);
+
+        if (!next || next.length < minLength) {
+          this.flash(`Mínimo ${minLength} caracteres requeridos.`, 'err');
+          return false;
+        }
+        if (!hasUppercase || !hasLowercase || !hasNumber) {
+          this.flash('Debe incluir mayúscula, minúscula y número.', 'err');
+          return false;
+        }
+        if (next !== confirmNext) {
+          this.flash('La confirmación no coincide.', 'err');
+          return false;
+        }
+
+        // Guardar en localStorage (persiste en este navegador)
+        window.LuxeContent.setAdminPassword(next);
+
+        this.flash('✓ Contraseña actualizada en este navegador.', 'ok', 5000);
+        return true;
+      } catch (e) {
+        console.error('Error al cambiar contraseña:', e);
+        this.flash('Error al actualizar contraseña: ' + (e.message || 'desconocido'), 'err');
+        return false;
+      }
     },
 
     flash(msg, tone = 'ok', duration = 3500) {

@@ -729,12 +729,14 @@
     </div>
 
     <!-- ============ SEGURIDAD ============ -->
-    <div x-show="tab === 'security'" class="admin-card space-y-5" x-data="{ cur: '', next: '', conf: '' }">
-      <h2 class="font-serif text-2xl">Seguridad</h2>
-      <p class="text-xs text-softblack/65 leading-relaxed">
-        Esta contraseña es un portón básico que limita el acceso casual al panel. No está cifrada —
-        no la reutilices en otros servicios importantes.
-      </p>
+    <div x-show="tab === 'security'" class="admin-card space-y-6" x-data="{ cur: '', next: '', conf: '', updating: false }">
+      <div>
+        <h2 class="font-serif text-2xl">Seguridad</h2>
+        <p class="text-xs text-softblack/65 leading-relaxed mt-2">
+          Esta contraseña protege el panel administrativo. Es local (no se sincroniza automáticamente a otros dispositivos).
+        </p>
+      </div>
+
       <div class="grid md:grid-cols-3 gap-4">
         <div>
           <label class="admin-label block mb-2">Contraseña actual</label>
@@ -742,18 +744,44 @@
         </div>
         <div>
           <label class="admin-label block mb-2">Nueva contraseña</label>
-          <input type="password" class="admin-input" x-model="next" />
+          <input type="password" class="admin-input" x-model="next" @input="$el.parentElement.classList.toggle('has-error', false)" />
         </div>
         <div>
           <label class="admin-label block mb-2">Confirmar nueva</label>
           <input type="password" class="admin-input" x-model="conf" />
         </div>
       </div>
+
+      <!-- Requisitos de contraseña segura -->
+      <template x-if="next">
+        <div class="bg-porcelain/40 border border-charcoal/10 rounded p-4 space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-wide text-softblack/70 mb-3">Requisitos de seguridad:</p>
+          <div class="space-y-1 text-xs">
+            <p :class="next.length >= 12 ? 'text-charcoal' : 'text-softblack/50'">
+              <span x-text="next.length >= 12 ? '✓' : '○'"></span> Mínimo 12 caracteres
+              <span x-show="next.length < 12" class="text-softblack/40">(<span x-text="next.length"></span>/12)</span>
+            </p>
+            <p :class="/[A-Z]/.test(next) ? 'text-charcoal' : 'text-softblack/50'">
+              <span x-text="/[A-Z]/.test(next) ? '✓' : '○'"></span> Una letra mayúscula
+            </p>
+            <p :class="/[a-z]/.test(next) ? 'text-charcoal' : 'text-softblack/50'">
+              <span x-text="/[a-z]/.test(next) ? '✓' : '○'"></span> Una letra minúscula
+            </p>
+            <p :class="/[0-9]/.test(next) ? 'text-charcoal' : 'text-softblack/50'">
+              <span x-text="/[0-9]/.test(next) ? '✓' : '○'"></span> Un número
+            </p>
+          </div>
+        </div>
+      </template>
+
       <button
         class="btn-primary"
-        @click="if (changePassword(cur, next, conf)) { cur=''; next=''; conf=''; }"
+        @click="updating = true; changePassword(cur, next, conf).then(success => { if (success) { cur=''; next=''; conf=''; } updating=false; })"
+        :disabled="updating"
+        :class="{ 'opacity-50 cursor-not-allowed': updating }"
       >
-        Actualizar contraseña
+        <span x-show="!updating">Actualizar contraseña</span>
+        <span x-show="updating">Actualizando…</span>
       </button>
     </div>
 
