@@ -3,11 +3,22 @@
    Carga el contenido desde assets/data/content.json (vía LuxeContent).
    ===================================================================== */
 
-// Wait for Alpine to be available (it loads via defer, after HTML parsing)
-const waitForAlpine = setInterval(() => {
-  if (typeof Alpine !== 'undefined') {
-    clearInterval(waitForAlpine);
-    Alpine.data('site', () => ({
+// Register Alpine data IMMEDIATELY (will be used when Alpine loads)
+if (typeof Alpine !== 'undefined') {
+  // Alpine already loaded somehow
+  registerAndInitialize();
+} else {
+  // Wait for Alpine to load, then initialize
+  const checkAlpine = setInterval(() => {
+    if (typeof Alpine !== 'undefined') {
+      clearInterval(checkAlpine);
+      registerAndInitialize();
+    }
+  }, 50);
+}
+
+function registerAndInitialize() {
+  Alpine.data('site', () => ({
   content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
   mobileOpen: false,
   bookingModalOpen: false,
@@ -107,5 +118,13 @@ const waitForAlpine = setInterval(() => {
       els.forEach((el) => io.observe(el));
     },
   }));
+
+  // Now that data is registered, tell Alpine to process the body
+  document.body.setAttribute('x-data', 'site');
+  // Reinitialize Alpine to process the body with the newly added x-data
+  if (Alpine && Alpine.nextTick) {
+    Alpine.nextTick(() => {
+      // Body should now be initialized
+    });
   }
-}, 50);
+}
