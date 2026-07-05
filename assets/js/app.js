@@ -3,26 +3,26 @@
    Carga el contenido desde assets/data/content.json (vía LuxeContent).
    ===================================================================== */
 
-document.addEventListener('alpine:init', () => {
-  Alpine.data('site', () => ({
-    content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
-    mobileOpen: false,
-    bookingModalOpen: false,
-    officeModalOpen: false,
-    diagnosticReminderOpen: false,
-    diagnosticReminderType: null,
+// Register data immediately (don't wait for alpine:init event)
+Alpine.data('site', () => ({
+  content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
+  mobileOpen: false,
+  bookingModalOpen: false,
+  officeModalOpen: false,
+  diagnosticReminderOpen: false,
+  diagnosticReminderType: null,
 
-    async init() {
-      this.content = await window.LuxeContent.loadContent();
-      window.LuxeContent.applyTheme(this.content.theme);
-      // Título optimizado para SEO (keyword + ciudad). Se mantiene fijo aquí
-      // para que coincida con el <title> del HTML y no lo pise con uno genérico.
-      document.title = 'Diseño de Sonrisa en Bogotá | Dra. Angela Barbosa — Luxe-Smile';
-      this.$nextTick(() => {
-        this.setupReveal();
-        this.loadElfsightIfNeeded();
-      });
-    },
+  async init() {
+    this.content = await window.LuxeContent.loadContent();
+    window.LuxeContent.applyTheme(this.content.theme);
+    // Título optimizado para SEO (keyword + ciudad). Se mantiene fijo aquí
+    // para que coincida con el <title> del HTML y no lo pise con uno genérico.
+    document.title = 'Diseño de Sonrisa en Bogotá | Dra. Angela Barbosa — Luxe-Smile';
+    this.$nextTick(() => {
+      this.setupReveal();
+      this.loadElfsightIfNeeded();
+    });
+  },
 
     // Inyecta el script de Elfsight platform.js solo si hay widget ID configurado.
     // El script detecta automáticamente cualquier div con clase elfsight-app-XXX y lo monta.
@@ -104,4 +104,3 @@ document.addEventListener('alpine:init', () => {
       els.forEach((el) => io.observe(el));
     },
   }));
-});
