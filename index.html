@@ -96,47 +96,32 @@
   <header
     class="fixed top-0 inset-x-0 z-40 backdrop-blur bg-ivory/80 border-b border-charcoal/5"
   >
-    <!-- Logo row -->
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
-      <a href="#inicio" class="flex items-center gap-2 lg:gap-3 flex-shrink-0">
+    <!-- Line 1: Logo -->
+    <div class="hidden lg:flex w-full items-center justify-center h-12 border-b border-charcoal/5">
+      <a href="#inicio" class="flex items-center justify-center flex-shrink-0">
         <template x-if="content.brand.logo">
           <img :src="content.brand.logo" alt="" style="height: 44px; width: auto; max-width: 140px;" class="object-contain" />
         </template>
-        <span class="font-serif text-lg lg:text-2xl tracking-tight whitespace-nowrap" x-text="content.brand.name"></span>
-        <span class="hidden lg:inline text-xs uppercase tracking-[0.25em] text-softblack/60"
-          >Odontología</span
-        >
       </a>
-
       <button
         class="lg:hidden p-2 -mr-2"
         @click="mobileOpen = !mobileOpen"
         aria-label="Menú"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          class="w-6 h-6"
-        >
-          <path
-            stroke-linecap="round"
-            d="M4 6h16M4 12h16M4 18h16"
-            x-show="!mobileOpen"
-          />
-          <path
-            stroke-linecap="round"
-            d="M6 6l12 12M6 18L18 6"
-            x-show="mobileOpen"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6">
+          <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" x-show="!mobileOpen" />
+          <path stroke-linecap="round" d="M6 6l12 12M6 18L18 6" x-show="mobileOpen" />
         </svg>
       </button>
     </div>
 
-    <!-- Nav row -->
-    <div class="hidden lg:flex max-w-7xl mx-auto px-6 lg:px-8 items-center justify-start gap-10 h-14 border-t border-charcoal/5">
+    <!-- Line 2: Brand name -->
+    <div class="hidden lg:flex w-full items-center justify-center h-12 border-b border-charcoal/5">
+      <span class="font-serif text-2xl tracking-tight" x-text="content.brand.name"></span>
+    </div>
+
+    <!-- Line 3: Navigation links -->
+    <div class="hidden lg:flex w-full items-center justify-center h-14 border-b border-charcoal/5">
       <nav class="flex items-center gap-10 text-sm">
         <template x-for="link in content.nav" :key="link.href">
           <a :href="link.href" class="nav-link whitespace-nowrap" x-text="link.label"></a>
@@ -144,8 +129,8 @@
       </nav>
     </div>
 
-    <!-- Buttons row -->
-    <div class="hidden lg:flex absolute left-0 right-0 items-center justify-center gap-6 h-14 border-t border-charcoal/5 bg-porcelain/20" style="top: calc(100% - 56px);">
+    <!-- Line 4: Agenda buttons -->
+    <div class="hidden lg:flex w-full items-center justify-center gap-6 h-14 border-t border-charcoal/5 bg-porcelain/20">
       <button @click="bookingModalOpen = true" class="btn-ghost inline-flex items-center gap-2 text-sm whitespace-nowrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 flex-shrink-0">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
