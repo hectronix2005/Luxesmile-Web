@@ -19,7 +19,7 @@
   'use strict';
 
   var TRACKING = {
-    ga4: 'G-XXXXXXX',            // GA4
+    ga4: 'G-4CPWLE6HFM',          // GA4
     googleAds: 'AW-XXXXXXXXX',   // Google Ads
     metaPixel: 'TU_PIXEL_ID',    // Meta Pixel (Instagram / Facebook)
     labels: {
