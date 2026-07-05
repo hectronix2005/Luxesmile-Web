@@ -121,10 +121,16 @@ function registerAndInitialize() {
 
   // Now that data is registered, tell Alpine to process the body
   document.body.setAttribute('x-data', 'site');
-  // Reinitialize Alpine to process the body with the newly added x-data
-  if (Alpine && Alpine.nextTick) {
-    Alpine.nextTick(() => {
-      // Body should now be initialized
+
+  // Force Alpine to reinitialize/process the body
+  if (window.Alpine && window.Alpine.prefixed) {
+    // Alpine 3.x initialization
+    Array.from(document.querySelectorAll('[x-data]')).forEach(el => {
+      if (!el.__x) {
+        window.Alpine.initialize(el);
+      }
     });
+  } else if (window.Alpine && window.Alpine.init) {
+    window.Alpine.init(document.body);
   }
 }
