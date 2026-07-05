@@ -32,18 +32,27 @@ document.addEventListener('alpine:init', () => {
       document.head.appendChild(s);
     },
 
-    waLink() {
+    waLink(type) {
       const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
-      const msg = encodeURIComponent(this.content.contact.whatsappMessage || '');
-      return `https://wa.me/${num}?text=${msg}`;
+      let msg = this.content.contact.whatsappMessage || '';
+
+      // Agregar especificación del tipo de cita si se proporciona
+      if (type === 'virtual') {
+        msg = msg.replace('una cita', 'una cita de forma virtual');
+      } else if (type === 'consultorio') {
+        msg = msg.replace('una cita', 'una cita presencial en el consultorio');
+      }
+
+      const encoded = encodeURIComponent(msg);
+      return `https://wa.me/${num}?text=${encoded}`;
     },
 
     bookingLink() {
-      return this.content.contact.calendar || this.waLink();
+      return this.content.contact.calendar || this.waLink('virtual');
     },
 
     bookingOfficeLink() {
-      return this.content.contact.calendarOffice || this.content.contact.calendar || this.waLink();
+      return this.content.contact.calendarOffice || this.waLink('consultorio');
     },
 
     nl2br(str) {

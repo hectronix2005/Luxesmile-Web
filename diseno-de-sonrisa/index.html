@@ -96,9 +96,18 @@
           }
         },
 
-        waLink() {
+        waLink(type) {
           const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
-          let msg = 'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración gratuita para un diseño de sonrisa.';
+          let msg = 'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración gratuita para un diseño de sonrisa';
+
+          // Agregar especificación del tipo de cita
+          if (type === 'virtual') {
+            msg += ' de forma virtual';
+          } else if (type === 'consultorio') {
+            msg += ' presencial en el consultorio';
+          }
+
+          msg += '.';
           if (this.leadSource) msg += `\n\n(${this.leadSource})`;
           return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
         },

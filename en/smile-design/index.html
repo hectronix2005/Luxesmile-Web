@@ -93,9 +93,18 @@
           }
         },
 
-        waLink() {
+        waLink(type) {
           const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
-          let msg = "Hi Dr. Angela, I'm interested in a smile design consultation and I'm traveling from abroad.";
+          let msg = "Hi Dr. Angela, I'm interested in a smile design consultation and I'm traveling from abroad";
+
+          // Add appointment type specification
+          if (type === 'virtual') {
+            msg += ' via virtual consultation';
+          } else if (type === 'consultorio') {
+            msg += ' and would like an in-office appointment';
+          }
+
+          msg += '.';
           if (this.leadSource) msg += `\n\n(${this.leadSource})`;
           return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
         },
