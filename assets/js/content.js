@@ -9,7 +9,6 @@
 const CACHE_KEY = 'luxesmile_cache_v2';         // snapshot del último fetch (offline fallback)
 const GH_CFG_KEY = 'luxesmile_gh_config_v1';    // config de GitHub API (token + repo)
 const ADMIN_PW_KEY = 'luxesmile_admin_pw_v1';   // contraseña del panel (por navegador)
-const DEFAULT_PASSWORD = 'luxe2026';
 
 // URL del JSON resuelta relativa a este script (funciona desde / y desde /admin/)
 const SCRIPT_URL = document.currentScript ? document.currentScript.src : null;
@@ -421,8 +420,22 @@ async function waitForPublished(expectedPublishedAt, { timeoutMs = 180000, inter
 }
 
 /* --------------------- Contraseña admin --------------------- */
-function getAdminPassword() {
-  return localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PASSWORD;
+async function getAdminPassword() {
+  // Primero intenta cargar desde archivo de configuración
+  try {
+    const res = await fetch('/assets/data/github-config.json');
+    if (res.ok) {
+      const fileConfig = await res.json();
+      if (fileConfig.adminPassword) {
+        return fileConfig.adminPassword;
+      }
+    }
+  } catch (e) {
+    console.debug('github-config.json no disponible para contraseña');
+  }
+
+  // Fallback a localStorage (por navegador)
+  return localStorage.getItem(ADMIN_PW_KEY) || '';
 }
 function setAdminPassword(pw) {
   localStorage.setItem(ADMIN_PW_KEY, pw);

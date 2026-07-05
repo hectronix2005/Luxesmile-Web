@@ -121,8 +121,9 @@ document.addEventListener('alpine:init', () => {
     },
 
     /* ------------------- Auth ------------------- */
-    login() {
-      if (this.passwordInput === window.LuxeContent.getAdminPassword()) {
+    async login() {
+      const correctPassword = await window.LuxeContent.getAdminPassword();
+      if (this.passwordInput === correctPassword) {
         this.authed = true;
         this.loginError = '';
         sessionStorage.setItem('luxesmile_admin_ok', '1');
