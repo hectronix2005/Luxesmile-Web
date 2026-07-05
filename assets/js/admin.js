@@ -73,7 +73,7 @@ document.addEventListener('alpine:init', () => {
       if (sessionStorage.getItem('luxesmile_admin_ok') === '1') {
         this.authed = true;
       }
-      const cfg = window.LuxeContent.getGithubConfig();
+      const cfg = await window.LuxeContent.getGithubConfig();
       this.gh = { ...this.gh, ...cfg };
       await this.loadFreshContent();
       this.loading = false;

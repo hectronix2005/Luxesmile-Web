@@ -237,7 +237,21 @@ async function loadContent() {
 }
 
 /* --------------------- Config GitHub API --------------------- */
-function getGithubConfig() {
+async function getGithubConfig() {
+  // Primero intenta cargar desde archivo en producción
+  try {
+    const res = await fetch('/assets/data/github-config.json');
+    if (res.ok) {
+      const fileConfig = await res.json();
+      if (fileConfig.token) {
+        return fileConfig; // Usa el token del archivo si existe
+      }
+    }
+  } catch (e) {
+    console.debug('github-config.json no disponible, usando localStorage');
+  }
+
+  // Fallback a localStorage
   try {
     return JSON.parse(localStorage.getItem(GH_CFG_KEY) || '{}');
   } catch {
@@ -257,7 +271,7 @@ function utf8ToBase64(str) {
 }
 
 async function githubRequest(path, opts = {}) {
-  const cfg = getGithubConfig();
+  const cfg = await getGithubConfig();
   if (!cfg.token) throw new Error('Falta el token de GitHub.');
   // Trim defensivo: previene 401 cuando el token tiene espacios o saltos invisibles
   // por copy-paste desde algunos gestores de contraseñas.
@@ -289,7 +303,7 @@ async function githubRequest(path, opts = {}) {
 }
 
 async function testGithubConnection() {
-  const cfg = getGithubConfig();
+  const cfg = await getGithubConfig();
   if (!cfg.owner || !cfg.repo) throw new Error('Completa owner y repo.');
   await githubRequest(`/repos/${cfg.owner}/${cfg.repo}`);
   const branch = cfg.branch || 'main';
@@ -307,7 +321,7 @@ function base64ToUtf8(b64) {
 // Para archivos > 1 MB la API contents devuelve content vacío; en ese caso bajamos
 // el blob crudo, que sí soporta archivos grandes.
 async function fetchContentViaAPI() {
-  const cfg = getGithubConfig();
+  const cfg = await getGithubConfig();
   if (!cfg.owner || !cfg.repo) throw new Error('Falta configuración de GitHub.');
   const branch = cfg.branch || 'main';
   const path = cfg.path || 'assets/data/content.json';
@@ -336,7 +350,7 @@ async function fetchContentViaAPI() {
 }
 
 async function publishContent(data, expectedSha) {
-  const cfg = getGithubConfig();
+  const cfg = await getGithubConfig();
   if (!cfg.owner || !cfg.repo || !cfg.token) {
     throw new Error('Configura GitHub primero (pestaña Publicación).');
   }
