@@ -43,6 +43,10 @@
       "href": "#testimonios"
     },
     {
+      "label": "Blog",
+      "href": "#blog"
+    },
+    {
       "label": "Contacto",
       "href": "#contacto"
     }
@@ -194,6 +198,54 @@
   "footer": {
     "tagline": "Rehabilitación Oral y Estética Dental ",
     "copyright": "© 2026 Luxe-Smile · Dra. Angela Barbosa. Todos los derechos reservados."
+  },
+  "blog": {
+    "title": "Blog de Odontología Estética",
+    "subtitle": "Consejos, técnicas y tendencias en diseño de sonrisa",
+    "articles": [
+      {
+        "id": 1,
+        "title": "Guía Completa: Diseño de Sonrisa Digital",
+        "slug": "diseno-sonrisa-digital",
+        "excerpt": "Descubre cómo la tecnología digital revoluciona el diseño de sonrisa, permitiendo visualizar resultados antes del tratamiento.",
+        "image": "https://images.unsplash.com/photo-1609927057406-21e5ff286d4f?auto=format&fit=crop&w=900&q=80",
+        "category": "Técnicas",
+        "author": "Dra. Angela Barbosa",
+        "date": "2026-07-01",
+        "readTime": "8 min",
+        "keywords": "diseño de sonrisa, digital smile design, odontología estética",
+        "featured": true,
+        "content": "El diseño digital de sonrisa es una revolucionaria técnica que permite a los pacientes visualizar exactamente cómo lucirá su sonrisa después del tratamiento. Utilizando software especializado, analizamos cada detalle de tu rostro para crear una sonrisa armónica y natural."
+      },
+      {
+        "id": 2,
+        "title": "Carillas de Porcelana: Durabilidad y Resultados",
+        "slug": "carillas-porcelana",
+        "excerpt": "Todo lo que necesitas saber sobre las carillas de porcelana: durabilidad, cuidados y resultados a largo plazo.",
+        "image": "https://images.unsplash.com/photo-1606811841689-23db3c4dfc1b?auto=format&fit=crop&w=900&q=80",
+        "category": "Procedimientos",
+        "author": "Dra. Angela Barbosa",
+        "date": "2026-06-25",
+        "readTime": "6 min",
+        "keywords": "carillas de porcelana, carillas dentales, estética dental",
+        "featured": true,
+        "content": "Las carillas de porcelana son una solución versátil para mejorar la apariencia de tus dientes. Con un cuidado adecuado, pueden durar 15 años o más, proporcionando una sonrisa natural y resistente."
+      },
+      {
+        "id": 3,
+        "title": "Blanqueamiento Dental: Métodos Seguros y Efectivos",
+        "slug": "blanqueamiento-dental",
+        "excerpt": "Explora los diferentes métodos de blanqueamiento dental y cómo elegir el más seguro y efectivo para ti.",
+        "image": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=900&q=80",
+        "category": "Cuidados",
+        "author": "Dra. Angela Barbosa",
+        "date": "2026-06-18",
+        "readTime": "5 min",
+        "keywords": "blanqueamiento dental, dientes blancos, estética dental",
+        "featured": false,
+        "content": "El blanqueamiento profesional en consultorio es la forma más rápida y segura de conseguir dientes más blancos. A diferencia de los tratamientos caseros, ofrecemos resultados controlados y duraderos."
+      }
+    ]
   },
   "_publishedAt": "2026-07-05T04:42:56.048Z"
 }
