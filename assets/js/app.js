@@ -7,6 +7,8 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('site', () => ({
     content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
     mobileOpen: false,
+    bookingModalOpen: false,
+    officeModalOpen: false,
 
     async init() {
       this.content = await window.LuxeContent.loadContent();
