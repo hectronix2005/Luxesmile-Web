@@ -107,20 +107,19 @@
         >
       </a>
 
-      <nav class="hidden lg:flex items-center gap-6 text-sm">
+      <nav class="hidden lg:flex items-center gap-6 text-sm flex-wrap">
         <template x-for="link in content.nav" :key="link.href">
           <a :href="link.href" class="nav-link" x-text="link.label"></a>
         </template>
+        <div class="flex items-center gap-4 ml-2 pl-2 border-l border-charcoal/10">
+          <button @click="bookingModalOpen = true" class="btn-ghost">
+            Agenda Virtual
+          </button>
+          <button @click="officeModalOpen = true" class="btn-primary">
+            Agenda en Consultorio
+          </button>
+        </div>
       </nav>
-
-      <div class="hidden lg:flex items-center gap-4 flex-shrink-0">
-        <button @click="bookingModalOpen = true" class="btn-ghost">
-          Agenda Virtual
-        </button>
-        <button @click="officeModalOpen = true" class="btn-primary">
-          Agenda en Consultorio
-        </button>
-      </div>
 
       <button
         class="lg:hidden p-2 -mr-2"
