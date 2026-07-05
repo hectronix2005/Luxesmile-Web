@@ -29,15 +29,16 @@ html {
 
 /* -------- Header logo sizing (fix for oversized logo) ---------- */
 header a img {
-  height: 32px !important;
+  height: 48px !important;
   width: auto !important;
-  max-width: 120px !important;
+  max-width: 140px !important;
+  object-fit: contain;
 }
 
 @media (min-width: 1024px) {
   header a img {
-    height: 40px !important;
-    max-width: 140px !important;
+    height: 56px !important;
+    max-width: 160px !important;
   }
 }
 
