@@ -100,7 +100,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
+  padding: 0.75rem 2rem;
   background: var(--charcoal);
   color: var(--ivory);
   font-size: 0.875rem;
@@ -109,6 +109,8 @@ body {
   border-radius: 999px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   box-shadow: 0 8px 24px -12px rgba(31, 27, 26, 0.4);
+  min-height: 44px;
+  white-space: nowrap;
 }
 .btn-primary:hover {
   background: var(--rosegold);
@@ -120,7 +122,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
+  padding: 0.75rem 2rem;
   border: 1px solid rgba(31, 27, 26, 0.18);
   color: var(--charcoal);
   font-size: 0.875rem;
@@ -128,6 +130,8 @@ body {
   text-transform: uppercase;
   border-radius: 999px;
   transition: background 0.2s ease, border-color 0.2s ease;
+  min-height: 44px;
+  white-space: nowrap;
 }
 .btn-ghost:hover {
   background: rgba(31, 27, 26, 0.04);
