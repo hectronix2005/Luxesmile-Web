@@ -85,19 +85,19 @@
   <!-- Sin JS (algunos crawlers): revela el contenido pre-renderizado que x-cloak ocultaría -->
   <noscript><style>[x-cloak]{display:revert !important}</style></noscript>
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260707a" />
-  <script src="assets/js/content.js?v=20260707a"></script>
-  <script src="assets/js/app.js?v=20260707a"></script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260707b" />
+  <script src="assets/js/content.js?v=20260707b"></script>
+  <script src="assets/js/app.js?v=20260707b"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body x-cloak class="bg-ivory text-charcoal">
   <!-- ============================ NAV ============================ -->
   <header
-    class="fixed top-0 inset-x-0 z-40 bg-ivory"
+    class="fixed top-0 inset-x-0 z-40 bg-white"
   >
     <!-- Line 1: Logo -->
-    <div class="hidden lg:flex w-full items-center justify-center bg-ivory" style="height: 140px;">
+    <div class="hidden lg:flex w-full items-center justify-center bg-white" style="height: 140px;">
       <a href="#inicio" class="flex items-center justify-center flex-shrink-0">
         <template x-if="content.brand.logo">
           <img :src="content.brand.logo" alt="" style="height: 140px; width: auto; max-width: 450px;" class="object-contain" />
@@ -125,7 +125,7 @@
     </div>
 
     <!-- Line 3: Agenda buttons -->
-    <div class="hidden lg:flex w-full items-center justify-center gap-6 h-14 border-t border-charcoal/5 bg-porcelain/20">
+    <div class="hidden lg:flex w-full items-center justify-center gap-6 h-14 border-t border-charcoal/5 bg-white">
       <button @click="showDiagnosticReminder('virtual')" class="btn-ghost inline-flex items-center gap-2 text-sm whitespace-nowrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 flex-shrink-0">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>

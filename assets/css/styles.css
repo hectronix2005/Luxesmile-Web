@@ -27,6 +27,11 @@ html {
   display: none !important;
 }
 
+/* Blanco puro (no está en el build de Tailwind y no depende del tema). */
+.bg-white {
+  background-color: #ffffff;
+}
+
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
