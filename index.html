@@ -85,9 +85,9 @@
   <!-- Sin JS (algunos crawlers): revela el contenido pre-renderizado que x-cloak ocultaría -->
   <noscript><style>[x-cloak]{display:revert !important}</style></noscript>
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260707b" />
-  <script src="assets/js/content.js?v=20260707b"></script>
-  <script src="assets/js/app.js?v=20260707b"></script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260707c" />
+  <script src="assets/js/content.js?v=20260707c"></script>
+  <script src="assets/js/app.js?v=20260707c"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
@@ -146,7 +146,8 @@
     <div
       x-show="mobileOpen"
       x-transition
-      class="lg:hidden border-t border-charcoal/5 bg-ivory/95 backdrop-blur"
+      class="lg:hidden border-t border-charcoal/5 backdrop-blur"
+      style="background: rgba(255, 255, 255, 0.95);"
     >
       <div class="px-6 py-6 flex flex-col gap-4">
         <template x-for="link in content.nav" :key="link.href">
