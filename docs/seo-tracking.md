@@ -37,6 +37,9 @@ que el blog y las páginas del sitio posicionen para keywords de intención loca
 | `/blog/precio-diseno-sonrisa-bogota/` | precio diseño de sonrisa bogotá | cuánto cuesta diseño de sonrisa |
 | `/blog/carillas-resina-vs-porcelana/` | carillas resina vs porcelana | diferencia carillas |
 | `/blog/implantes-dentales-bogota/` | implantes dentales bogotá | implante de titanio |
+| `/blog/cuanto-dura-una-carilla-dental/` | cuánto dura una carilla dental | duración carillas de porcelana |
+| `/blog/diseno-sonrisa-vs-carillas/` | diseño de sonrisa vs carillas | diferencia diseño y carillas |
+| `/blog/rehabilitacion-oral-bogota/` | rehabilitación oral bogotá | rehabilitación dental |
 
 ## Fases y gates de verificación
 
@@ -44,10 +47,13 @@ que el blog y las páginas del sitio posicionen para keywords de intención loca
   `<title>`/description únicos, canonical, H1, contenido en HTML sin JS, JSON-LD
   BlogPosting+BreadcrumbList, sitemap.xml con blog.
   - Gate: `curl /blog/<slug>/` → 200 con título+contenido sin JS ✅ (verificado en prod).
-- **Fase 2 (en curso):** 3 artículos nuevos de alta intención (precio, resina vs
-  porcelana, implantes), home muestra 3 + "Ver todos", enlazado interno.
-  - Gate: nuevas URLs 200 con schema; en GSC, subida de impresiones para sus consultas.
-- **Fase 3 (pendiente, requiere cuentas Google):** Google Business Profile + citas/backlinks.
+- **Fase 2 (hecha):** blog ampliado a **9 artículos** cubriendo long-tails de alta
+  intención (precio, resina vs porcelana, implantes, cuánto dura una carilla,
+  diseño vs carillas, rehabilitación oral). Home muestra 3 + "Ver todos" (enlazado
+  interno). sitemap con 13 URLs.
+  - Gate: nuevas URLs 200 con schema ✅; en GSC, seguir la subida de impresiones por consulta.
+- **Fase 3 (documentada, requiere cuentas Google):** Google Business Profile —
+  ver `docs/google-business-profile-guia.md` + citas/backlinks (Doctoralia).
 
 ## Acciones del dueño (una vez, en GSC)
 
