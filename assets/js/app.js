@@ -21,6 +21,7 @@ function registerAndInitialize() {
   officeModalOpen: false,
   diagnosticReminderOpen: false,
   diagnosticReminderType: null,
+  currentArticle: null,
 
   async init() {
     this.content = await window.LuxeContent.loadContent();

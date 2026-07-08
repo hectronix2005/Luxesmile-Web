@@ -85,9 +85,9 @@
   <!-- Sin JS (algunos crawlers): revela el contenido pre-renderizado que x-cloak ocultaría -->
   <noscript><style>[x-cloak]{display:revert !important}</style></noscript>
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260707e" />
-  <script src="assets/js/content.js?v=20260707e"></script>
-  <script src="assets/js/app.js?v=20260707e"></script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260707f" />
+  <script src="assets/js/content.js?v=20260707f"></script>
+  <script src="assets/js/app.js?v=20260707f"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
@@ -436,7 +436,7 @@
       <!-- Featured articles grid -->
       <div class="grid md:grid-cols-3 gap-8">
         <template x-for="article in content.blog?.articles" :key="article.id">
-          <article class="blog-card reveal group cursor-pointer" @click="currentArticle = article">
+          <article class="blog-card reveal group cursor-pointer" @click.stop="currentArticle = article">
             <!-- Image -->
             <div class="relative mb-6 overflow-hidden rounded-lg aspect-video bg-porcelain/50">
               <img
@@ -686,6 +686,38 @@
         <!-- Google Calendar Embed -->
         <iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0fwcpigRyRRQG39-GzVAP5MLe-VAA2NtgsVVbwWXorIW_H7flQCzjyqdrFKAqmYIRRYTXHEyx-" style="border: 0" width="100%" height="600" frameborder="0"></iframe>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Artículo del Blog -->
+  <div x-show="currentArticle" x-transition class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div @click.away="currentArticle = null" class="bg-ivory rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-6 border-b border-charcoal/10">
+        <h2 class="text-2xl font-serif text-charcoal">Artículo</h2>
+        <button @click="currentArticle = null" class="text-charcoal/60 hover:text-charcoal" aria-label="Cerrar">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <template x-if="currentArticle">
+        <div class="p-6">
+          <div class="aspect-video overflow-hidden rounded-lg mb-6">
+            <img :src="currentArticle.image" :alt="currentArticle.title" class="w-full h-full object-cover" />
+          </div>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="inline-block px-3 py-1 bg-rosegold/10 text-rosegold text-xs font-medium rounded-full" x-text="currentArticle.category"></span>
+            <span class="text-xs text-softblack/60" x-text="currentArticle.readTime"></span>
+          </div>
+          <h3 class="font-serif text-3xl text-charcoal mb-3" x-text="currentArticle.title"></h3>
+          <div class="flex items-center gap-3 text-xs text-softblack/60 mb-6 border-b border-charcoal/10" style="padding-bottom: 1.25rem;">
+            <span x-text="currentArticle.author"></span>
+            <span>·</span>
+            <span x-text="currentArticle.date"></span>
+          </div>
+          <div class="text-softblack/80 leading-relaxed" x-html="nl2br(currentArticle.content)"></div>
+        </div>
+      </template>
     </div>
   </div>
 
