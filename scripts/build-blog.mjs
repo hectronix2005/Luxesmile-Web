@@ -17,7 +17,7 @@ import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://luxesmilee.com';
-const V = '20260707i'; // cache-bust de CSS
+const V = '20260707j'; // cache-bust de CSS
 
 const content = JSON.parse(readFileSync(join(ROOT, 'assets/data/content.json'), 'utf8'));
 const brand = content.brand || {};
