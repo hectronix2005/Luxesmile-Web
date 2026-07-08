@@ -85,9 +85,9 @@
   <!-- Sin JS (algunos crawlers): revela el contenido pre-renderizado que x-cloak ocultaría -->
   <noscript><style>[x-cloak]{display:revert !important}</style></noscript>
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260707f" />
-  <script src="assets/js/content.js?v=20260707f"></script>
-  <script src="assets/js/app.js?v=20260707f"></script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260707g" />
+  <script src="assets/js/content.js?v=20260707g"></script>
+  <script src="assets/js/app.js?v=20260707g"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
@@ -715,7 +715,7 @@
             <span>·</span>
             <span x-text="currentArticle.date"></span>
           </div>
-          <div class="text-softblack/80 leading-relaxed" x-html="nl2br(currentArticle.content)"></div>
+          <div class="text-softblack/80 leading-relaxed article-body" x-html="currentArticle.content"></div>
         </div>
       </template>
     </div>

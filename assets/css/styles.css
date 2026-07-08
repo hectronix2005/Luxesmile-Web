@@ -35,6 +35,37 @@ html {
   background-color: #ffffff;
 }
 
+/* -------- Cuerpo de artículo del blog (contenido HTML del modal) -------- */
+.article-body h3 {
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--rosegold);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin: 1.75rem 0 0.6rem;
+}
+.article-body h3:first-child {
+  margin-top: 0;
+}
+.article-body p {
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+.article-body ul {
+  list-style: disc;
+  margin: 0 0 1.1rem 1.25rem;
+}
+.article-body li {
+  margin-bottom: 0.4rem;
+  line-height: 1.6;
+}
+.article-body strong {
+  color: var(--charcoal);
+  font-weight: 600;
+}
+.article-body > *:last-child {
+  margin-bottom: 0;
+}
+
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
