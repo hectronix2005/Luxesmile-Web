@@ -12,6 +12,7 @@ on:
       - 'assets/data/content.json'
       - 'scripts/extract-images.mjs'
       - 'scripts/prerender.mjs'
+      - 'scripts/build-blog.mjs'
       - 'package.json'
   workflow_dispatch: {}
 
@@ -41,12 +42,15 @@ jobs:
       - name: Regenerar HTML pre-renderizado
         run: node scripts/prerender.mjs
 
+      - name: Generar páginas estáticas del blog + sitemap
+        run: node scripts/build-blog.mjs
+
       - name: Compilar Tailwind CSS
         run: npm run build:css
 
       - name: Commit si hubo cambios
         run: |
-          git add assets/data/content.json assets/img/content index.html assets/css/tailwind.css
+          git add assets/data/content.json assets/img/content index.html assets/css/tailwind.css blog sitemap.xml
           if git diff --cached --quiet; then
             echo "Sin cambios; nada que commitear."
           else

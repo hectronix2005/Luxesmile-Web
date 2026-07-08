@@ -6,6 +6,7 @@
 module.exports = {
   content: [
     './index.html',
+    './blog/**/*.html',
     './diseno-de-sonrisa/**/*.html',
     './en/**/*.html',
     './assets/js/app.js',
