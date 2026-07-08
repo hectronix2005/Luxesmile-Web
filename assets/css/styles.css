@@ -21,6 +21,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Los anclas (#servicios, etc.) no quedan tapados por el header fijo.
+     252px = alto del header en desktop (logo 140 + nav 56 + agenda 56). */
+  scroll-padding-top: 252px;
 }
 
 [x-cloak] {
@@ -373,6 +376,18 @@ body {
 @media (max-width: 1023px) {
   #inicio {
     padding-top: 88px;
+  }
+  html {
+    /* barra móvil (56px) + holgura */
+    scroll-padding-top: 64px;
+  }
+}
+
+/* Menos aire vertical en las secciones para reducir scroll en móvil. */
+@media (max-width: 767px) {
+  .py-24 {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
   }
 }
 
