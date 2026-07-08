@@ -365,6 +365,17 @@ body {
   background: rgba(31, 27, 26, 0.06);
 }
 
+/* Offset del hero para librar el header fijo: 3 filas altas en desktop,
+   barra compacta (h-14 = 56px) en móvil. El selector de id gana a pt-32. */
+#inicio {
+  padding-top: 220px;
+}
+@media (max-width: 1023px) {
+  #inicio {
+    padding-top: 88px;
+  }
+}
+
 @media (max-width: 640px) {
   .hero-title {
     font-size: 3rem !important;

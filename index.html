@@ -85,9 +85,9 @@
   <!-- Sin JS (algunos crawlers): revela el contenido pre-renderizado que x-cloak ocultaría -->
   <noscript><style>[x-cloak]{display:revert !important}</style></noscript>
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260707c" />
-  <script src="assets/js/content.js?v=20260707c"></script>
-  <script src="assets/js/app.js?v=20260707c"></script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260707d" />
+  <script src="assets/js/content.js?v=20260707d"></script>
+  <script src="assets/js/app.js?v=20260707d"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
@@ -96,15 +96,15 @@
   <header
     class="fixed top-0 inset-x-0 z-40 bg-white"
   >
-    <!-- Line 1: Logo -->
-    <div class="hidden lg:flex w-full items-center justify-center bg-white" style="height: 140px;">
-      <a href="#inicio" class="flex items-center justify-center flex-shrink-0">
+    <!-- Barra superior móvil (visible < lg): logo + botón de menú -->
+    <div class="flex lg:hidden items-center justify-between px-6 h-14 border-b border-charcoal/5 bg-white">
+      <a href="#inicio" class="flex items-center flex-shrink-0">
         <template x-if="content.brand.logo">
-          <img :src="content.brand.logo" alt="" style="height: 140px; width: auto; max-width: 450px;" class="object-contain" />
+          <img :src="content.brand.logo" alt="Luxe-Smile" class="object-contain" style="height: 40px; width: auto; max-width: 210px;" />
         </template>
       </a>
       <button
-        class="lg:hidden p-2 -mr-2"
+        class="p-2 -mr-2"
         @click="mobileOpen = !mobileOpen"
         aria-label="Menú"
       >
@@ -113,6 +113,15 @@
           <path stroke-linecap="round" d="M6 6l12 12M6 18L18 6" x-show="mobileOpen" />
         </svg>
       </button>
+    </div>
+
+    <!-- Line 1: Logo (desktop) -->
+    <div class="hidden lg:flex w-full items-center justify-center bg-white" style="height: 140px;">
+      <a href="#inicio" class="flex items-center justify-center flex-shrink-0">
+        <template x-if="content.brand.logo">
+          <img :src="content.brand.logo" alt="" style="height: 140px; width: auto; max-width: 450px;" class="object-contain" />
+        </template>
+      </a>
     </div>
 
     <!-- Line 2: Navigation links -->
@@ -172,7 +181,7 @@
   </header>
 
   <!-- ============================ HERO ============================ -->
-  <section id="inicio" class="relative pt-32 pb-24 hero-aura overflow-hidden" style="padding-top: 220px;">
+  <section id="inicio" class="relative pt-32 pb-24 hero-aura overflow-hidden">
     <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-12 items-center">
       <div class="lg:col-span-7 reveal">
         <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-6" x-text="content.hero.eyebrow"><!--PR:eyebrow-->Odontología estética · Diseño de sonrisa<!--/PR:eyebrow--></p>
@@ -616,7 +625,7 @@
   <!-- ===================== MODALES ===================== -->
   <!-- Modal Recordatorio de Diagnóstico -->
   <div x-show="diagnosticReminderOpen" x-transition class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-    <div @click.away="diagnosticReminderOpen = false" class="bg-ivory rounded-lg shadow-2xl max-w-2xl w-full">
+    <div @click.away="diagnosticReminderOpen = false" class="bg-ivory rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between p-6 border-b border-charcoal/10">
         <h2 class="text-2xl font-serif text-charcoal">Antes de agendar</h2>
         <button @click="diagnosticReminderOpen = false" class="text-charcoal/60 hover:text-charcoal">
