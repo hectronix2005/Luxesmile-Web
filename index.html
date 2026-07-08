@@ -85,9 +85,9 @@
   <!-- Sin JS (algunos crawlers): revela el contenido pre-renderizado que x-cloak ocultaría -->
   <noscript><style>[x-cloak]{display:revert !important}</style></noscript>
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=20260707h" />
-  <script src="assets/js/content.js?v=20260707h"></script>
-  <script src="assets/js/app.js?v=20260707h"></script>
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260707i" />
+  <script src="assets/js/content.js?v=20260707i"></script>
+  <script src="assets/js/app.js?v=20260707i"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
@@ -435,7 +435,7 @@
 
       <!-- Featured articles grid -->
       <div class="grid md:grid-cols-3 gap-8">
-        <template x-for="article in content.blog?.articles" :key="article.id">
+        <template x-for="article in (content.blog?.articles || []).slice(0, 3)" :key="article.id">
           <a :href="'/blog/' + article.slug + '/'" class="blog-card reveal group cursor-pointer" style="display:block;">
             <!-- Image -->
             <div class="relative mb-6 overflow-hidden rounded-lg aspect-video bg-porcelain/50">
@@ -464,6 +464,10 @@
             </div>
           </a>
         </template>
+      </div>
+
+      <div class="text-center mt-12 reveal">
+        <a href="/blog/" class="btn-ghost">Ver todos los artículos</a>
       </div>
     </div>
   </section>
