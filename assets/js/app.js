@@ -3,19 +3,15 @@
    Carga el contenido desde assets/data/content.json (vía LuxeContent).
    ===================================================================== */
 
-// Register Alpine data IMMEDIATELY (will be used when Alpine loads)
-if (typeof Alpine !== 'undefined') {
-  // Alpine already loaded somehow
-  registerAndInitialize();
-} else {
-  // Wait for Alpine to load, then initialize
-  const checkAlpine = setInterval(() => {
-    if (typeof Alpine !== 'undefined') {
-      clearInterval(checkAlpine);
-      registerAndInitialize();
-    }
-  }, 50);
-}
+// Registrar el componente Alpine en 'alpine:init' (antes de que Alpine recorra el
+// DOM) y marcar <body> con x-data ahí, para que el propio start() de Alpine lo
+// inicialice. Se quita x-cloak en 'alpine:initialized', ya con el DOM hidratado.
+// app.js corre sin defer (antes que Alpine), así que estos listeners quedan
+// registrados a tiempo.
+document.addEventListener('alpine:init', registerAndInitialize);
+document.addEventListener('alpine:initialized', () => {
+  document.body.removeAttribute('x-cloak');
+});
 
 function registerAndInitialize() {
   Alpine.data('site', () => ({
@@ -119,21 +115,7 @@ function registerAndInitialize() {
     },
   }));
 
-  // Now that data is registered, tell Alpine to process the body
+  // Marcar <body> con x-data. Como esto corre en 'alpine:init' (antes del walk
+  // del DOM), Alpine inicializa el componente por sí mismo durante start().
   document.body.setAttribute('x-data', 'site');
-
-  // Force Alpine to reinitialize/process the body
-  if (window.Alpine && window.Alpine.prefixed) {
-    // Alpine 3.x initialization
-    Array.from(document.querySelectorAll('[x-data]')).forEach(el => {
-      if (!el.__x) {
-        window.Alpine.initialize(el);
-      }
-    });
-  } else if (window.Alpine && window.Alpine.init) {
-    window.Alpine.init(document.body);
-  }
-
-  // Remove x-cloak to show the page
-  document.body.removeAttribute('x-cloak');
 }
