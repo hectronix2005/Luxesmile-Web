@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713j" />
-  <script src="../assets/js/content.js?v=20260713j"></script>
-  <script defer src="../assets/js/admin.js?v=20260713j"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713k" />
+  <script src="../assets/js/content.js?v=20260713k"></script>
+  <script defer src="../assets/js/admin.js?v=20260713k"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713j';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713k';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -494,6 +494,17 @@
         </div>
         <button class="btn-ghost text-xs whitespace-nowrap" @click="addBlogArticle()">+ Agregar artículo</button>
       </div>
+      <div class="grid md:grid-cols-2 gap-4 pb-5 border-b border-charcoal/10">
+        <div>
+          <label class="admin-label block mb-1">Título del blog</label>
+          <input class="admin-input" x-model="content.blog.title" placeholder="Blog de Odontología Estética" />
+        </div>
+        <div>
+          <label class="admin-label block mb-1">Subtítulo del blog</label>
+          <input class="admin-input" x-model="content.blog.subtitle" placeholder="Consejos, técnicas y tendencias…" />
+        </div>
+      </div>
+
       <div class="space-y-4">
         <template x-for="(a, i) in content.blog.articles" :key="a.slug || i">
           <div class="border border-charcoal/10 rounded p-4 bg-ivory/50 space-y-3">
