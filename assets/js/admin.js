@@ -436,6 +436,25 @@ document.addEventListener('alpine:init', () => {
       this.openEditor(src, { defaultAspect: 'free', defaultOutputW: 600, outputFormat: 'png' },
         (b64) => (this.content.brand.logo = b64));
     },
+    addBlogArticle() {
+      if (!this.content.blog) this.content.blog = { articles: [] };
+      if (!this.content.blog.articles) this.content.blog.articles = [];
+      const today = new Date().toISOString().slice(0, 10);
+      this.content.blog.articles.unshift({
+        id: Date.now(),
+        title: 'Nuevo artículo',
+        slug: 'nuevo-articulo',
+        excerpt: '',
+        image: '',
+        category: '',
+        author: this.content.brand?.doctor || '',
+        date: today,
+        readTime: '3 min',
+        keywords: '',
+        featured: false,
+        content: '<p>Contenido del artículo.</p>',
+      });
+    },
     uploadBlogImage(i) {
       this.pickImage(
         (b64) => (this.content.blog.articles[i].image = b64),
