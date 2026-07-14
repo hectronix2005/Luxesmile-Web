@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713l" />
-  <script src="../assets/js/content.js?v=20260713l"></script>
-  <script defer src="../assets/js/admin.js?v=20260713l"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713m" />
+  <script src="../assets/js/content.js?v=20260713m"></script>
+  <script defer src="../assets/js/admin.js?v=20260713m"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713l';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713m';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -326,13 +326,18 @@
       </div>
       <div class="grid md:grid-cols-2 gap-5">
         <div>
-          <label class="admin-label block mb-2">Texto botón principal</label>
+          <label class="admin-label block mb-2">Botón principal (Agenda en Consultorio)</label>
           <input class="admin-input" x-model="content.hero.ctaPrimary" />
         </div>
         <div>
-          <label class="admin-label block mb-2">Texto botón secundario</label>
+          <label class="admin-label block mb-2">Botón WhatsApp</label>
           <input class="admin-input" x-model="content.hero.ctaSecondary" />
         </div>
+      </div>
+      <div>
+        <label class="admin-label block mb-2">Línea de apoyo bajo los botones</label>
+        <input class="admin-input" x-model="content.hero.supportLine" placeholder="Primera valoración sin costo · Cupos limitados" />
+        <p class="text-xs text-softblack/50 mt-1">Déjalo vacío para ocultar la línea.</p>
       </div>
       <div>
         <label class="admin-label block mb-2">Imagen principal (URL o sube archivo)</label>

@@ -143,8 +143,9 @@ const DEFAULT_CONTENT = {
     title: 'Tu sonrisa,\nnuestra obra de arte.',
     subtitle:
       'Creamos sonrisas naturales y armónicas con tecnología de vanguardia y un trato íntimo, cálido y personalizado.',
-    ctaPrimary: 'Agenda tu cita',     // botón principal → calendario (contact.calendar)
-    ctaSecondary: 'Contáctanos',      // botón secundario → WhatsApp
+    ctaPrimary: 'Agenda en Consultorio',
+    ctaSecondary: 'Contáctanos',
+    supportLine: 'Primera valoración sin costo · Cupos limitados',
     image:
       'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1400&q=80',
   },

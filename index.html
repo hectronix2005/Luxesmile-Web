@@ -204,7 +204,7 @@
               <path d="M12 21s-7-7.5-7-12a7 7 0 1 1 14 0c0 4.5-7 12-7 12Z" />
               <circle cx="12" cy="9" r="2.5" />
             </svg>
-            Agenda en Consultorio
+            <span x-text="content.hero.ctaPrimary">Agenda en Consultorio</span>
           </button>
           <button @click="bookingModalOpen = true" class="btn-ghost">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="w-4 h-4">
@@ -221,7 +221,7 @@
           </a>
         </div>
 
-        <p class="mt-5 text-xs text-softblack/50 tracking-wide">Primera valoración sin costo · Cupos limitados</p>
+        <p class="mt-5 text-xs text-softblack/50 tracking-wide" x-show="content.hero.supportLine" x-text="content.hero.supportLine">Primera valoración sin costo · Cupos limitados</p>
 
         <div class="mt-10 flex items-center gap-6 text-sm text-softblack/70">
           <span class="gold-divider"></span>
