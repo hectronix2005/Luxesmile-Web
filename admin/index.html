@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260518e" />
-  <script src="../assets/js/content.js?v=20260518e"></script>
-  <script defer src="../assets/js/admin.js?v=20260518e"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713a" />
+  <script src="../assets/js/content.js?v=20260713a"></script>
+  <script defer src="../assets/js/admin.js?v=20260713a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260518e';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713a';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -477,6 +477,49 @@
               <button class="admin-tab" @click="move(content.gallery, i, -1)">↑</button>
               <button class="admin-tab" @click="move(content.gallery, i, 1)">↓</button>
               <button class="admin-tab" @click="remove(content.gallery, i)">✕ Eliminar</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- ============ BLOG ============ -->
+    <div x-show="tab === 'blog'" class="admin-card space-y-5">
+      <div>
+        <h2 class="font-serif text-2xl">Imágenes del Blog</h2>
+        <p class="text-xs text-softblack/60 leading-relaxed mt-2">
+          Cambia la imagen de portada de cada artículo. Recomendado: horizontal (16:9), mínimo 900 px de ancho.
+          Puedes pegar una URL directa o subir desde tu equipo.
+        </p>
+      </div>
+      <div class="space-y-4">
+        <template x-for="(a, i) in content.blog.articles" :key="a.slug || i">
+          <div class="border border-charcoal/10 rounded p-4 bg-ivory/50 space-y-3">
+            <div>
+              <p class="text-xs uppercase tracking-widest text-softblack/50" x-text="(a.category || 'Artículo') + ' · ' + (a.date || '')"></p>
+              <p class="font-serif text-lg leading-snug mt-0.5" x-text="a.title"></p>
+            </div>
+            <template x-if="a.image">
+              <img :src="a.image" class="rounded h-36 w-full object-cover" />
+            </template>
+            <div>
+              <label class="admin-label block mb-1">Imagen (URL o archivo)</label>
+              <div class="flex flex-wrap gap-2">
+                <input class="admin-input flex-1 min-w-[140px]" x-model="a.image" placeholder="https://... o sube archivo" />
+                <button class="btn-ghost text-xs whitespace-nowrap" @click="uploadBlogImage(i)">↑ Subir</button>
+                <button
+                  class="btn-ghost text-xs whitespace-nowrap"
+                  :disabled="!a.image"
+                  :class="{ 'opacity-40 cursor-not-allowed': !a.image }"
+                  @click="editBlogImage(i)"
+                >✂ Recortar</button>
+                <button
+                  class="btn-ghost text-xs whitespace-nowrap"
+                  :disabled="!a.image"
+                  :class="{ 'opacity-40 cursor-not-allowed': !a.image }"
+                  @click="clearBlogImage(i)"
+                >✕ Quitar</button>
+              </div>
             </div>
           </div>
         </template>

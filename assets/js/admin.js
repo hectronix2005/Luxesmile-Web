@@ -51,6 +51,7 @@ document.addEventListener('alpine:init', () => {
       { id: 'stats', label: 'Stats' },
       { id: 'contact', label: 'Contacto' },
       { id: 'footer', label: 'Footer' },
+      { id: 'blog', label: 'Blog' },
       { id: 'publish', label: 'Publicación' },
       { id: 'backup', label: 'Backup' },
       { id: 'security', label: 'Seguridad' },
@@ -435,6 +436,19 @@ document.addEventListener('alpine:init', () => {
       this.openEditor(src, { defaultAspect: 'free', defaultOutputW: 600, outputFormat: 'png' },
         (b64) => (this.content.brand.logo = b64));
     },
+    uploadBlogImage(i) {
+      this.pickImage(
+        (b64) => (this.content.blog.articles[i].image = b64),
+        { defaultAspect: '16:9', defaultOutputW: 1200 },
+      );
+    },
+    async editBlogImage(i) {
+      const src = await this.fetchEditableSrc(this.content.blog.articles[i].image);
+      if (!src) return;
+      this.openEditor(src, { defaultAspect: '16:9', defaultOutputW: 1200 },
+        (b64) => (this.content.blog.articles[i].image = b64));
+    },
+    clearBlogImage(i) { this.content.blog.articles[i].image = ''; },
     // Convierte URLs externas a data URL para evitar canvas tainting (CORS).
     // Las imágenes data: o blob: pasan tal cual.
     async fetchEditableSrc(src) {
