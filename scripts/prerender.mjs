@@ -42,12 +42,14 @@ function region(key, inner) {
 }
 
 /* ---- Textos de valor único (Alpine los sobrescribe en cliente) ---- */
-region('eyebrow', esc(content.hero?.eyebrow));
-region('subtitle', esc(content.hero?.subtitle));
-region('doctor', esc(content.brand?.doctor));
-region('aboutTitle', esc(content.about?.title));
-region('aboutSubtitle', esc(content.about?.subtitle));
-region('aboutText', esc(content.about?.text).replace(/\n/g, '<br>'));
+region('eyebrow',      esc(content.hero?.eyebrow));
+region('subtitle',     esc(content.hero?.subtitle));
+region('ctaPrimary',   esc(content.hero?.ctaPrimary  || 'Agenda en Consultorio'));
+region('supportLine',  esc(content.hero?.supportLine || 'Primera valoración sin costo · Cupos limitados'));
+region('doctor',       esc(content.brand?.doctor));
+region('aboutTitle',   esc(content.about?.title));
+region('aboutSubtitle',esc(content.about?.subtitle));
+region('aboutText',    esc(content.about?.text).replace(/\n/g, '<br>'));
 
 /* ---- H1: título con saltos de línea (la línea índice 1 va en <em>, como en Alpine) ---- */
 const titleLines = String(content.hero?.title || '').split('\n');
