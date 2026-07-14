@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713g" />
-  <script src="../assets/js/content.js?v=20260713g"></script>
-  <script defer src="../assets/js/admin.js?v=20260713g"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713h" />
+  <script src="../assets/js/content.js?v=20260713h"></script>
+  <script defer src="../assets/js/admin.js?v=20260713h"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713g';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713h';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -567,6 +567,37 @@
                   :class="{ 'opacity-40 cursor-not-allowed': !a.image }"
                   @click="clearBlogImage(i)"
                 >✕ Quitar</button>
+              </div>
+            </div>
+            <!-- Vista previa -->
+            <div x-data="{ preview: false }" class="pt-2 border-t border-charcoal/10">
+              <div class="flex items-center gap-3">
+                <button
+                  class="btn-ghost text-xs"
+                  @click="preview = !preview"
+                  x-text="preview ? 'Ocultar vista previa' : '👁 Vista previa'"
+                ></button>
+                <a
+                  :href="'/blog/' + a.slug + '/'"
+                  target="_blank"
+                  rel="noopener"
+                  class="text-xs text-softblack/60 hover:text-rosegold underline"
+                >Ver en el sitio ↗</a>
+              </div>
+              <div
+                x-show="preview"
+                x-transition
+                class="mt-4 border border-charcoal/10 rounded-lg overflow-hidden bg-white"
+              >
+                <div class="px-6 py-6 max-w-2xl mx-auto">
+                  <p class="blog-eyebrow" x-text="(a.category || '') + (a.readTime ? ' · ' + a.readTime : '')"></p>
+                  <h2 class="font-serif blog-h1 mt-1" x-text="a.title"></h2>
+                  <p class="blog-byline mt-2" x-text="(a.author || '') + (a.date ? ' · ' + a.date : '')"></p>
+                  <template x-if="a.image">
+                    <img :src="a.image" class="blog-hero-img mt-4" :alt="a.title" />
+                  </template>
+                  <div class="article-body mt-6" x-html="a.content"></div>
+                </div>
               </div>
             </div>
           </div>
