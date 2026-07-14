@@ -181,8 +181,8 @@ ${footer()}`;
 
 function indexPage() {
   const url = `${SITE}/blog/`;
-  const title = `Blog de Odontología Estética | Luxe-Smile Bogotá`;
-  const desc = blog.subtitle || 'Consejos, técnicas y tendencias en diseño de sonrisa, carillas y estética dental en Bogotá.';
+  const title = blog.indexTitle || `Blog de Odontología Estética | Luxe-Smile Bogotá`;
+  const desc = blog.metaDescription || blog.subtitle || 'Consejos, técnicas y tendencias en diseño de sonrisa, carillas y estética dental en Bogotá.';
   const jsonld = {
     '@context': 'https://schema.org',
     '@type': 'Blog',

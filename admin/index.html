@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713k" />
-  <script src="../assets/js/content.js?v=20260713k"></script>
-  <script defer src="../assets/js/admin.js?v=20260713k"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713l" />
+  <script src="../assets/js/content.js?v=20260713l"></script>
+  <script defer src="../assets/js/admin.js?v=20260713l"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713k';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713l';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -494,14 +494,26 @@
         </div>
         <button class="btn-ghost text-xs whitespace-nowrap" @click="addBlogArticle()">+ Agregar artículo</button>
       </div>
-      <div class="grid md:grid-cols-2 gap-4 pb-5 border-b border-charcoal/10">
-        <div>
-          <label class="admin-label block mb-1">Título del blog</label>
-          <input class="admin-input" x-model="content.blog.title" placeholder="Blog de Odontología Estética" />
+      <div class="space-y-4 pb-5 border-b border-charcoal/10">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="admin-label block mb-1">Título visible del blog</label>
+            <input class="admin-input" x-model="content.blog.title" placeholder="Blog de Odontología Estética" />
+          </div>
+          <div>
+            <label class="admin-label block mb-1">Subtítulo visible del blog</label>
+            <input class="admin-input" x-model="content.blog.subtitle" placeholder="Consejos, técnicas y tendencias…" />
+          </div>
         </div>
         <div>
-          <label class="admin-label block mb-1">Subtítulo del blog</label>
-          <input class="admin-input" x-model="content.blog.subtitle" placeholder="Consejos, técnicas y tendencias…" />
+          <label class="admin-label block mb-1">Título SEO del índice <code class="text-xs font-mono">&lt;title&gt;</code></label>
+          <input class="admin-input" x-model="content.blog.indexTitle" placeholder="Blog de Odontología Estética | Luxe-Smile Bogotá" />
+          <p class="text-xs text-softblack/50 mt-1">Si está vacío, se usa el valor por defecto.</p>
+        </div>
+        <div>
+          <label class="admin-label block mb-1">Meta-description del índice</label>
+          <textarea class="admin-textarea" rows="2" x-model="content.blog.metaDescription" placeholder="Consejos, técnicas y tendencias en diseño de sonrisa, carillas y estética dental en Bogotá."></textarea>
+          <p class="text-xs text-softblack/50 mt-1">Si está vacío, se usa el subtítulo visible. Recomendado: 120–160 caracteres.</p>
         </div>
       </div>
 
