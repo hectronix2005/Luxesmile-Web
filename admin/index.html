@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713f" />
-  <script src="../assets/js/content.js?v=20260713f"></script>
-  <script defer src="../assets/js/admin.js?v=20260713f"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713g" />
+  <script src="../assets/js/content.js?v=20260713g"></script>
+  <script defer src="../assets/js/admin.js?v=20260713g"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713f';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713g';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -502,10 +502,11 @@
                 <p class="text-xs uppercase tracking-widest text-softblack/50" x-text="(a.category || 'Artículo') + ' · ' + (a.date || '')"></p>
                 <p class="font-serif text-lg leading-snug mt-0.5" x-text="a.title"></p>
               </div>
-              <button
-                class="admin-tab text-xs whitespace-nowrap shrink-0"
-                @click="remove(content.blog.articles, i)"
-              >✕ Eliminar</button>
+              <div class="flex gap-1 shrink-0">
+                <button class="admin-tab" @click="move(content.blog.articles, i, -1)">↑</button>
+                <button class="admin-tab" @click="move(content.blog.articles, i, 1)">↓</button>
+                <button class="admin-tab text-xs" @click="remove(content.blog.articles, i)">✕ Eliminar</button>
+              </div>
             </div>
             <template x-if="a.image">
               <img :src="a.image" class="rounded h-36 w-full object-cover" />
