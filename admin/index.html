@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713d" />
-  <script src="../assets/js/content.js?v=20260713d"></script>
-  <script defer src="../assets/js/admin.js?v=20260713d"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713e" />
+  <script src="../assets/js/content.js?v=20260713e"></script>
+  <script defer src="../assets/js/admin.js?v=20260713e"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713d';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713e';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -518,6 +518,16 @@
               <div>
                 <label class="admin-label block mb-1">Slug (URL)</label>
                 <input class="admin-input font-mono text-xs" x-model="a.slug" placeholder="mi-articulo" />
+              </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-3">
+              <div>
+                <label class="admin-label block mb-1">Categoría</label>
+                <input class="admin-input" x-model="a.category" placeholder="Ej: Técnicas, Procedimientos…" />
+              </div>
+              <div>
+                <label class="admin-label block mb-1">Fecha</label>
+                <input class="admin-input" type="date" x-model="a.date" />
               </div>
             </div>
             <div>
