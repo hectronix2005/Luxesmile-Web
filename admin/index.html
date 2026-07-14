@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713a" />
-  <script src="../assets/js/content.js?v=20260713a"></script>
-  <script defer src="../assets/js/admin.js?v=20260713a"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713b" />
+  <script src="../assets/js/content.js?v=20260713b"></script>
+  <script defer src="../assets/js/admin.js?v=20260713b"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713a';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713b';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -502,6 +502,14 @@
             <template x-if="a.image">
               <img :src="a.image" class="rounded h-36 w-full object-cover" />
             </template>
+            <div>
+              <label class="admin-label block mb-1">Título</label>
+              <input class="admin-input" x-model="a.title" />
+            </div>
+            <div>
+              <label class="admin-label block mb-1">Excerpt (resumen corto)</label>
+              <textarea class="admin-textarea" rows="2" x-model="a.excerpt"></textarea>
+            </div>
             <div>
               <label class="admin-label block mb-1">Imagen (URL o archivo)</label>
               <div class="flex flex-wrap gap-2">
