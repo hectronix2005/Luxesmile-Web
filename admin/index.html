@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713i" />
-  <script src="../assets/js/content.js?v=20260713i"></script>
-  <script defer src="../assets/js/admin.js?v=20260713i"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713j" />
+  <script src="../assets/js/content.js?v=20260713j"></script>
+  <script defer src="../assets/js/admin.js?v=20260713j"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713i';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713j';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -534,6 +534,10 @@
             <div>
               <label class="admin-label block mb-1">Excerpt (resumen corto)</label>
               <textarea class="admin-textarea" rows="2" x-model="a.excerpt"></textarea>
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="checkbox" :id="'featured-' + i" x-model="a.featured" class="w-4 h-4 accent-rosegold cursor-pointer" />
+              <label :for="'featured-' + i" class="admin-label cursor-pointer select-none">Artículo destacado</label>
             </div>
             <div>
               <label class="admin-label block mb-1">Autor</label>
