@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713e" />
-  <script src="../assets/js/content.js?v=20260713e"></script>
-  <script defer src="../assets/js/admin.js?v=20260713e"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713f" />
+  <script src="../assets/js/content.js?v=20260713f"></script>
+  <script defer src="../assets/js/admin.js?v=20260713f"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713e';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713f';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -533,6 +533,16 @@
             <div>
               <label class="admin-label block mb-1">Excerpt (resumen corto)</label>
               <textarea class="admin-textarea" rows="2" x-model="a.excerpt"></textarea>
+            </div>
+            <div class="grid md:grid-cols-2 gap-3">
+              <div>
+                <label class="admin-label block mb-1">Keywords (SEO)</label>
+                <input class="admin-input" x-model="a.keywords" placeholder="carillas, diseño de sonrisa…" />
+              </div>
+              <div>
+                <label class="admin-label block mb-1">Tiempo de lectura</label>
+                <input class="admin-input" x-model="a.readTime" placeholder="3 min" />
+              </div>
             </div>
             <div>
               <label class="admin-label block mb-1">Contenido (HTML)</label>
