@@ -37,11 +37,11 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713b" />
-  <script src="../assets/js/content.js?v=20260713b"></script>
-  <script defer src="../assets/js/admin.js?v=20260713b"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713c" />
+  <script src="../assets/js/content.js?v=20260713c"></script>
+  <script defer src="../assets/js/admin.js?v=20260713c"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713b';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260713c';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -509,6 +509,11 @@
             <div>
               <label class="admin-label block mb-1">Excerpt (resumen corto)</label>
               <textarea class="admin-textarea" rows="2" x-model="a.excerpt"></textarea>
+            </div>
+            <div>
+              <label class="admin-label block mb-1">Contenido (HTML)</label>
+              <textarea class="admin-textarea font-mono text-xs" rows="8" x-model="a.content"></textarea>
+              <p class="text-xs text-softblack/50 mt-1">Acepta HTML: &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;/&lt;li&gt;, &lt;strong&gt;, etc.</p>
             </div>
             <div>
               <label class="admin-label block mb-1">Imagen (URL o archivo)</label>
