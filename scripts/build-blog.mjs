@@ -18,6 +18,7 @@ import { dirname, join } from 'node:path';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://luxesmilee.com';
 const V = '20260707j'; // cache-bust de CSS
+const VJS = '20260718a'; // cache-bust de tracking.js (mantener en sync con index/landings)
 
 const content = JSON.parse(readFileSync(join(ROOT, 'assets/data/content.json'), 'utf8'));
 const brand = content.brand || {};
@@ -78,6 +79,8 @@ function head({ title, desc, url, image, jsonld }) {
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/assets/css/tailwind.css?v=${V}" />
   <link rel="stylesheet" href="/assets/css/styles.css?v=${V}" />
+  <!-- Seguimiento de conversiones (GA4 + Google Ads + Meta Pixel). Editar los IDs en assets/js/tracking.js -->
+  <script src="/assets/js/tracking.js?v=${VJS}"></script>
   <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
 </head>`;
 }
