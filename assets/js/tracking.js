@@ -21,7 +21,7 @@
   var TRACKING = {
     ga4: 'G-4CPWLE6HFM',            // GA4
     googleAds: 'AW-18224708687',   // Google Ads
-    metaPixel: 'TU_PIXEL_ID',      // Meta Pixel (Instagram / Facebook)
+    metaPixel: '4446128538988992', // Meta Pixel (Instagram / Facebook)
     labels: {
       whatsapp: 'A2slCKTB-cocEM_4m_JD',    // Clic WhatsApp
       agenda: 'icl7CKfB-cocEM_4m_JD',      // Clic Agendar
