@@ -78,6 +78,10 @@
           this.$nextTick(() => this.setupReveal());
         },
 
+        navHref(href) {
+          return href.startsWith('#') ? '/' + href : href;
+        },
+
         waLink() {
           const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
           const msg = 'Hola Dra. Angela, soy paciente internacional y me gustaría agendar una consulta virtual para planificar mi tratamiento dental en Bogotá.';
@@ -140,7 +144,7 @@
     <div class="hidden lg:flex w-full items-center justify-center h-14 border-b border-charcoal/5">
       <nav class="flex items-center gap-10 text-sm">
         <template x-for="link in content.nav" :key="link.href">
-          <a :href="link.href" class="nav-link whitespace-nowrap" x-text="link.label"></a>
+          <a :href="navHref(link.href)" class="nav-link whitespace-nowrap" x-text="link.label"></a>
         </template>
       </nav>
     </div>
@@ -156,7 +160,7 @@
     <div x-show="mobileOpen" x-transition class="lg:hidden border-t border-charcoal/5" style="background: rgba(255,255,255,0.95);">
       <div class="px-6 py-6 flex flex-col gap-4">
         <template x-for="link in content.nav" :key="link.href">
-          <a :href="link.href" class="text-base nav-link" x-text="link.label" @click="mobileOpen = false"></a>
+          <a :href="navHref(link.href)" class="text-base nav-link" x-text="link.label" @click="mobileOpen = false"></a>
         </template>
         <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary justify-center" @click="mobileOpen = false">
           Agenda tu consulta virtual
