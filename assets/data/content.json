@@ -47,6 +47,10 @@
       "href": "#blog"
     },
     {
+      "label": "Internacionales",
+      "href": "/pacientes-internacionales/"
+    },
+    {
       "label": "Contacto",
       "href": "#contacto"
     }

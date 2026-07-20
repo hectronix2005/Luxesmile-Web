@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pacientes Internacionales | Diseño de Sonrisa en Bogotá | Luxe-Smile · Dra. Angela Barbosa</title>
+  <meta
+    name="description"
+    content="Planifica tu tratamiento dental antes de viajar a Bogotá. Consulta virtual, plan personalizado y cronograma de citas con la Dra. Angela Barbosa en Luxe-Smile, Chapinero."
+  />
+  <link rel="canonical" href="https://luxesmilee.com/pacientes-internacionales/" />
+  <link rel="alternate" hreflang="es" href="https://luxesmilee.com/pacientes-internacionales/" />
+  <link rel="alternate" hreflang="x-default" href="https://luxesmilee.com/" />
+  <meta name="theme-color" content="#FAF7F2" />
+
+  <script src="../assets/js/tracking.js?v=20260718a"></script>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Luxe-Smile" />
+  <meta property="og:locale" content="es_CO" />
+  <meta property="og:url" content="https://luxesmilee.com/pacientes-internacionales/" />
+  <meta property="og:title" content="Pacientes Internacionales | Luxe-Smile · Dra. Angela Barbosa" />
+  <meta property="og:description" content="Planifica tu tratamiento dental antes de viajar a Bogotá. Consulta virtual, plan personalizado y cronograma de citas con la Dra. Angela Barbosa." />
+  <meta property="og:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="817" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pacientes Internacionales | Luxe-Smile Bogotá" />
+  <meta name="twitter:description" content="Planifica tu tratamiento dental antes de viajar a Bogotá. Consulta virtual con la Dra. Angela Barbosa." />
+  <meta name="twitter:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Atención a Pacientes Internacionales",
+    "serviceType": "Odontología estética para pacientes internacionales",
+    "description": "Consulta virtual previa al viaje, plan de tratamiento personalizado y cronograma de citas optimizado para pacientes que viajan a Bogotá.",
+    "areaServed": "Internacional",
+    "provider": {
+      "@type": "Dentist",
+      "name": "Luxe-Smile — Dra. Angela Barbosa",
+      "url": "https://luxesmilee.com/",
+      "telephone": "+573163903511",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Cl. 90 #14-16, Consultorio 508",
+        "addressLocality": "Chapinero",
+        "addressRegion": "Bogotá",
+        "addressCountry": "CO"
+      }
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="../assets/css/tailwind.css?v=20260704a" />
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260707j" />
+  <script src="../assets/js/content.js?v=20260518e"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('landing', () => ({
+        content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
+
+        async init() {
+          this.content = await window.LuxeContent.loadContent();
+          window.LuxeContent.applyTheme(this.content.theme);
+          this.$nextTick(() => this.setupReveal());
+        },
+
+        waLink() {
+          const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
+          const msg = 'Hola Dra. Angela, soy paciente internacional y me gustaría agendar una consulta virtual para planificar mi tratamiento dental en Bogotá.';
+          return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
+        },
+
+        setupReveal() {
+          const els = document.querySelectorAll('.reveal');
+          if (!('IntersectionObserver' in window)) {
+            els.forEach((el) => el.classList.add('in-view'));
+            return;
+          }
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((e) => {
+                if (e.isIntersecting) {
+                  e.target.classList.add('in-view');
+                  io.unobserve(e.target);
+                }
+              });
+            },
+            { threshold: 0.12 },
+          );
+          els.forEach((el) => io.observe(el));
+        },
+      }));
+    });
+  </script>
+</head>
+
+<body x-data="landing" x-cloak class="bg-ivory text-charcoal">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="fixed top-0 inset-x-0 z-40 backdrop-blur bg-ivory/80 border-b border-charcoal/5">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between h-20">
+      <a href="/" class="flex items-center gap-3">
+        <template x-if="content.brand.logo">
+          <img :src="content.brand.logo" alt="" class="h-10 w-auto max-w-[140px] object-contain" />
+        </template>
+        <span class="font-serif text-2xl tracking-tight" x-text="content.brand.name"></span>
+      </a>
+      <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary hidden sm:inline-flex">
+        Agenda tu consulta virtual
+      </a>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="relative pt-32 pb-20 lg:pt-44 lg:pb-32 hero-aura overflow-hidden">
+    <div class="max-w-4xl mx-auto px-6 lg:px-10 text-center reveal">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-5">
+        Pacientes Internacionales · Bogotá, Colombia
+      </p>
+      <h1 class="hero-title font-serif text-5xl md:text-6xl lg:text-[4.5rem] leading-[1.05] mb-6">
+        Pacientes<br /><em>Internacionales</em>
+      </h1>
+      <p class="text-xl text-softblack/70 max-w-2xl mx-auto mb-10">
+        Planifica tu tratamiento antes de viajar a Colombia.
+      </p>
+      <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary inline-flex justify-center">
+        Agenda tu consulta virtual
+      </a>
+    </div>
+  </section>
+
+  <!-- ===================== CÓMO FUNCIONA ===================== -->
+  <section class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-4xl mx-auto px-6 lg:px-10">
+      <div class="text-center mb-14 reveal">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-3">Proceso</p>
+        <h2 class="font-serif text-4xl md:text-5xl">¿Cómo funciona?</h2>
+      </div>
+      <ol class="space-y-8">
+        <li class="reveal flex gap-6 items-start">
+          <span class="font-serif text-5xl text-rosegold/30 leading-none flex-shrink-0 w-12 text-center">1</span>
+          <div class="pt-2">
+            <p class="text-lg text-softblack/85">Agenda tu consulta virtual.</p>
+          </div>
+        </li>
+        <li class="reveal flex gap-6 items-start">
+          <span class="font-serif text-5xl text-rosegold/30 leading-none flex-shrink-0 w-12 text-center">2</span>
+          <div class="pt-2">
+            <p class="text-lg text-softblack/85">Evaluamos tu caso mediante fotografías, radiografías o escáneres.</p>
+          </div>
+        </li>
+        <li class="reveal flex gap-6 items-start">
+          <span class="font-serif text-5xl text-rosegold/30 leading-none flex-shrink-0 w-12 text-center">3</span>
+          <div class="pt-2">
+            <p class="text-lg text-softblack/85">Diseñamos un plan de tratamiento personalizado.</p>
+          </div>
+        </li>
+        <li class="reveal flex gap-6 items-start">
+          <span class="font-serif text-5xl text-rosegold/30 leading-none flex-shrink-0 w-12 text-center">4</span>
+          <div class="pt-2">
+            <p class="text-lg text-softblack/85">Te informamos el tiempo estimado de permanencia en Bogotá, el número de citas y el presupuesto.</p>
+          </div>
+        </li>
+        <li class="reveal flex gap-6 items-start">
+          <span class="font-serif text-5xl text-rosegold/30 leading-none flex-shrink-0 w-12 text-center">5</span>
+          <div class="pt-2">
+            <p class="text-lg text-softblack/85">Con esta información podrás organizar tu viaje con tranquilidad.</p>
+          </div>
+        </li>
+      </ol>
+      <div class="mt-12 text-center reveal">
+        <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary inline-flex justify-center">
+          Agenda tu consulta virtual
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DURANTE TU ESTANCIA ===================== -->
+  <section class="py-20 lg:py-28">
+    <div class="max-w-4xl mx-auto px-6 lg:px-10">
+      <div class="text-center mb-12 reveal">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-3">Más allá del consultorio</p>
+        <h2 class="font-serif text-4xl md:text-5xl mb-5">Durante tu estancia en Bogotá</h2>
+        <p class="text-lg text-softblack/70 max-w-2xl mx-auto">
+          Queremos que tu experiencia vaya más allá de la consulta.
+        </p>
+      </div>
+      <div class="bg-porcelain/60 rounded-3xl p-8 lg:p-12 reveal">
+        <p class="text-softblack/80 leading-relaxed mb-8">
+          Si entre tus citas dispones de tiempo libre, con gusto te compartiremos recomendaciones de lugares para conocer cerca de nuestro consultorio y otros sitios emblemáticos de la ciudad, para que disfrutes de la cultura y la gastronomía de Bogotá mientras realizas tu tratamiento.
+        </p>
+        <p class="font-medium text-charcoal mb-5">Podemos sugerirte:</p>
+        <ul class="grid sm:grid-cols-2 gap-3">
+          <li class="flex items-center gap-3 text-softblack/80">
+            <span class="text-rosegold text-lg flex-shrink-0">✦</span>
+            Restaurantes recomendados
+          </li>
+          <li class="flex items-center gap-3 text-softblack/80">
+            <span class="text-rosegold text-lg flex-shrink-0">✦</span>
+            Cafés y zonas para caminar
+          </li>
+          <li class="flex items-center gap-3 text-softblack/80">
+            <span class="text-rosegold text-lg flex-shrink-0">✦</span>
+            Museos y actividades culturales
+          </li>
+          <li class="flex items-center gap-3 text-softblack/80">
+            <span class="text-rosegold text-lg flex-shrink-0">✦</span>
+            Centros comerciales
+          </li>
+          <li class="flex items-center gap-3 text-softblack/80 sm:col-span-2">
+            <span class="text-rosegold text-lg flex-shrink-0">✦</span>
+            Sitios turísticos de la ciudad
+          </li>
+        </ul>
+        <p class="mt-8 text-sm text-softblack/50 italic">
+          Estas recomendaciones son un servicio de orientación para nuestros pacientes y no hacen parte de un paquete de turismo.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== POR QUÉ ELEGIR ===================== -->
+  <section class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-4xl mx-auto px-6 lg:px-10">
+      <div class="text-center mb-12 reveal">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-3">Razones</p>
+        <h2 class="font-serif text-4xl md:text-5xl">
+          ¿Por qué elegir a la<br /><em>Dra. Angela Barbosa?</em>
+        </h2>
+      </div>
+      <ul class="space-y-5 max-w-xl mx-auto">
+        <li class="reveal flex items-start gap-4">
+          <span class="text-rosegold text-xl flex-shrink-0 mt-0.5">✦</span>
+          <span class="text-softblack/85 text-lg">Más de 10 años de experiencia.</span>
+        </li>
+        <li class="reveal flex items-start gap-4">
+          <span class="text-rosegold text-xl flex-shrink-0 mt-0.5">✦</span>
+          <span class="text-softblack/85 text-lg">Planeación digital del tratamiento.</span>
+        </li>
+        <li class="reveal flex items-start gap-4">
+          <span class="text-rosegold text-xl flex-shrink-0 mt-0.5">✦</span>
+          <span class="text-softblack/85 text-lg">Ubicación estratégica en Bogotá.</span>
+        </li>
+        <li class="reveal flex items-start gap-4">
+          <span class="text-rosegold text-xl flex-shrink-0 mt-0.5">✦</span>
+          <span class="text-softblack/85 text-lg">Atención personalizada antes, durante y después de tu viaje.</span>
+        </li>
+        <li class="reveal flex items-start gap-4">
+          <span class="text-rosegold text-xl flex-shrink-0 mt-0.5">✦</span>
+          <span class="text-softblack/85 text-lg">Cronograma de citas optimizado para aprovechar tu estancia.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== CTA FINAL ===================== -->
+  <section class="py-24 lg:py-32">
+    <div class="max-w-3xl mx-auto px-6 text-center reveal">
+      <h2 class="font-serif text-4xl md:text-5xl mb-5">¿Lista para planificar tu viaje?</h2>
+      <p class="text-lg text-softblack/75 mb-4">
+        Agenda tu consulta virtual y recibe un plan de tratamiento completo antes de viajar a Bogotá.
+      </p>
+      <p class="text-sm text-softblack/50 mb-10" x-text="content.contact.address"></p>
+      <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary inline-flex justify-center">
+        Agenda tu consulta virtual
+      </a>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="py-10 border-t border-charcoal/5 text-center text-sm text-softblack/60">
+    <p>
+      <span class="font-serif text-lg text-charcoal" x-text="content.brand.name"></span>
+      · <span x-text="content.brand.doctor"></span>
+    </p>
+    <p class="mt-2" x-text="content.contact.address"></p>
+    <p class="mt-1"><a href="/" class="hover:text-rosegold underline">Volver al sitio principal</a></p>
+  </footer>
+
+  <!-- Botón flotante de WhatsApp -->
+  <a :href="waLink()" target="_blank" rel="noopener" class="wa-float" aria-label="Chatear por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.49 0 .16 5.33.16 11.9c0 2.1.55 4.14 1.6 5.94L0 24l6.34-1.66a11.84 11.84 0 0 0 5.72 1.46h.01c6.56 0 11.9-5.33 11.9-11.9 0-3.18-1.24-6.17-3.45-8.42ZM12.07 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.77.99 1-3.67-.23-.38a9.85 9.85 0 0 1-1.51-5.25c0-5.46 4.44-9.9 9.91-9.9 2.64 0 5.13 1.03 7 2.9a9.84 9.84 0 0 1 2.9 7c0 5.47-4.44 9.9-9.9 9.9Zm5.43-7.41c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.41-1.48a9.1 9.1 0 0 1-1.68-2.09c-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.22 5.1 4.51.71.31 1.27.5 1.7.64.72.23 1.37.2 1.88.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z" />
+    </svg>
+  </a>
+
+</body>
+</html>

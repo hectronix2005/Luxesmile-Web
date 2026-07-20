@@ -242,6 +242,7 @@ function sitemap() {
   const urls = [
     { loc: `${SITE}/`, priority: '1.0', changefreq: 'monthly' },
     { loc: `${SITE}/diseno-de-sonrisa/`, priority: '0.9', changefreq: 'monthly' },
+    { loc: `${SITE}/pacientes-internacionales/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/en/smile-design/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/blog/`, priority: '0.7', changefreq: 'weekly' },
     ...articles.map((a) => ({

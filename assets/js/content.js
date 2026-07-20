@@ -136,6 +136,7 @@ const DEFAULT_CONTENT = {
     { label: 'Servicios', href: '#servicios' },
     { label: 'Galería', href: '#galeria' },
     { label: 'Testimonios', href: '#testimonios' },
+    { label: 'Internacionales', href: '/pacientes-internacionales/' },
     { label: 'Contacto', href: '#contacto' },
   ],
   hero: {
