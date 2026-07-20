@@ -176,7 +176,7 @@ ${topbar()}
       <div class="article-body">${a.content || ''}</div>
       <div class="blog-cta">
         <p class="font-serif">¿Lista para tu nueva sonrisa?</p>
-        <p>Agenda una valoración con la ${escText(brand.doctor || 'Dra. Angela Barbosa')} en nuestro consultorio de Chapinero, Bogotá.</p>
+        <p>Agenda una valoración con la ${escText(brand.doctor || 'Dra. Angela Barbosa')} en nuestro consultorio de Chico, Bogotá.</p>
         <div class="blog-cta-actions">
           <a href="${escAttr(waLink)}" target="_blank" rel="noopener" class="btn-primary">Agenda por WhatsApp</a>
           <a href="/#contacto" class="btn-ghost">Ver contacto</a>
