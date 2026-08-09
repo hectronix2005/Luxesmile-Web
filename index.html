@@ -65,7 +65,12 @@
         "closes": "13:00"
       }
     ],
-    "sameAs": ["https://www.instagram.com/luxesmilee_"]
+    "sameAs": ["https://www.instagram.com/luxesmilee_"],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "reviewCount": "6"
+    }
   }
   </script>
 
@@ -173,7 +178,7 @@
         <button @click="mobileOpen = false; showDiagnosticReminder('virtual')" class="btn-ghost justify-center">
           Agenda Virtual
         </button>
-        <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost justify-center">
+        <a :href="waLink('hero')" target="_blank" rel="noopener" class="btn-ghost justify-center">
           Contáctanos
         </a>
       </div>
@@ -213,7 +218,7 @@
             </svg>
             Agenda Virtual
           </button>
-          <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost">
+          <a :href="waLink('hero')" target="_blank" rel="noopener" class="btn-ghost">
             <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
               <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.49 0 .16 5.33.16 11.9c0 2.1.55 4.14 1.6 5.94L0 24l6.34-1.66a11.84 11.84 0 0 0 5.72 1.46c6.56 0 11.9-5.33 11.9-11.9 0-3.18-1.24-6.17-3.45-8.42Z" />
             </svg>
@@ -225,7 +230,10 @@
 
         <div class="mt-10 flex items-center gap-6 text-sm text-softblack/70">
           <span class="gold-divider"></span>
-          <span class="font-serif italic text-lg" x-text="content.brand.doctor"><!--PR:doctor-->Dra. Angela Barbosa Gómez<!--/PR:doctor--></span>
+          <div>
+            <span class="font-serif italic text-lg" x-text="content.brand.doctor"><!--PR:doctor-->Dra. Angela Barbosa Gómez<!--/PR:doctor--></span>
+            <p class="text-xs text-softblack/55 mt-1 tracking-wide" x-text="content.about.subtitle">Prostodoncista · Especialista en Rehabilitación Oral y Estética · +10 años</p>
+          </div>
         </div>
       </div>
 
@@ -285,7 +293,7 @@
       <div class="lg:col-span-7 order-1 lg:order-2 reveal">
         <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Sobre mí</p>
         <h2 class="font-serif text-5xl md:text-6xl leading-[1] mb-3" x-text="content.about.title"><!--PR:aboutTitle-->Dra. Angela Barbosa Gómez<!--/PR:aboutTitle--></h2>
-        <p class="font-serif italic text-xl text-softblack/70 mb-8" x-text="content.about.subtitle"><!--PR:aboutSubtitle-->Directora clínica · Luxe-Smile <!--/PR:aboutSubtitle--></p>
+        <p class="font-serif italic text-xl text-softblack/70 mb-8" x-text="content.about.subtitle"><!--PR:aboutSubtitle-->Prostodoncista · Especialista en Rehabilitación Oral y Estética · +10 años<!--/PR:aboutSubtitle--></p>
         <p class="text-softblack/80 leading-relaxed text-lg" x-text="content.about.text"><!--PR:aboutText-->Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.<!--/PR:aboutText--></p>
 
         <ul class="mt-8 space-y-3">
@@ -332,13 +340,10 @@
         <a :href="bookingLink()" target="_blank" rel="noopener" class="btn-ghost">
           Agenda Virtual
         </a>
-        <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost">
+        <a :href="waLink('hero')" target="_blank" rel="noopener" class="btn-ghost">
           Contáctanos
         </a>
       </div>
-      <p class="text-center mt-6 text-xs text-softblack/50 reveal tracking-wide">
-        Planes de pago flexibles · Financiación disponible para tu tratamiento
-      </p>
     </div>
   </section>
 
@@ -365,6 +370,11 @@
             <figcaption class="gallery-overlay" x-text="item.caption"></figcaption>
           </figure>
         </template>
+      </div>
+      <div class="text-center mt-12 reveal" x-show="content.gallery && content.gallery.length">
+        <a :href="waLink('casos')" target="_blank" rel="noopener" class="btn-primary">
+          Quiero un resultado como estos
+        </a>
       </div>
     </div>
   </section>
@@ -494,7 +504,7 @@
         <div class="flex flex-wrap gap-3 mb-10">
           <button @click="showDiagnosticReminder('office')" class="btn-primary">Agenda en Consultorio</button>
           <button @click="showDiagnosticReminder('virtual')" class="btn-ghost">Agenda Virtual</button>
-          <a :href="waLink()" target="_blank" rel="noopener" class="btn-ghost">Contáctanos</a>
+          <a :href="waLink('contacto')" target="_blank" rel="noopener" class="btn-ghost">Contáctanos</a>
         </div>
 
         <ul class="space-y-5 text-softblack/85">

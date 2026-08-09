@@ -152,7 +152,7 @@ const DEFAULT_CONTENT = {
   },
   about: {
     title: 'Dra. Angela Barbosa',
-    subtitle: 'Directora clínica · Luxe-Smile',
+    subtitle: 'Prostodoncista · Especialista en Rehabilitación Oral y Estética · +10 años',
     text:
       'Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.',
     credentials: [

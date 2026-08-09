@@ -46,19 +46,24 @@ function registerAndInitialize() {
       document.head.appendChild(s);
     },
 
-    waLink(type) {
+    waLink(context) {
       const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
-      let msg = this.content.contact.whatsappMessage || '';
-
-      // Agregar especificación del tipo de cita si se proporciona
-      if (type === 'virtual') {
-        msg = msg.replace('una cita', 'una cita de forma virtual');
-      } else if (type === 'consultorio') {
-        msg = msg.replace('una cita', 'una cita presencial en el consultorio');
+      const base = this.content.contact.whatsappMessage || 'Hola, quiero información sobre Luxe-Smile.';
+      let msg;
+      if (context === 'hero') {
+        msg = 'Hola, quiero información sobre diseño de sonrisa.';
+      } else if (context === 'casos') {
+        msg = 'Hola, vi los casos en su página y quiero agendar una valoración.';
+      } else if (context === 'contacto') {
+        msg = 'Hola, quiero agendar mi valoración con la Dra. Angela.';
+      } else if (context === 'virtual') {
+        msg = base.replace('una cita', 'una cita de forma virtual');
+      } else if (context === 'consultorio') {
+        msg = base.replace('una cita', 'una cita presencial en el consultorio');
+      } else {
+        msg = base;
       }
-
-      const encoded = encodeURIComponent(msg);
-      return `https://wa.me/${num}?text=${encoded}`;
+      return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
     },
 
     bookingLink() {
