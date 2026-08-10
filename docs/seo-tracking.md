@@ -2,7 +2,7 @@
 
 Registro de posicionamiento orgánico y verificación de mejoras. Objetivo:
 que el blog y las páginas del sitio posicionen para keywords de intención local
-(Bogotá / Chapinero), pasando de "no aparece" a top 10 → top 5.
+(Bogotá / Chico), pasando de "no aparece" a top 10 → top 5.
 
 ## Cómo se mide (fuentes de verdad)
 

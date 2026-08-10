@@ -8,7 +8,7 @@ decisivo que el SEO del sitio. La web y el GBP se potencian entre sí.
 
 Datos del negocio (usarlos SIEMPRE idénticos — "NAP"):
 - **Nombre:** Luxe-Smile
-- **Dirección:** Cl. 90 #14-16, Consultorio 508, Chapinero, Bogotá
+- **Dirección:** Cl. 90 #14-16, Consultorio 508, Chico, Bogotá
 - **Teléfono:** +57 316 390 3511
 - **Sitio web:** https://luxesmilee.com
 
@@ -39,7 +39,7 @@ Las categorías son el factor #1 de relevancia local. Elige las más específica
 - **Sitio web:** `https://luxesmilee.com`.
 - **Descripción del negocio (750 caracteres):** incluye keywords naturales.
   Ejemplo:
-  > "Luxe-Smile es una clínica de odontología estética en Chapinero, Bogotá,
+  > "Luxe-Smile es una clínica de odontología estética en Chico, Bogotá,
   > liderada por la Dra. Angela Barbosa. Especialistas en diseño de sonrisa,
   > carillas de porcelana, blanqueamiento, implantes dentales y rehabilitación
   > oral. Valoración sin costo. Tecnología digital y atención personalizada."
