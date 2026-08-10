@@ -81,6 +81,9 @@ await field(content.about, 'image', 'about');
 for (let i = 0; i < (content.gallery || []).length; i++) {
   await field(content.gallery[i], 'image', `gallery-${i}`);
 }
+for (let i = 0; i < (content.blog?.articles || []).length; i++) {
+  await field(content.blog.articles[i], 'image', `blog-${i}`);
+}
 
 // Limpia .webp huérfanos (ya no referenciados por content.json).
 for (const f of readdirSync(IMG_DIR)) {
