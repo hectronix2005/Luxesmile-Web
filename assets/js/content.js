@@ -422,22 +422,15 @@ async function waitForPublished(expectedPublishedAt, { timeoutMs = 180000, inter
 }
 
 /* --------------------- Contraseña admin --------------------- */
+// Vive SOLO en localStorage, por navegador. Antes se leía primero de
+// assets/data/github-config.json, que GitHub Pages sirve en abierto (HTTP 200):
+// la contraseña quedaba publicada. Devuelve null si no hay ninguna definida
+// para que login() nunca pueda hacer match contra cadena vacía.
 async function getAdminPassword() {
-  // Primero intenta cargar desde archivo de configuración
-  try {
-    const res = await fetch('/assets/data/github-config.json');
-    if (res.ok) {
-      const fileConfig = await res.json();
-      if (fileConfig.adminPassword) {
-        return fileConfig.adminPassword;
-      }
-    }
-  } catch (e) {
-    console.debug('github-config.json no disponible para contraseña');
-  }
-
-  // Fallback a localStorage (por navegador)
-  return localStorage.getItem(ADMIN_PW_KEY) || '';
+  return localStorage.getItem(ADMIN_PW_KEY) || null;
+}
+function hasAdminPassword() {
+  return !!localStorage.getItem(ADMIN_PW_KEY);
 }
 function setAdminPassword(pw) {
   localStorage.setItem(ADMIN_PW_KEY, pw);
@@ -481,6 +474,7 @@ window.LuxeContent = {
   setGithubConfig,
   clearGithubConfig,
   getAdminPassword,
+  hasAdminPassword,
   setAdminPassword,
   exportContentJSON,
   importContentJSON,

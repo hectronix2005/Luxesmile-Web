@@ -38,10 +38,10 @@
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260713m" />
-  <script src="../assets/js/content.js?v=20260713m"></script>
-  <script defer src="../assets/js/admin.js?v=20260713m"></script>
+  <script src="../assets/js/content.js?v=20260810a"></script>
+  <script defer src="../assets/js/admin.js?v=20260810a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260713m';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260810a';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -49,13 +49,21 @@
   <!-- ====================== LOGIN ====================== -->
   <div x-show="!authed" class="min-h-screen flex items-center justify-center p-6">
     <form
-      @submit.prevent="login()"
+      @submit.prevent="needsSetup ? setupPassword() : login()"
       class="admin-card w-full max-w-md text-center"
     >
       <p class="font-serif text-4xl mb-2">Luxe-Smile</p>
       <p class="text-xs uppercase tracking-[0.25em] text-softblack/60 mb-8">Panel administrativo</p>
 
-      <label class="admin-label block text-left mb-2">Contraseña</label>
+      <div x-show="needsSetup" class="text-left text-sm bg-porcelain border border-charcoal/10 rounded-lg p-4 mb-6" style="display:none">
+        <p class="font-semibold mb-1">Define la contraseña de este navegador</p>
+        <p class="text-softblack/70">
+          La contraseña ya no viaja en un archivo público: ahora vive solo en este
+          navegador. Tendrás que definirla una vez en cada equipo desde el que entres.
+        </p>
+      </div>
+
+      <label class="admin-label block text-left mb-2" x-text="needsSetup ? 'Nueva contraseña (mín. 8 caracteres)' : 'Contraseña'">Contraseña</label>
       <input
         type="password"
         class="admin-input"
@@ -65,7 +73,7 @@
       />
       <p x-show="loginError" x-text="loginError" class="text-rosegold text-sm mt-3"></p>
 
-      <button type="submit" class="btn-primary w-full justify-center mt-6">Ingresar</button>
+      <button type="submit" class="btn-primary w-full justify-center mt-6" x-text="needsSetup ? 'Definir y entrar' : 'Ingresar'">Ingresar</button>
 
       <p class="mt-6">
         <a href="../index.html" class="text-xs text-softblack/60 hover:text-rosegold">← Volver al sitio</a>

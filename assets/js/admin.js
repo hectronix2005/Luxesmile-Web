@@ -122,8 +122,20 @@ document.addEventListener('alpine:init', () => {
     },
 
     /* ------------------- Auth ------------------- */
+    // true cuando este navegador aún no tiene contraseña: el formulario pasa a
+    // modo «definir» en vez de «ingresar».
+    needsSetup: !window.LuxeContent.hasAdminPassword(),
+
     async login() {
       const correctPassword = await window.LuxeContent.getAdminPassword();
+      // Sin contraseña definida no se autentica: si no, '' === '' dejaría entrar
+      // con el campo vacío.
+      if (!correctPassword) {
+        this.needsSetup = true;
+        this.loginError = 'Este navegador todavía no tiene contraseña. Defínela abajo.';
+        this.passwordInput = '';
+        return;
+      }
       if (this.passwordInput === correctPassword) {
         this.authed = true;
         this.loginError = '';
@@ -132,6 +144,21 @@ document.addEventListener('alpine:init', () => {
         this.loginError = 'Contraseña incorrecta.';
       }
       this.passwordInput = '';
+    },
+
+    // Primer arranque en un navegador nuevo.
+    setupPassword() {
+      const pw = (this.passwordInput || '').trim();
+      if (pw.length < 8) {
+        this.loginError = 'Usa al menos 8 caracteres.';
+        return;
+      }
+      window.LuxeContent.setAdminPassword(pw);
+      this.needsSetup = false;
+      this.authed = true;
+      this.loginError = '';
+      this.passwordInput = '';
+      sessionStorage.setItem('luxesmile_admin_ok', '1');
     },
     logout() {
       sessionStorage.removeItem('luxesmile_admin_ok');
