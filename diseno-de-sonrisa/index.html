@@ -73,6 +73,13 @@
   <link rel="stylesheet" href="../assets/css/tailwind.css?v=20260704a" />
 
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260518e" />
+
+  <!-- styles.css fija scroll-padding-top para el header del home (252px desktop
+       / 64px móvil). El header de esta landing mide 80px en todos los anchos,
+       así que se sobrescribe aquí para que los anclas de los sitelinks
+       (#casos #doctora #resenas #contacto) no dejen un hueco enorme.
+       Va después del <link> para ganar por orden de fuente. -->
+  <style>html{scroll-padding-top:6rem}</style>
   <script src="../assets/js/content.js?v=20260518e"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -218,7 +225,7 @@
   </section>
 
   <!-- ===================== GALERÍA DE RESULTADOS ===================== -->
-  <section id="casos" class="py-20 lg:py-28" style="scroll-margin-top:6rem" x-show="content.gallery && content.gallery.length">
+  <section id="casos" class="py-20 lg:py-28" x-show="content.gallery && content.gallery.length">
     <div class="max-w-6xl mx-auto px-6 lg:px-10">
       <div class="text-center mb-12 reveal">
         <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-3">Resultados reales</p>
@@ -245,7 +252,7 @@
   </section>
 
   <!-- ===================== LA DOCTORA ===================== -->
-  <section id="doctora" class="py-20 lg:py-28" style="scroll-margin-top:6rem">
+  <section id="doctora" class="py-20 lg:py-28">
     <div class="max-w-6xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-14 items-center">
       <div class="lg:col-span-5 reveal">
         <div class="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
@@ -285,7 +292,7 @@
 
   <!-- ===================== TESTIMONIOS ===================== -->
   <section id="resenas" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5"
-           style="scroll-margin-top:6rem"
+          
            x-show="content.testimonials && content.testimonials.length">
     <div class="max-w-6xl mx-auto px-6 lg:px-10">
       <div class="text-center mb-12 reveal">
@@ -312,7 +319,7 @@
   </section>
 
   <!-- ===================== CTA FINAL ===================== -->
-  <section id="contacto" class="py-24 lg:py-32" style="scroll-margin-top:6rem">
+  <section id="contacto" class="py-24 lg:py-32">
     <div class="max-w-3xl mx-auto px-6 text-center reveal">
       <h2 class="font-serif text-4xl md:text-5xl mb-5">¿Lista para transformar tu sonrisa?</h2>
       <p class="text-lg text-softblack/75 mb-4">
