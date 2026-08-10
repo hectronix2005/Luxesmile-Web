@@ -45,12 +45,18 @@
       "name": "Luxe-Smile — Dra. Angela Barbosa",
       "url": "https://luxesmilee.com/",
       "telephone": "+573163903511",
+      "priceRange": "$$$",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Cl. 90 #14-16, Consultorio 508",
         "addressLocality": "Chapinero",
         "addressRegion": "Bogotá",
         "addressCountry": "CO"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "8"
       }
     }
   }
@@ -78,6 +84,7 @@
         leadSource: '',
 
         async init() {
+          document.querySelectorAll('[data-prerendered]').forEach(el => el.remove());
           this.content = await window.LuxeContent.loadContent();
           window.LuxeContent.applyTheme(this.content.theme);
           this.detectSource();
@@ -172,9 +179,14 @@
           blanqueamiento e implantes, con un trato cálido y personalizado.
         </p>
 
-        <div class="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-gold/15 border border-gold/30">
-          <span class="text-gold text-lg">✦</span>
-          <span class="text-sm font-medium text-softblack">Primera valoración <strong>sin costo</strong></span>
+        <div class="flex flex-wrap items-center gap-3 mb-8">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 border border-gold/30">
+            <span class="text-gold text-lg">✦</span>
+            <span class="text-sm font-medium text-softblack">Primera valoración <strong>sin costo</strong></span>
+          </div>
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rosegold/10 border border-rosegold/25">
+            <span class="text-xs font-semibold tracking-wide text-rosegold uppercase">Carillas desde $6.000.000</span>
+          </div>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-4">
@@ -213,6 +225,13 @@
         <h2 class="font-serif text-4xl md:text-5xl">Sonrisas que hablan por sí solas</h2>
       </div>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Prerendered para crawlers: Alpine lo elimina en init() antes de renderizar dinámico -->
+        <figure data-prerendered class="rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-0-f924e7c9b7a6.webp" alt="Antes y después diseño de sonrisa — Luxe-Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure data-prerendered class="rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-1-6db91a46afcd.webp" alt="Resultado carillas de porcelana — Luxe-Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure data-prerendered class="rounded-2xl overflow-hidden shadow-lg bg-porcelana aspect-square"><img src="/assets/img/content/gallery-2-514b7badc08a.webp" alt="Caso real diseño de sonrisa Bogotá — Luxe-Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure data-prerendered class="rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-3-29840d47e206.webp" alt="Transformación dental antes y después — Luxe-Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure data-prerendered class="rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-4-2723b02af56c.webp" alt="Diseño de sonrisa natural Chapinero — Luxe-Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure data-prerendered class="rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-5-5034621accf8.webp" alt="Carillas cerámicas resultado real — Luxe-Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
         <template x-for="(g, i) in content.gallery" :key="i">
           <figure class="reveal rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square">
             <img :src="g.image" :alt="g.caption || 'Resultado de diseño de sonrisa — Luxe-Smile'"
@@ -232,6 +251,10 @@
         <h2 class="font-serif text-4xl md:text-5xl">Lo que dicen nuestros pacientes</h2>
       </div>
       <div class="grid md:grid-cols-3 gap-6">
+        <!-- Prerendered para crawlers -->
+        <blockquote data-prerendered class="bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Excelente experiencia. La doctora es muy profesional, amable y perfeccionista en cada detalle. Desde la primera cita transmite mucha confianza y el resultado del tratamiento superó mis expectativas."</p><footer class="text-sm"><span class="font-semibold">SINLIMITES COM</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
+        <blockquote data-prerendered class="bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Excelente servicio, llevo 1 año y no volví a sufrir con las carillas que tenía porque ahora uso las carillas en cerámica que la doctora me recomendó. La mejor decisión."</p><footer class="text-sm"><span class="font-semibold">Hector Neira</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
+        <blockquote data-prerendered class="bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Gracias a la Doctora Angela, hoy en día puedo comer y hablar tranquilamente, los implantes dentales fijados a mi prótesis cambiaron mi calidad de vida."</p><footer class="text-sm"><span class="font-semibold">Personal Financial Dreams</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
         <template x-for="(t, i) in content.testimonials" :key="i">
           <blockquote class="reveal bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5">
             <div class="text-gold mb-3 tracking-widest" x-text="stars(t.rating || 5)"></div>
