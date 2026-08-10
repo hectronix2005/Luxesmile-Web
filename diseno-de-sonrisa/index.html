@@ -126,6 +126,15 @@
           return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
         },
 
+        // Agenda directa. Si no hay calendario configurado, cae a WhatsApp con
+        // el mensaje del tipo de cita, igual que en el home.
+        bookingOfficeLink() {
+          return this.content.contact.calendarOffice || this.waLink('consultorio');
+        },
+        bookingLink() {
+          return this.content.contact.calendar || this.waLink('virtual');
+        },
+
         stars(n) {
           return '★'.repeat(n) + '☆'.repeat(Math.max(0, 5 - n));
         },
@@ -327,9 +336,27 @@
         Te respondemos por WhatsApp.
       </p>
       <p class="text-sm text-softblack/60 mb-9" x-text="content.contact.address"></p>
+
+      <!-- WhatsApp sigue siendo la acción principal (es la que más convierte);
+           la agenda directa va como alternativa para quien prefiere reservar
+           sin escribir. data-cta="agendar" es lo que hace que tracking.js
+           dispare schedule_click: no basta con la URL, porque el calendario
+           virtual es de Calendly y esa cadena no contiene «calendar». -->
       <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary justify-center">
         Escríbenos por WhatsApp
       </a>
+
+      <p class="text-sm text-softblack/60 mt-8 mb-4">O reserva tu hora directamente:</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a :href="bookingOfficeLink()" data-cta="agendar" target="_blank" rel="noopener"
+           class="btn-ghost justify-center">
+          Agenda en consultorio
+        </a>
+        <a :href="bookingLink()" data-cta="agendar" target="_blank" rel="noopener"
+           class="btn-ghost justify-center">
+          Agenda virtual
+        </a>
+      </div>
     </div>
   </section>
 

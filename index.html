@@ -141,14 +141,14 @@
 
     <!-- Line 3: Agenda buttons -->
     <div class="hidden lg:flex w-full items-center justify-center gap-6 h-14 border-t border-charcoal/5 bg-white">
-      <button @click="showDiagnosticReminder('virtual')" class="btn-ghost inline-flex items-center gap-2 text-sm whitespace-nowrap">
+      <button data-cta="agendar" @click="showDiagnosticReminder('virtual')" class="btn-ghost inline-flex items-center gap-2 text-sm whitespace-nowrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 flex-shrink-0">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
         </svg>
         Agenda Virtual
       </button>
-      <button @click="showDiagnosticReminder('office')" class="btn-primary inline-flex items-center gap-2 text-sm whitespace-nowrap">
+      <button data-cta="agendar" @click="showDiagnosticReminder('office')" class="btn-primary inline-flex items-center gap-2 text-sm whitespace-nowrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 flex-shrink-0">
           <path d="M12 21s-7-7.5-7-12a7 7 0 1 1 14 0c0 4.5-7 12-7 12Z"></path>
           <circle cx="12" cy="9" r="2.5"></circle>
@@ -173,10 +173,10 @@
             @click="mobileOpen = false"
           ></a>
         </template>
-        <button @click="mobileOpen = false; showDiagnosticReminder('office')" class="btn-primary justify-center">
+        <button data-cta="agendar" @click="mobileOpen = false; showDiagnosticReminder('office')" class="btn-primary justify-center">
           Agenda en Consultorio
         </button>
-        <button @click="mobileOpen = false; showDiagnosticReminder('virtual')" class="btn-ghost justify-center">
+        <button data-cta="agendar" @click="mobileOpen = false; showDiagnosticReminder('virtual')" class="btn-ghost justify-center">
           Agenda Virtual
         </button>
         <a :href="waLink('hero')" target="_blank" rel="noopener" class="btn-ghost justify-center">
@@ -339,10 +339,13 @@
       </div>
 
       <div class="text-center mt-14 reveal flex flex-wrap gap-3 justify-center">
-        <a :href="bookingOfficeLink()" target="_blank" rel="noopener" class="btn-primary">
+        <!-- data-cta="agendar" es imprescindible en el virtual: apunta a
+             Calendly, y el selector a[href*="calendar"] de tracking.js no
+             casa con «calendly», así que sin esto no se cuenta la conversión. -->
+        <a :href="bookingOfficeLink()" data-cta="agendar" target="_blank" rel="noopener" class="btn-primary">
           Agenda en Consultorio
         </a>
-        <a :href="bookingLink()" target="_blank" rel="noopener" class="btn-ghost">
+        <a :href="bookingLink()" data-cta="agendar" target="_blank" rel="noopener" class="btn-ghost">
           Agenda Virtual
         </a>
         <a :href="waLink('hero')" target="_blank" rel="noopener" class="btn-ghost">
@@ -512,8 +515,8 @@
         </p>
 
         <div class="flex flex-wrap gap-3 mb-10">
-          <button @click="showDiagnosticReminder('office')" class="btn-primary">Agenda en Consultorio</button>
-          <button @click="showDiagnosticReminder('virtual')" class="btn-ghost">Agenda Virtual</button>
+          <button data-cta="agendar" @click="showDiagnosticReminder('office')" class="btn-primary">Agenda en Consultorio</button>
+          <button data-cta="agendar" @click="showDiagnosticReminder('virtual')" class="btn-ghost">Agenda Virtual</button>
           <a :href="waLink('contacto')" target="_blank" rel="noopener" class="btn-ghost">Contáctanos</a>
         </div>
 
