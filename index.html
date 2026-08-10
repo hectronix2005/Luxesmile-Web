@@ -398,7 +398,7 @@
       </div>
 
       <!-- Testimonios manuales -->
-      <template x-if="content.testimonials?.length">
+      <template x-if="content.testimonials?.length && !content.reviews?.elfsightWidgetId">
         <div class="grid md:grid-cols-3 gap-8 mb-12">
           <template x-for="t in content.testimonials" :key="t.name">
             <div class="testimonial-card reveal">
