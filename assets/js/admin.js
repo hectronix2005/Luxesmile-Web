@@ -52,6 +52,7 @@ document.addEventListener('alpine:init', () => {
       { id: 'contact', label: 'Contacto' },
       { id: 'footer', label: 'Footer' },
       { id: 'blog', label: 'Blog' },
+      { id: 'metrics', label: 'Métricas' },
       { id: 'publish', label: 'Publicación' },
       { id: 'backup', label: 'Backup' },
       { id: 'security', label: 'Seguridad' },
@@ -882,6 +883,234 @@ document.addEventListener('alpine:init', () => {
         console.error('Error al cambiar contraseña:', e);
         this.flash('Error al actualizar contraseña: ' + (e.message || 'desconocido'), 'err');
         return false;
+      }
+    },
+
+    /* ==================== MÉTRICAS ====================
+       Dos bloques independientes:
+         1. Pixel  — diagnóstico local, sin credenciales. Descarga las páginas
+                     públicas (mismo origen) y verifica IDs, cobertura de
+                     tracking.js y presencia de los CTA que disparan conversión.
+         2. GA4    — datos reales vía Data API, autenticando con la cuenta de
+                     Google del usuario (OAuth en el navegador). El token vive
+                     en memoria y expira solo; nunca se persiste.
+       ================================================== */
+
+    metrics: {
+      pixel: { running: false, ran: false, ids: null, pages: [], error: '' },
+      ga: {
+        clientId: localStorage.getItem('luxesmile_ga_client_id') || '',
+        propertyId: localStorage.getItem('luxesmile_ga_property_id') || '',
+        days: 28,
+        token: '',
+        connecting: false,
+        loading: false,
+        error: '',
+        summary: null,
+        sources: [],
+        pages: [],
+        events: [],
+      },
+    },
+
+    /* ---------------- 1. Diagnóstico de pixel ---------------- */
+
+    // Páginas públicas que deben llevar el tracking.
+    get _publicPages() {
+      return [
+        { label: 'Home', url: '../index.html' },
+        { label: 'Landing diseño de sonrisa', url: '../diseno-de-sonrisa/index.html' },
+        { label: 'Pacientes internacionales', url: '../pacientes-internacionales/index.html' },
+        { label: 'Landing EN', url: '../en/smile-design/index.html' },
+        { label: 'Blog', url: '../blog/index.html' },
+      ];
+    },
+
+    async runPixelCheck() {
+      const p = this.metrics.pixel;
+      p.running = true; p.error = ''; p.pages = [];
+      try {
+        // --- IDs configurados, leídos del propio tracking.js ---
+        const src = await fetch('../assets/js/tracking.js?ts=' + Date.now()).then((r) => r.text());
+        const pick = (key) => {
+          const m = new RegExp(key + "\\s*:\\s*'([^']*)'").exec(src);
+          return m ? m[1] : '';
+        };
+        const isPlaceholder = (v) => !v || /XXX|TU_PIXEL_ID/i.test(v);
+        p.ids = {
+          ga4: pick('ga4'),
+          googleAds: pick('googleAds'),
+          metaPixel: pick('metaPixel'),
+          whatsapp: pick('whatsapp'),
+          agenda: pick('agenda'),
+          llamada: pick('llamada'),
+        };
+        p.ids.problems = Object.entries(p.ids)
+          .filter(([k, v]) => k !== 'problems' && isPlaceholder(v))
+          .map(([k]) => k);
+
+        // --- Cobertura por página ---
+        for (const page of this._publicPages) {
+          const row = { label: page.label, ok: false, tracking: false, wa: 0, agenda: 0, error: '' };
+          try {
+            const html = await fetch(page.url + '?ts=' + Date.now()).then((r) => {
+              if (!r.ok) throw new Error('HTTP ' + r.status);
+              return r.text();
+            });
+            row.tracking = /tracking\.js/.test(html);
+            // El sitio monta los CTA con Alpine (:href="waLink()"), así que la
+            // URL resuelta no está en el HTML estático: se acepta cualquiera
+            // de las dos formas.
+            row.wa = (html.match(/wa\.me|api\.whatsapp\.com|waLink\(/g) || []).length;
+            row.agenda = (html.match(/calendar\.app\.google|data-cta="agendar"|bookingLink\(|bookingOfficeLink\(/g) || []).length;
+            row.ok = row.tracking && row.wa > 0;
+          } catch (e) {
+            row.error = e.message || 'no se pudo leer';
+          }
+          p.pages.push(row);
+        }
+        p.ran = true;
+      } catch (e) {
+        p.error = e.message || 'Error inesperado';
+      } finally {
+        p.running = false;
+      }
+    },
+
+    /* ---------------- 2. Tráfico (GA4 Data API) ---------------- */
+
+    saveGaConfig() {
+      const g = this.metrics.ga;
+      localStorage.setItem('luxesmile_ga_client_id', g.clientId.trim());
+      localStorage.setItem('luxesmile_ga_property_id', g.propertyId.trim().replace(/\D/g, ''));
+      this.flash('Configuración de GA4 guardada en este navegador.', 'ok');
+    },
+
+    // Carga el SDK de Google Identity una sola vez, y solo si se usa.
+    _loadGis() {
+      if (window.google?.accounts?.oauth2) return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://accounts.google.com/gsi/client';
+        s.async = true;
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('No se pudo cargar el SDK de Google.'));
+        document.head.appendChild(s);
+      });
+    },
+
+    async gaConnect() {
+      const g = this.metrics.ga;
+      g.error = '';
+      if (!g.clientId.trim()) { g.error = 'Falta el Client ID de OAuth.'; return; }
+      if (!g.propertyId.trim()) { g.error = 'Falta el ID de propiedad de GA4.'; return; }
+      g.connecting = true;
+      try {
+        await this._loadGis();
+        const client = window.google.accounts.oauth2.initTokenClient({
+          client_id: g.clientId.trim(),
+          scope: 'https://www.googleapis.com/auth/analytics.readonly',
+          callback: (resp) => {
+            g.connecting = false;
+            if (resp.error) { g.error = 'Google rechazó el acceso: ' + resp.error; return; }
+            g.token = resp.access_token;
+            this.gaLoadReports();
+          },
+        });
+        client.requestAccessToken();
+      } catch (e) {
+        g.connecting = false;
+        g.error = e.message || 'No se pudo iniciar sesión.';
+      }
+    },
+
+    gaDisconnect() {
+      const g = this.metrics.ga;
+      g.token = ''; g.summary = null; g.sources = []; g.pages = []; g.events = []; g.error = '';
+    },
+
+    async _gaReport(body) {
+      const g = this.metrics.ga;
+      const res = await fetch(
+        `https://analyticsdata.googleapis.com/v1beta/properties/${g.propertyId.trim().replace(/\D/g, '')}:runReport`,
+        {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + g.token, 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        },
+      );
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json?.error?.message || `HTTP ${res.status}`);
+      }
+      return json;
+    },
+
+    async gaLoadReports() {
+      const g = this.metrics.ga;
+      g.loading = true; g.error = '';
+      const range = [{ startDate: `${g.days}daysAgo`, endDate: 'today' }];
+      try {
+        // Resumen
+        const sum = await this._gaReport({
+          dateRanges: range,
+          metrics: [
+            { name: 'activeUsers' }, { name: 'sessions' },
+            { name: 'screenPageViews' }, { name: 'bounceRate' },
+          ],
+        });
+        const v = sum.rows?.[0]?.metricValues || [];
+        g.summary = {
+          users: Number(v[0]?.value || 0),
+          sessions: Number(v[1]?.value || 0),
+          views: Number(v[2]?.value || 0),
+          bounce: Math.round(Number(v[3]?.value || 0) * 100),
+        };
+
+        // Fuentes de tráfico
+        const src = await this._gaReport({
+          dateRanges: range,
+          dimensions: [{ name: 'sessionSourceMedium' }],
+          metrics: [{ name: 'sessions' }],
+          orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+          limit: 8,
+        });
+        g.sources = (src.rows || []).map((r) => ({
+          label: r.dimensionValues[0].value,
+          value: Number(r.metricValues[0].value),
+        }));
+
+        // Páginas más vistas
+        const pages = await this._gaReport({
+          dateRanges: range,
+          dimensions: [{ name: 'pagePath' }],
+          metrics: [{ name: 'screenPageViews' }],
+          orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+          limit: 8,
+        });
+        g.pages = (pages.rows || []).map((r) => ({
+          label: r.dimensionValues[0].value,
+          value: Number(r.metricValues[0].value),
+        }));
+
+        // Eventos — aquí salen whatsapp_click / schedule_click / call_click
+        const ev = await this._gaReport({
+          dateRanges: range,
+          dimensions: [{ name: 'eventName' }],
+          metrics: [{ name: 'eventCount' }],
+          orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
+          limit: 15,
+        });
+        const tracked = ['whatsapp_click', 'schedule_click', 'call_click'];
+        g.events = (ev.rows || []).map((r) => ({
+          label: r.dimensionValues[0].value,
+          value: Number(r.metricValues[0].value),
+          isConversion: tracked.includes(r.dimensionValues[0].value),
+        }));
+      } catch (e) {
+        g.error = e.message || 'No se pudieron cargar los informes.';
+      } finally {
+        g.loading = false;
       }
     },
 

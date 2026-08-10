@@ -814,6 +814,209 @@
       </div>
     </div>
 
+    <!-- ============ MÉTRICAS ============ -->
+    <div x-show="tab === 'metrics'" class="space-y-6" style="display:none">
+
+      <!-- ---------- Diagnóstico de pixel ---------- -->
+      <div class="admin-card space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="font-serif text-2xl">Pixel y etiquetas</h2>
+            <p class="text-sm text-softblack/70 mt-1">
+              Revisa los IDs de seguimiento y verifica que cada página pública los cargue.
+              No usa credenciales ni envía datos a Google.
+            </p>
+          </div>
+          <button @click="runPixelCheck()" :disabled="metrics.pixel.running" class="btn-primary text-xs whitespace-nowrap"
+                  :class="{ 'opacity-50 cursor-not-allowed': metrics.pixel.running }">
+            <span x-show="!metrics.pixel.running">Revisar ahora</span>
+            <span x-show="metrics.pixel.running" style="display:none">Revisando…</span>
+          </button>
+        </div>
+
+        <p x-show="metrics.pixel.error" x-text="metrics.pixel.error" class="text-sm text-rosegold" style="display:none"></p>
+
+        <div x-show="metrics.pixel.ran" style="display:none" class="space-y-6">
+          <!-- IDs -->
+          <div>
+            <p class="admin-label mb-3">IDs configurados</p>
+            <div class="grid sm:grid-cols-2 gap-2 text-sm">
+              <template x-for="row in [
+                { k: 'ga4', label: 'Google Analytics 4' },
+                { k: 'googleAds', label: 'Google Ads' },
+                { k: 'metaPixel', label: 'Meta Pixel' },
+                { k: 'whatsapp', label: 'Etiqueta · WhatsApp' },
+                { k: 'agenda', label: 'Etiqueta · Agendar' },
+                { k: 'llamada', label: 'Etiqueta · Llamada' }
+              ]" :key="row.k">
+                <div class="flex items-center justify-between gap-3 bg-porcelain rounded-lg px-3 py-2">
+                  <span class="text-softblack/70" x-text="row.label"></span>
+                  <span class="font-mono text-xs"
+                        :class="metrics.pixel.ids.problems.includes(row.k) ? 'text-rosegold' : 'text-charcoal'"
+                        x-text="metrics.pixel.ids[row.k] || 'sin configurar'"></span>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- Cobertura -->
+          <div>
+            <p class="admin-label mb-3">Cobertura por página</p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-left text-softblack/60 border-b border-charcoal/10">
+                    <th class="py-2 pr-3 font-medium">Página</th>
+                    <th class="py-2 px-3 font-medium">tracking.js</th>
+                    <th class="py-2 px-3 font-medium">CTA WhatsApp</th>
+                    <th class="py-2 pl-3 font-medium">CTA Agenda</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="row in metrics.pixel.pages" :key="row.label">
+                    <tr class="border-b border-charcoal/5">
+                      <td class="py-2 pr-3" x-text="row.label"></td>
+                      <td class="py-2 px-3">
+                        <span x-show="row.tracking" class="text-emerald-700">✓ sí</span>
+                        <span x-show="!row.tracking" class="text-rosegold" style="display:none">✕ falta</span>
+                      </td>
+                      <td class="py-2 px-3" :class="row.wa > 0 ? '' : 'text-rosegold'" x-text="row.wa > 0 ? row.wa : 'ninguno'"></td>
+                      <td class="py-2 pl-3" :class="row.agenda > 0 ? '' : 'text-softblack/40'" x-text="row.agenda > 0 ? row.agenda : '—'"></td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-xs text-softblack/60 mt-3 leading-relaxed">
+              El sitio arma los botones con Alpine, así que se cuentan tanto los enlaces
+              ya resueltos como las llamadas a <code>waLink()</code> y
+              <code>bookingLink()</code>. Un guion en Agenda significa que esa página
+              solo ofrece WhatsApp: no es un error, pero desde ahí nunca se dispara la
+              conversión de agendar.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- Tráfico (GA4) ---------- -->
+      <div class="admin-card space-y-5">
+        <div>
+          <h2 class="font-serif text-2xl">Tráfico del sitio</h2>
+          <p class="text-sm text-softblack/70 mt-1">
+            Datos en vivo desde Google Analytics. Te autenticas con tu propia cuenta de
+            Google: el permiso es de solo lectura y el acceso caduca al cerrar la sesión.
+          </p>
+        </div>
+
+        <!-- Configuración -->
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="admin-label block mb-2">OAuth Client ID</label>
+            <input class="admin-input font-mono text-xs" x-model="metrics.ga.clientId"
+                   placeholder="123456789-abc.apps.googleusercontent.com" />
+          </div>
+          <div>
+            <label class="admin-label block mb-2">ID de propiedad GA4 (numérico)</label>
+            <input class="admin-input font-mono text-xs" x-model="metrics.ga.propertyId" placeholder="123456789" />
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button @click="saveGaConfig()" class="btn-ghost text-xs">Guardar configuración</button>
+          <button x-show="!metrics.ga.token" @click="gaConnect()" :disabled="metrics.ga.connecting"
+                  class="btn-primary text-xs" :class="{ 'opacity-50 cursor-not-allowed': metrics.ga.connecting }">
+            <span x-show="!metrics.ga.connecting">Conectar Google Analytics</span>
+            <span x-show="metrics.ga.connecting" style="display:none">Conectando…</span>
+          </button>
+          <template x-if="metrics.ga.token">
+            <div class="flex items-center gap-3">
+              <select class="admin-input w-auto text-xs" x-model.number="metrics.ga.days" @change="gaLoadReports()">
+                <option :value="7">Últimos 7 días</option>
+                <option :value="28">Últimos 28 días</option>
+                <option :value="90">Últimos 90 días</option>
+              </select>
+              <button @click="gaLoadReports()" class="btn-ghost text-xs">Actualizar</button>
+              <button @click="gaDisconnect()" class="text-xs text-softblack/60 hover:text-rosegold">Desconectar</button>
+            </div>
+          </template>
+        </div>
+
+        <p x-show="metrics.ga.error" x-text="metrics.ga.error" class="text-sm text-rosegold" style="display:none"></p>
+        <p x-show="metrics.ga.loading" class="text-sm text-softblack/60" style="display:none">Cargando informes…</p>
+
+        <!-- Resumen -->
+        <template x-if="metrics.ga.summary">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <template x-for="c in [
+              { label: 'Usuarios', v: metrics.ga.summary.users },
+              { label: 'Sesiones', v: metrics.ga.summary.sessions },
+              { label: 'Vistas', v: metrics.ga.summary.views },
+              { label: 'Rebote %', v: metrics.ga.summary.bounce }
+            ]" :key="c.label">
+              <div class="bg-porcelain rounded-lg px-4 py-3">
+                <p class="text-xs uppercase tracking-wide text-softblack/60" x-text="c.label"></p>
+                <p class="font-serif text-3xl mt-1" x-text="c.v.toLocaleString('es-CO')"></p>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <!-- Tablas -->
+        <div class="grid md:grid-cols-2 gap-6" x-show="metrics.ga.sources.length || metrics.ga.pages.length" style="display:none">
+          <div>
+            <p class="admin-label mb-3">De dónde llega la gente</p>
+            <table class="w-full text-sm">
+              <template x-for="r in metrics.ga.sources" :key="r.label">
+                <tr class="border-b border-charcoal/5">
+                  <td class="py-1.5 pr-3 text-softblack/80" x-text="r.label"></td>
+                  <td class="py-1.5 text-right font-mono text-xs" x-text="r.value.toLocaleString('es-CO')"></td>
+                </tr>
+              </template>
+            </table>
+          </div>
+          <div>
+            <p class="admin-label mb-3">Páginas más vistas</p>
+            <table class="w-full text-sm">
+              <template x-for="r in metrics.ga.pages" :key="r.label">
+                <tr class="border-b border-charcoal/5">
+                  <td class="py-1.5 pr-3 text-softblack/80 truncate max-w-[220px]" x-text="r.label"></td>
+                  <td class="py-1.5 text-right font-mono text-xs" x-text="r.value.toLocaleString('es-CO')"></td>
+                </tr>
+              </template>
+            </table>
+          </div>
+        </div>
+
+        <!-- Eventos -->
+        <div x-show="metrics.ga.events.length" style="display:none">
+          <p class="admin-label mb-3">Eventos · las conversiones van resaltadas</p>
+          <table class="w-full text-sm">
+            <template x-for="r in metrics.ga.events" :key="r.label">
+              <tr class="border-b border-charcoal/5">
+                <td class="py-1.5 pr-3" :class="r.isConversion ? 'text-rosegold font-medium' : 'text-softblack/80'" x-text="r.label"></td>
+                <td class="py-1.5 text-right font-mono text-xs" x-text="r.value.toLocaleString('es-CO')"></td>
+              </tr>
+            </template>
+          </table>
+        </div>
+
+        <details class="text-sm text-softblack/70">
+          <summary class="cursor-pointer font-medium">Cómo obtener los dos datos de arriba</summary>
+          <ol class="list-decimal ml-5 mt-3 space-y-2 leading-relaxed">
+            <li><strong>ID de propiedad:</strong> en Google Analytics, Administrar → Configuración de la propiedad. Es el número que aparece arriba a la derecha, no el <code>G-…</code>.</li>
+            <li><strong>Client ID:</strong> en Google Cloud Console → APIs y servicios → Credenciales → Crear credenciales → ID de cliente de OAuth → Aplicación web.</li>
+            <li>En ese cliente, añade <code>https://luxesmilee.com</code> como origen autorizado de JavaScript.</li>
+            <li>En la misma consola, habilita la <strong>Google Analytics Data API</strong>.</li>
+          </ol>
+          <p class="mt-3 leading-relaxed">
+            El Client ID no es un secreto: está pensado para ir en el navegador. Quien lo
+            tenga igual necesita una cuenta de Google con acceso a la propiedad para ver
+            algo, así que estos datos quedan protegidos por Google y no por la contraseña
+            del panel.
+          </p>
+        </details>
+      </div>
+    </div>
+
     <!-- ============ PUBLICACIÓN (GitHub API) ============ -->
     <div x-show="tab === 'publish'" class="admin-card space-y-5">
       <h2 class="font-serif text-2xl">Publicación online (GitHub)</h2>
