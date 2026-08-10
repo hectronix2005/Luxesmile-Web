@@ -94,7 +94,6 @@
   <script src="assets/js/content.js?v=20260707j"></script>
   <script src="assets/js/app.js?v=20260809a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <link rel="preload" as="image" href="/assets/img/content/hero-1b766ff0825b.webp" data-hero-preload>
 </head>
 
 <body x-cloak class="bg-ivory text-charcoal">
@@ -241,12 +240,9 @@
       <div class="lg:col-span-5 relative reveal">
         <div class="relative aspect-[4/5] rounded-sm overflow-hidden shadow-2xl shadow-rosegold/20">
           <img
-            data-hero-img
-            src="/assets/img/content/hero-1b766ff0825b.webp"
             :src="content.hero.image"
             alt="Sonrisa Luxe-Smile"
             class="w-full h-full object-cover"
-            fetchpriority="high"
           />
           <div
             class="absolute inset-0 ring-1 ring-inset ring-white/20 pointer-events-none"

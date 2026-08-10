@@ -79,18 +79,5 @@ if (missing.length) {
   process.exit(1);
 }
 
-/* ---- Hero image: preload link + static src (evita que el LCP espere a Alpine) ---- */
-const heroImg = content.hero?.image;
-if (heroImg) {
-  html = html.replace(
-    /(<link rel="preload" as="image" href=")[^"]*(" data-hero-preload>)/,
-    `$1${heroImg}$2`
-  );
-  html = html.replace(
-    /(<img\b[\s\S]{0,200}?data-hero-img[\s\S]{0,200}?src=")[^"]*(")/,
-    `$1${heroImg}$2`
-  );
-}
-
 writeFileSync(HTML_PATH, html);
-console.log('✓ Pre-render aplicado a index.html (H1, hero, sobre, servicios, hero-preload).');
+console.log('✓ Pre-render aplicado a index.html (H1, hero, sobre, servicios).');
