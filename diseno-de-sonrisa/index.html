@@ -244,6 +244,45 @@
     </div>
   </section>
 
+  <!-- ===================== LA DOCTORA ===================== -->
+  <section id="doctora" class="py-20 lg:py-28" style="scroll-margin-top:6rem">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-14 items-center">
+      <div class="lg:col-span-5 reveal">
+        <div class="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
+          <img :src="content.about.image" :alt="content.about.title"
+               src="/assets/img/content/about-48c2420dd2ec.webp"
+               loading="lazy" decoding="async" class="w-full h-full object-cover" />
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 reveal">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-4">Quién te atiende</p>
+        <h2 class="font-serif text-4xl md:text-5xl mb-3" x-text="content.about.title">Dra. Angela Barbosa Gómez</h2>
+        <p class="font-serif italic text-lg text-softblack/70 mb-7" x-text="content.about.subtitle">Prostodoncista · Especialista en Rehabilitación Oral y Estética · +10 años</p>
+        <p class="text-softblack/80 leading-relaxed text-lg" x-text="content.about.text">Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.</p>
+
+        <ul class="mt-8 space-y-3">
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Odontóloga Especialista en Prostodoncia Colegio Odontológico Colombiano</span></li>
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Entrenamiento avanzado en carillas de porcelana</span></li>
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Miembro activo de la Sociedad Colombiana de Prostodoncia</span></li>
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Docente Universitario Colegio Odontologico Colombiano Unicoc</span></li>
+          <template x-for="cred in content.about.credentials" :key="cred">
+            <li class="flex items-start gap-3">
+              <span class="text-gold mt-1">◆</span>
+              <span class="text-softblack/80" x-text="cred"></span>
+            </li>
+          </template>
+        </ul>
+
+        <div class="mt-9">
+          <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary">
+            Agenda tu valoración con la Dra. Angela
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===================== TESTIMONIOS ===================== -->
   <section id="resenas" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5"
            style="scroll-margin-top:6rem"
