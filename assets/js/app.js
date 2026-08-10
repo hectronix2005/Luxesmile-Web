@@ -3,15 +3,9 @@
    Carga el contenido desde assets/data/content.json (vía LuxeContent).
    ===================================================================== */
 
-// Registrar el componente Alpine en 'alpine:init' (antes de que Alpine recorra el
-// DOM) y marcar <body> con x-data ahí, para que el propio start() de Alpine lo
-// inicialice. Se quita x-cloak en 'alpine:initialized', ya con el DOM hidratado.
-// app.js corre sin defer (antes que Alpine), así que estos listeners quedan
-// registrados a tiempo.
+// app.js corre sin defer (antes que Alpine), así que este listener queda
+// registrado a tiempo.
 document.addEventListener('alpine:init', registerAndInitialize);
-document.addEventListener('alpine:initialized', () => {
-  document.body.removeAttribute('x-cloak');
-});
 
 function registerAndInitialize() {
   Alpine.data('site', () => ({
