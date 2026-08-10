@@ -83,7 +83,7 @@ if (missing.length) {
 const heroImg = content.hero?.image;
 if (heroImg) {
   html = html.replace(
-    /(<link rel="preload" as="image" href=")[^"]*(" fetchpriority="high" data-hero-preload>)/,
+    /(<link rel="preload" as="image" href=")[^"]*(" data-hero-preload>)/,
     `$1${heroImg}$2`
   );
   html = html.replace(
