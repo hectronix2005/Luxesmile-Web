@@ -5,6 +5,9 @@
    (WhatsApp / agenda / llamada) por EVENT DELEGATION en `document`,
    porque el contenido (incl. los botones) lo inyecta Alpine en el cliente.
 
+   DÓNDE MIDE: solo en luxesmilee.com y www.luxesmilee.com (ver HOSTS_MEDIDOS).
+   En cualquier otro host el script sale sin cargar nada.
+
    CÓMO ACTIVAR: reemplaza los placeholders de TRACKING por los IDs reales.
    Mientras un ID conserve 'XXX' o 'TU_PIXEL_ID', ese proveedor NO se carga
    (así no hay requests rotos en producción antes de tener las cuentas).
@@ -17,6 +20,20 @@
    ===================================================================== */
 (function () {
   'use strict';
+
+  /* ---------------- Guarda de dominio ----------------
+     Las etiquetas solo se cargan en el dominio canónico. Cualquier otra copia
+     del sitio —un despliegue huérfano, una preview, un staging o el servidor
+     local— se queda sin medir y no contamina GA4 ni las conversiones de Ads.
+
+     Motivo: luxe-smilee.netlify.app servía una copia vieja del sitio con estos
+     mismos IDs dentro, y Google la detectó como dominio adicional de la
+     etiqueta. La guarda evita que vuelva a pasar con cualquier host futuro. */
+  var HOSTS_MEDIDOS = ['luxesmilee.com', 'www.luxesmilee.com'];
+  if (HOSTS_MEDIDOS.indexOf(location.hostname) === -1) {
+    console.info('[tracking] Host no canónico (' + location.hostname + '): etiquetas desactivadas.');
+    return;
+  }
 
   var TRACKING = {
     ga4: 'G-4CPWLE6HFM',            // GA4
