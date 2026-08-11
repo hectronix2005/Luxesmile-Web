@@ -8,6 +8,9 @@
    DÓNDE MIDE: solo en luxesmilee.com y www.luxesmilee.com (ver HOSTS_MEDIDOS).
    En cualquier otro host el script sale sin cargar nada.
 
+   A QUIÉN NO MIDE: quien haya abierto una vez luxesmilee.com/?notrack=1 en ese
+   navegador (visitas internas). Se revierte con ?notrack=0.
+
    CÓMO ACTIVAR: reemplaza los placeholders de TRACKING por los IDs reales.
    Mientras un ID conserve 'XXX' o 'TU_PIXEL_ID', ese proveedor NO se carga
    (así no hay requests rotos en producción antes de tener las cuentas).
@@ -34,6 +37,30 @@
     console.info('[tracking] Host no canónico (' + location.hostname + '): etiquetas desactivadas.');
     return;
   }
+
+  /* ---------------- Interruptor de visita interna ----------------
+     Quien trabaja en el sitio —la doctora, la agencia, nosotros— no debería
+     contar como visita. Basta abrir una vez, en cada navegador:
+
+       luxesmilee.com/?notrack=1   deja de medir en ese navegador
+       luxesmilee.com/?notrack=0   vuelve a medir
+
+     La marca vive en localStorage: sobrevive a cerrar el navegador, pero es
+     por dispositivo y por navegador (el móvil hay que marcarlo aparte).
+
+     En incógnito o con el almacenamiento bloqueado, localStorage lanza. Ahí
+     se sigue midiendo a propósito: es preferible un dato de más que apagar
+     la medición de un visitante real por un fallo de almacenamiento. */
+  var MARCA_INTERNA = 'lx_no_track';
+  try {
+    var pedido = new URLSearchParams(location.search).get('notrack');
+    if (pedido === '1') localStorage.setItem(MARCA_INTERNA, '1');
+    if (pedido === '0') localStorage.removeItem(MARCA_INTERNA);
+    if (localStorage.getItem(MARCA_INTERNA) === '1') {
+      console.info('[tracking] Visita interna: etiquetas desactivadas. Reactivar con ?notrack=0');
+      return;
+    }
+  } catch (e) { /* sin localStorage: se mide con normalidad */ }
 
   var TRACKING = {
     ga4: 'G-4CPWLE6HFM',            // GA4
