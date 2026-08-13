@@ -11,6 +11,10 @@
    A QUIÉN NO MIDE: quien haya abierto una vez luxesmilee.com/?notrack=1 en ese
    navegador (visitas internas). Se revierte con ?notrack=0.
 
+   ATRIBUCIÓN: captura el gclid del anuncio al aterrizar y lo adjunta al mensaje
+   de WhatsApp, para que el CRM pueda devolverle a Google el paciente real.
+   Ver CLIC_KEY más abajo y la página /wa/.
+
    CÓMO ACTIVAR: reemplaza los placeholders de TRACKING por los IDs reales.
    Mientras un ID conserve 'XXX' o 'TU_PIXEL_ID', ese proveedor NO se carga
    (así no hay requests rotos en producción antes de tener las cuentas).
@@ -61,6 +65,64 @@
       return;
     }
   } catch (e) { /* sin localStorage: se mide con normalidad */ }
+
+  /* ---------------- Atribución del clic de Google Ads ----------------
+     Google marca cada clic de anuncio con `gclid` (o `wbraid`/`gbraid` cuando
+     iOS impide las cookies). Ese identificador es lo ÚNICO que permite decirle
+     después a Google «este paciente vino de este clic».
+
+     El problema: la conversación ocurre en WhatsApp, fuera del sitio. Si el
+     identificador no viaja hasta allí, Google nunca sabe qué campaña trajo al
+     paciente y acaba optimizando hacia clics en botón en vez de hacia gente que
+     agenda. Es exactamente lo que pasa hoy.
+
+     Solución: capturarlo al aterrizar, guardarlo 90 días (la ventana de
+     conversión de Ads) y adjuntarlo al mensaje prellenado de WhatsApp. El CRM
+     lo lee de ahí y se lo devuelve a Google cuando el paciente agenda.
+
+     No hace falta página intermedia: los anuncios aterrizan en el sitio, no en
+     wa.me. Para el caso de un anuncio que sí apunte directo a WhatsApp existe
+     /wa/, que hace lo mismo y redirige. */
+  var CLIC_KEY = 'lx_clic';
+  var CLIC_DIAS = 90;
+  // Sin espacio tras los dos puntos a propósito: al serializar la URL el espacio
+  // se convierte en '+', y no todos los clientes de WhatsApp lo devuelven a
+  // espacio. Así el CRM siempre lee el mismo literal: Ref:<id>
+  var CLIC_MARCA = 'Ref:';
+
+  try {
+    var q = new URLSearchParams(location.search);
+    var idClic = q.get('gclid') || q.get('wbraid') || q.get('gbraid');
+    if (idClic) localStorage.setItem(CLIC_KEY, JSON.stringify({ id: idClic, t: Date.now() }));
+  } catch (e) { /* sin localStorage: se pierde la atribución, no el sitio */ }
+
+  function clicVigente() {
+    try {
+      var o = JSON.parse(localStorage.getItem(CLIC_KEY) || 'null');
+      if (!o || !o.id) return null;
+      if (Date.now() - o.t > CLIC_DIAS * 864e5) { localStorage.removeItem(CLIC_KEY); return null; }
+      return o.id;
+    } catch (e) { return null; }
+  }
+
+  // Se reescribe el href en fase de captura, antes de que el navegador
+  // navegue y antes del listener de conversiones. Idempotente: si el mensaje
+  // ya lleva la referencia no se duplica.
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var a = t.closest('a[href*="wa.me"], a[href*="api.whatsapp.com"]');
+    if (!a) return;
+    var id = clicVigente();
+    if (!id) return;
+    try {
+      var url = new URL(a.href);
+      var texto = url.searchParams.get('text') || '';
+      if (texto.indexOf(CLIC_MARCA) !== -1) return;
+      url.searchParams.set('text', texto + '\n\n' + CLIC_MARCA + id);
+      a.href = url.toString();
+    } catch (err) { /* href raro: se deja intacto */ }
+  }, true);
 
   var TRACKING = {
     ga4: 'G-4CPWLE6HFM',            // GA4

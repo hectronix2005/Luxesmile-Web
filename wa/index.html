@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abriendo WhatsApp — Luxe-Smile</title>
+
+  <!-- Página puente, no debe indexarse ni aparecer en resultados -->
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- =====================================================================
+       Luxe-Smile · Puente de atribución hacia WhatsApp
+       ---------------------------------------------------------------------
+       Existe para un solo caso: que un anuncio, un sitelink o una publicación
+       apunte DIRECTO a WhatsApp. Si el visitante entra por el sitio, no hace
+       falta pasar por aquí — assets/js/tracking.js ya captura el gclid al
+       aterrizar y lo adjunta al mensaje.
+
+       Qué hace: lee el identificador del clic de anuncio (gclid, o wbraid /
+       gbraid cuando iOS bloquea cookies), lo guarda 90 días y lo adjunta al
+       mensaje prellenado antes de redirigir a wa.me.
+
+       Sin ese identificador Google no puede saber qué campaña trajo al
+       paciente, y acaba optimizando hacia clics en botón en vez de hacia
+       gente que agenda.
+
+       Parámetros aceptados:
+         ?gclid=… | ?wbraid=… | ?gbraid=…   los pone Google solo (auto-tagging)
+         ?m=consultorio | virtual | info    variante del mensaje (opcional)
+
+       Se usa igual con o sin parámetros: sin ellos redirige sin referencia.
+       ===================================================================== */
+
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      margin: 0; min-height: 100vh;
+      display: grid; place-items: center;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #faf9f7; color: #2b2b2b;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #16171a; color: #e8e6e3; }
+    }
+    .caja { text-align: center; padding: 2rem 1.5rem; max-width: 22rem; }
+    .punto {
+      width: 2.25rem; height: 2.25rem; margin: 0 auto 1.25rem;
+      border: 2.5px solid currentColor; border-right-color: transparent;
+      border-radius: 50%; opacity: .35;
+      animation: giro .8s linear infinite;
+    }
+    @keyframes giro { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .punto { animation: none; } }
+    p { margin: 0 0 1.25rem; font-size: 1rem; line-height: 1.5; }
+    a {
+      display: inline-block; padding: .7rem 1.35rem;
+      background: #25D366; color: #fff; text-decoration: none;
+      border-radius: 999px; font-weight: 600; font-size: .95rem;
+    }
+    .fina { font-size: .82rem; opacity: .6; margin-top: 1.25rem; }
+  </style>
+</head>
+<body>
+  <div class="caja">
+    <div class="punto" aria-hidden="true"></div>
+    <p>Abriendo WhatsApp…</p>
+    <a id="ir" href="https://wa.me/573163903511">Continuar a WhatsApp</a>
+    <p class="fina">Si no se abre solo, pulsa el botón.</p>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var NUMERO = '573163903511';
+      var CLIC_KEY = 'lx_clic';
+      var CLIC_DIAS = 90;
+      var CLIC_MARCA = 'Ref:';   // sin espacio: ver nota en assets/js/tracking.js
+
+      var MENSAJES = {
+        consultorio: 'Hola Dra. Angela, me gustaría agendar una cita en Luxe-Smile.',
+        virtual: 'Hola, quiero agendar una valoración virtual en Luxe-Smile.',
+        info: 'Hola, quiero información sobre el diseño de sonrisa.'
+      };
+      var POR_DEFECTO = 'Hola, quiero agendar una valoración en Luxe-Smile.';
+
+      var q = new URLSearchParams(location.search);
+
+      // 1. Capturar el identificador del clic, si viene
+      var id = q.get('gclid') || q.get('wbraid') || q.get('gbraid');
+      try {
+        if (id) {
+          localStorage.setItem(CLIC_KEY, JSON.stringify({ id: id, t: Date.now() }));
+        } else {
+          // Puede haber llegado en una visita anterior al sitio
+          var o = JSON.parse(localStorage.getItem(CLIC_KEY) || 'null');
+          if (o && o.id && Date.now() - o.t <= CLIC_DIAS * 864e5) id = o.id;
+        }
+      } catch (e) { /* sin localStorage: se sigue sin atribución */ }
+
+      // 2. Componer el mensaje
+      var texto = MENSAJES[q.get('m')] || POR_DEFECTO;
+      if (id) texto += '\n\n' + CLIC_MARCA + id;
+
+      var destino = 'https://wa.me/' + NUMERO + '?text=' + encodeURIComponent(texto);
+      document.getElementById('ir').href = destino;
+
+      // 3. Redirigir. replace() para que el botón "atrás" no traiga aquí de vuelta.
+      location.replace(destino);
+    })();
+  </script>
+</body>
+</html>
