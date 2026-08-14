@@ -18,7 +18,7 @@ import { dirname, join } from 'node:path';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://luxesmilee.com';
 const V = '20260707j'; // cache-bust de CSS
-const VJS = '20260813a'; // cache-bust de tracking.js (mantener en sync con index/landings)
+const VJS = '20260814a'; // cache-bust de tracking.js (mantener en sync con index/landings)
 
 const content = JSON.parse(readFileSync(join(ROOT, 'assets/data/content.json'), 'utf8'));
 const brand = content.brand || {};

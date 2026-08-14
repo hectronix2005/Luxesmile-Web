@@ -182,10 +182,25 @@
     }
   }
   // Evento GA4 (funciona en cuanto exista el GA4 ID, aunque Ads aún no).
-  function ga4Event(name) {
+  // `params` es opcional: sirve para segmentar el evento en los informes.
+  function ga4Event(name, params) {
     if (window.gtag && isSet(TRACKING.ga4)) {
-      window.gtag('event', name);
+      window.gtag('event', name, params || {});
     }
+  }
+
+  /* Distingue las dos modalidades de cita a partir del destino del enlace.
+     El sitio ya las separa —calendarOffice para el consultorio, Calendly para
+     la virtual— pero ambas comparten la misma etiqueta de conversión en Ads.
+     Aquí se conserva la diferencia en GA4, que es gratis y no toca la puja.
+
+     Nota: 'calendly' NO contiene la cadena 'calendar'. Por eso los enlaces
+     virtuales dependen de data-cta="agendar" para ser detectados. */
+  function modalidadCita(el) {
+    var href = (el && el.href) || '';
+    if (href.indexOf('calendar.app.google') !== -1) return 'presencial';
+    if (href.indexOf('calendly.com') !== -1) return 'virtual';
+    return 'sin_determinar';
   }
   // Evento estándar de Meta Pixel.
   function metaEvent(name) {
@@ -207,10 +222,11 @@
       return;
     }
 
-    // 2) Agendar (Google Calendar: consultorio o virtual)
-    if (t.closest('a[href*="calendar.app.google"], a[href*="calendar"], [data-cta="agendar"]')) {
+    // 2) Agendar (consultorio o virtual)
+    var agenda = t.closest('a[href*="calendar.app.google"], a[href*="calendar"], [data-cta="agendar"]');
+    if (agenda) {
       adsConversion(TRACKING.labels.agenda);
-      ga4Event('schedule_click');
+      ga4Event('schedule_click', { modalidad: modalidadCita(agenda) });
       metaEvent('Schedule');
       return;
     }
