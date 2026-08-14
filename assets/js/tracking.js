@@ -87,13 +87,28 @@
   var CLIC_DIAS = 90;
   // Sin espacio tras los dos puntos a propósito: al serializar la URL el espacio
   // se convierte en '+', y no todos los clientes de WhatsApp lo devuelven a
-  // espacio. Así el CRM siempre lee el mismo literal: Ref:<id>
+  // espacio. Así el CRM siempre lee el mismo literal: Ref:<tipo>.<id>
   var CLIC_MARCA = 'Ref:';
+
+  /* Google usa tres parámetros distintos según el caso, y la API de conversiones
+     offline los espera en CAMPOS DISTINTOS. Si solo enviamos el identificador sin
+     decir de cuál se trata, el CRM tiene que adivinar —y las conversiones de iOS
+     se pierden—. Por eso el prefijo de una letra. */
+  var FUENTES = [
+    ['gclid', 'g'],   // el habitual
+    ['wbraid', 'w'],  // iOS, tráfico web
+    ['gbraid', 'b'],  // iOS, app-a-web
+  ];
 
   try {
     var q = new URLSearchParams(location.search);
-    var idClic = q.get('gclid') || q.get('wbraid') || q.get('gbraid');
-    if (idClic) localStorage.setItem(CLIC_KEY, JSON.stringify({ id: idClic, t: Date.now() }));
+    for (var i = 0; i < FUENTES.length; i++) {
+      var v = q.get(FUENTES[i][0]);
+      if (v) {
+        localStorage.setItem(CLIC_KEY, JSON.stringify({ id: v, tipo: FUENTES[i][1], t: Date.now() }));
+        break;
+      }
+    }
   } catch (e) { /* sin localStorage: se pierde la atribución, no el sitio */ }
 
   function clicVigente() {
@@ -101,7 +116,8 @@
       var o = JSON.parse(localStorage.getItem(CLIC_KEY) || 'null');
       if (!o || !o.id) return null;
       if (Date.now() - o.t > CLIC_DIAS * 864e5) { localStorage.removeItem(CLIC_KEY); return null; }
-      return o.id;
+      // 'tipo' se añadió después: lo guardado antes del cambio es siempre gclid.
+      return { id: o.id, tipo: o.tipo || 'g' };
     } catch (e) { return null; }
   }
 
@@ -113,13 +129,13 @@
     if (!t || !t.closest) return;
     var a = t.closest('a[href*="wa.me"], a[href*="api.whatsapp.com"]');
     if (!a) return;
-    var id = clicVigente();
-    if (!id) return;
+    var clic = clicVigente();
+    if (!clic) return;
     try {
       var url = new URL(a.href);
       var texto = url.searchParams.get('text') || '';
       if (texto.indexOf(CLIC_MARCA) !== -1) return;
-      url.searchParams.set('text', texto + '\n\n' + CLIC_MARCA + id);
+      url.searchParams.set('text', texto + '\n\n' + CLIC_MARCA + clic.tipo + '.' + clic.id);
       a.href = url.toString();
     } catch (err) { /* href raro: se deja intacto */ }
   }, true);

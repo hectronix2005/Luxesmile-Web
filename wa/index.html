@@ -76,6 +76,9 @@
       var CLIC_KEY = 'lx_clic';
       var CLIC_DIAS = 90;
       var CLIC_MARCA = 'Ref:';   // sin espacio: ver nota en assets/js/tracking.js
+      // Prefijo de una letra según el parámetro: la API de conversiones offline
+      // espera gclid, wbraid y gbraid en campos distintos.
+      var FUENTES = [['gclid','g'], ['wbraid','w'], ['gbraid','b']];
 
       var MENSAJES = {
         consultorio: 'Hola Dra. Angela, me gustaría agendar una cita en Luxe-Smile.',
@@ -87,20 +90,27 @@
       var q = new URLSearchParams(location.search);
 
       // 1. Capturar el identificador del clic, si viene
-      var id = q.get('gclid') || q.get('wbraid') || q.get('gbraid');
+      var id = null, tipo = null;
+      for (var i = 0; i < FUENTES.length; i++) {
+        var v = q.get(FUENTES[i][0]);
+        if (v) { id = v; tipo = FUENTES[i][1]; break; }
+      }
       try {
         if (id) {
-          localStorage.setItem(CLIC_KEY, JSON.stringify({ id: id, t: Date.now() }));
+          localStorage.setItem(CLIC_KEY, JSON.stringify({ id: id, tipo: tipo, t: Date.now() }));
         } else {
           // Puede haber llegado en una visita anterior al sitio
           var o = JSON.parse(localStorage.getItem(CLIC_KEY) || 'null');
-          if (o && o.id && Date.now() - o.t <= CLIC_DIAS * 864e5) id = o.id;
+          if (o && o.id && Date.now() - o.t <= CLIC_DIAS * 864e5) {
+            id = o.id;
+            tipo = o.tipo || 'g';   // lo guardado antes del cambio es siempre gclid
+          }
         }
       } catch (e) { /* sin localStorage: se sigue sin atribución */ }
 
       // 2. Componer el mensaje
       var texto = MENSAJES[q.get('m')] || POR_DEFECTO;
-      if (id) texto += '\n\n' + CLIC_MARCA + id;
+      if (id) texto += '\n\n' + CLIC_MARCA + tipo + '.' + id;
 
       var destino = 'https://wa.me/' + NUMERO + '?text=' + encodeURIComponent(texto);
       document.getElementById('ir').href = destino;
