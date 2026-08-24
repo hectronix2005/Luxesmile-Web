@@ -103,7 +103,14 @@
         detectSource() {
           const p = new URLSearchParams(location.search);
           const utm = (p.get('utm_source') || '').toLowerCase();
-          if (p.get('gclid') || utm === 'google' || utm === 'adwords') {
+
+          // Con identificador de clic no se añade nada: tracking.js adjunta la
+          // referencia Ref: y esa línea ya identifica el anuncio. Decirlo además
+          // en palabras duplica el dato y ensucia el mensaje que el paciente ve
+          // antes de enviarlo, que puede borrarlo si le parece raro.
+          if (p.get('gclid') || p.get('wbraid') || p.get('gbraid')) return;
+
+          if (utm === 'google' || utm === 'adwords') {
             this.leadSource = 'Vengo de un anuncio de Google';
           } else if (/instagram|^ig$|meta|facebook|fb/.test(utm)) {
             this.leadSource = 'Vengo de Instagram';
