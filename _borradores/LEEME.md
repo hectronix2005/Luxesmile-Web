@@ -41,15 +41,30 @@ Así que `docs/` es peor: público por los dos canales.
 
 | Archivo | Estado |
 |---|---|
-| `politica-tratamiento-datos.md` | borrador, **10 marcas `[[ ]]` sin diligenciar**, pendiente de revisión de abogado |
+| `politica-tratamiento-datos.md` | borrador en markdown, **superado** — el trabajo vivo está en la rama, ver abajo |
 
-## Qué falta para publicar la política
+## El trabajo vivo está en una rama, no aquí (24-ago-2026)
 
-1. Diligenciar los campos abiertos — leyendo antes la advertencia de arriba.
-2. Pasarla por un abogado con criterio en protección de datos. Son **datos
-   sensibles de salud**, Ley 1581 de 2012.
-3. Volcarla a `privacidad/index.html`, que hoy existe **sin rastrear en git** y
-   sin publicar, con los campos resaltados con `<mark class="pendiente">`.
-4. Al publicar: añadir `/privacidad/` al sitemap (lista fija en
-   `scripts/build-blog.mjs`), enlazarla desde el pie de página y quitar los
-   estilos y marcas `.pendiente`.
+    git checkout wip/politica-privacidad     # commit 9c9e160
+
+Ahí está `privacidad/index.html` con **5 de 6 campos diligenciados**. Falta solo la
+fecha de entrada en vigencia, que se pone el día de publicar.
+
+**NO FUSIONAR A MAIN.** Fusionar publica la página, y el texto afirma que existe un
+contrato de transmisión de datos con ZEUS **que no existe**.
+
+## Qué falta antes de fusionar
+
+1. **Ubicación real del servidor de base de datos de ZEUS.** Verificado que la
+   aplicación está en Ashburn (Virginia) y los adjuntos en Nueva York; la base,
+   donde vive el contenido de las conversaciones, sigue sin verificar.
+2. **Si el número de la clínica usa la ruta de ZEUS o la de Meta.** Lo decide cómo
+   se enlace el WhatsApp el 26 de agosto.
+3. **El contrato de transmisión**, escalado por ZEUS sin dueño ni plazo.
+4. **Revisión de un abogado** con criterio en protección de datos. Son datos
+   sensibles de salud, Ley 1581 de 2012.
+
+## Al publicar, además
+
+Añadir `/privacidad/` al sitemap (lista fija en `scripts/build-blog.mjs`),
+enlazarla desde el pie de página, y quitar los estilos y marcas `.pendiente`.
