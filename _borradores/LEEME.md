@@ -63,6 +63,12 @@ contrato de transmisión de datos con ZEUS **que no existe**.
 3. **El contrato de transmisión**, escalado por ZEUS sin dueño ni plazo.
 4. **Revisión de un abogado** con criterio en protección de datos. Son datos
    sensibles de salud, Ley 1581 de 2012.
+5. **Declarar el identificador de clic.** El enlace a WhatsApp inyecta `Ref:<tipo>.<id>`
+   en el texto del mensaje (`wa/index.html`, `assets/js/tracking.js`), así que el
+   click id de Google/Meta queda **almacenado en el CRM junto a la conversación
+   clínica**. Atenea confirmó el 08-sep-2026 que la mayoría de reguladores tratan
+   `gclid`/`fbclid`/`ttclid` como dato personal seudónimo. La política tiene que
+   decir que se guarda, para qué y cuánto tiempo — hoy no está escrito.
 
 ## Al publicar, además
 
