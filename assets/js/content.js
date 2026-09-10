@@ -198,6 +198,14 @@ const DEFAULT_CONTENT = {
     tagline: 'Odontología estética con alma. Sonrisas hechas a medida.',
     copyright: '© 2026 Luxe-Smile · Dra. Angela Barbosa. Todos los derechos reservados.',
   },
+  // El admin enlaza content.blog.title con x-model, y x-show no impide que Alpine
+  // evalúe la expresión: sin esta clave, si el fetch de content.json falla, la
+  // pestaña de blog lanza en cada render. Mismas claves que content.json.
+  blog: {
+    title: 'Blog de Odontología Estética',
+    subtitle: 'Consejos, técnicas y tendencias en diseño de sonrisa',
+    articles: [],
+  },
 };
 
 /* --------------------- Merge profundo --------------------- */
