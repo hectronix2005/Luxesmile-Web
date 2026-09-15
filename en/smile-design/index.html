@@ -15,7 +15,7 @@
   <meta name="theme-color" content="#FAF7F2" />
 
   <!-- Conversion tracking (same as the main site) -->
-  <script src="../../assets/js/tracking.js?v=20260914c"></script>
+  <script src="../../assets/js/tracking.js?v=20260915a"></script>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -74,7 +74,8 @@
     document.addEventListener('alpine:init', () => {
       Alpine.data('landing', () => ({
         content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
-        leadSource: '',
+        leadSource: '',   // readable text: only for the `wa.me` fallback
+        origen: '',       // stable code for the redirector: 'ig' | 'google'
 
         async init() {
           this.content = await window.LuxeContent.loadContent();
@@ -88,12 +89,29 @@
           const utm = (p.get('utm_source') || '').toLowerCase();
           if (p.get('gclid') || utm === 'google' || utm === 'adwords') {
             this.leadSource = 'Coming from a Google ad';
+            this.origen = 'google';
           } else if (/instagram|^ig$|meta|facebook|fb/.test(utm)) {
             this.leadSource = 'Coming from Instagram';
+            this.origen = 'ig';
           }
         },
 
+        // Misma inversión que en `diseno-de-sonrisa`: se manda la clave y el
+        // origen, no el texto. Ver allí el porqué largo.
+        //
+        // SÓLO EL MENSAJE BASE TIENE CLAVE. Las dos variantes en inglés —«via
+        // virtual consultation» y «and would like an in-office appointment»— no
+        // están en el diccionario de Zeus, a propósito: esta página tiene
+        // tráfico marginal y no compensaba multiplicar el diccionario antes de
+        // ver si la base funciona. Por eso aquí NO se cae a la clave más
+        // parecida: sin clave no se enruta, y el enlace se va a wa.me con su
+        // texto correcto. Enrutarlas a `smile_design_en` daría un mensaje
+        // distinto del que el botón prometió, sin error y sin aviso.
         waLink(type) {
+          const clave = type ? null : 'smile_design_en';
+          const ruta = clave && window.lxRuta && window.lxRuta(clave, this.origen);
+          if (ruta) return ruta;
+
           const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
           let msg = "Hi Dr. Angela, I'm interested in a smile design consultation and I'm traveling from abroad";
 

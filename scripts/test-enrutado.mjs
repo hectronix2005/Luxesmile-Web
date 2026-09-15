@@ -156,5 +156,75 @@ console.log('\n3. cobertura: toda página con enlaces a WhatsApp tiene mecanismo
   console.log(`  ..    ${generadas} páginas de blog generadas, cubiertas por la plantilla de build-blog.mjs`);
 }
 
+// ── 4. LAS PÁGINAS AUTOCONTENIDAS Y EL ORIGEN ──────────────────────────────
+// Estas tres llevan su propia `waLink` —cuatro copias en el repo contando la de
+// app.js— y hasta el 15-sep ninguna estaba cubierta por este fichero. El caso
+// que las rompía: con `utm_source` social y sin `gclid`, `detectSource()` añade
+// «(Vengo de Instagram)» al mensaje, el texto deja de casar con el diccionario
+// y el enlace se va a wa.me sin registrar nada. En silencio, porque el paciente
+// llega igual.
+console.log('\n4. páginas autocontenidas: clave + origen')
+{
+  // Carga el componente Alpine que vive en un <script> inline de la página.
+  function cargarPagina(file, { conRuta, search }) {
+    const html = readFileSync(file, 'utf8')
+    const m = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].find((x) => x[1].includes('waLink'))
+    if (!m) throw new Error(`sin componente en ${file}`)
+    let comp = null, init = null
+    const ctx = {
+      console, structuredClone, URLSearchParams, Date, JSON, Math, Promise, setTimeout, clearTimeout,
+      Alpine: { data: (_n, f) => { comp = f() } },
+      IntersectionObserver: class { observe() {} disconnect() {} },
+      location: { search: search || '', hostname: 'luxesmilee.com' },
+      document: { ...documentoFalso([]), addEventListener: (ev, fn) => { if (ev === 'alpine:init') init = fn } },
+    }
+    ctx.window = ctx; ctx.globalThis = ctx
+    ctx.window.LuxeContent = { DEFAULT_CONTENT: { contact: {} }, loadContent: async () => ({}) }
+    if (conRuta) ctx.window.lxRuta = (c, o) => (c ? `${R}?m=${c}${o ? `&o=${o}` : ''}` : null)
+    vm.createContext(ctx)
+    vm.runInContext(m[1], ctx)
+    if (init) init()
+    comp.content = { contact: { whatsapp: '573163903511' } }
+    if (comp.detectSource) comp.detectSource()
+    return comp
+  }
+
+  const ES = 'diseno-de-sonrisa/index.html'
+  const EN = 'en/smile-design/index.html'
+
+  // — el caso que estaba roto —
+  for (const utm of ['instagram', 'ig', 'meta', 'facebook', 'fb']) {
+    const c = cargarPagina(ES, { conRuta: true, search: `?utm_source=${utm}` })
+    ok(c.waLink().includes('m=web') && c.waLink().includes('o=ig'), `ES utm_source=${utm.padEnd(9)} -> m=web&o=ig`)
+  }
+  const g = cargarPagina(ES, { conRuta: true, search: '?utm_source=google' })
+  ok(g.waLink().includes('o=google'), 'ES utm_source=google  -> o=google')
+
+  // Con identificador de clic NO se manda origen: el gclid ya identifica, y
+  // `detectSource()` hace return antes de fijarlo. Si esto fallara, estaríamos
+  // mandando dos veces el mismo dato y uno de los dos podría contradecir al otro.
+  const cg = cargarPagina(ES, { conRuta: true, search: '?gclid=Cj0ABC&utm_source=instagram' })
+  ok(!cg.waLink().includes('o='), 'ES con gclid          -> sin origen (lo identifica el gclid)')
+
+  // Sin utm: enruta igual, sin origen.
+  const limpio = cargarPagina(ES, { conRuta: true, search: '' })
+  ok(limpio.waLink().includes('m=web') && !limpio.waLink().includes('o='), 'ES sin utm            -> m=web, sin origen')
+  ok(limpio.waLink('virtual').includes('m=web_virtual'), 'ES virtual            -> m=web_virtual')
+  ok(limpio.waLink('consultorio').includes('m=web_consultorio'), 'ES consultorio        -> m=web_consultorio')
+
+  // — la página en inglés —
+  const en = cargarPagina(EN, { conRuta: true, search: '?utm_source=instagram' })
+  ok(en.waLink().includes('m=smile_design_en') && en.waLink().includes('o=ig'), 'EN utm_source=instagram -> m=smile_design_en&o=ig')
+  // Sus dos variantes NO tienen clave y NO deben enrutarse a la más parecida.
+  ok(en.waLink('virtual').startsWith('https://wa.me/'), 'EN virtual            -> wa.me (sin clave, no se inventa)')
+  ok(en.waLink('consultorio').startsWith('https://wa.me/'), 'EN consultorio        -> wa.me (sin clave, no se inventa)')
+
+  // — el reserva: sin tracking.js sigue el comportamiento de hoy, coletilla incluida —
+  const sin = cargarPagina(ES, { conRuta: false, search: '?utm_source=instagram' })
+  const txt = decodeURIComponent(sin.waLink().split('text=')[1])
+  ok(sin.waLink().startsWith('https://wa.me/573163903511?text='), 'ES sin tracking.js    -> wa.me con el número correcto')
+  ok(txt.includes('(Vengo de Instagram)'), 'ES sin tracking.js    -> conserva la coletilla de hoy')
+}
+
 console.log(`\n${fallos ? `FALLOS: ${fallos}` : 'todo en verde'}\n`);
 process.exit(fallos ? 1 : 0);

@@ -189,7 +189,7 @@
      Por eso el home no empareja: llama a `lxRuta(clave)` y manda la clave que ya
      conoce. El texto deja de ser la llave. Si este fichero no cargó, `lxRuta` no
      existe y quien llama se queda con su `wa.me` de siempre. */
-  function lxRuta(clave) {
+  function lxRuta(clave, origen) {
     if (!clave) return null;
     var destino = REDIRECTOR + '?m=' + encodeURIComponent(clave);
     var clic = clicVigente();
@@ -202,6 +202,19 @@
       var LARGO = { g: 'gclid', w: 'wbraid', b: 'gbraid' };
       if (LARGO[clic.tipo]) destino += '&t=' + LARGO[clic.tipo];
     }
+    /* ORIGEN, sólo cuando NO hay identificador de clic.
+       Google ya viene identificado por el `gclid`; el tráfico social no trae
+       nada, así que su traspaso es hoy indistinguible de uno directo. Este
+       parámetro es lo único que los separa.
+
+       Valores: 'ig' | 'google'. Códigos cortos y estables, NO el texto legible
+       —«Vengo de Instagram»—, que se redacta para que lo lea una persona y por
+       tanto puede cambiar sin avisar. Un índice que se puede reescribir no es
+       un índice.
+
+       Zeus TOLERA el parámetro hoy (comprobado: sirve el 302 correcto) pero no
+       lo registra ni lo refleja. Hasta que lo haga, esto no desplegado. */
+    if (origen) destino += '&o=' + encodeURIComponent(origen);
     return destino;
   }
   window.lxRuta = lxRuta;

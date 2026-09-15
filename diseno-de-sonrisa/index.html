@@ -15,7 +15,7 @@
   <meta name="theme-color" content="#FAF7F2" />
 
   <!-- Seguimiento de conversiones (mismo tracking que el sitio principal) -->
-  <script src="../assets/js/tracking.js?v=20260914c"></script>
+  <script src="../assets/js/tracking.js?v=20260915a"></script>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -88,7 +88,8 @@
     document.addEventListener('alpine:init', () => {
       Alpine.data('landing', () => ({
         content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
-        leadSource: '',
+        leadSource: '',   // texto legible: sólo para el `wa.me` de reserva
+        origen: '',       // código estable para el redirector: 'ig' | 'google'
 
         async init() {
           document.querySelectorAll('[data-prerendered]').forEach(el => el.remove());
@@ -112,12 +113,37 @@
 
           if (utm === 'google' || utm === 'adwords') {
             this.leadSource = 'Vengo de un anuncio de Google';
+            this.origen = 'google';
           } else if (/instagram|^ig$|meta|facebook|fb/.test(utm)) {
             this.leadSource = 'Vengo de Instagram';
+            this.origen = 'ig';
           }
         },
 
+        // LA CLAVE PRIMERO, EL TEXTO DESPUÉS.
+        //
+        // Antes esto componía siempre el `wa.me` y tracking.js lo reescribía
+        // buscando ese texto en el diccionario de Zeus. Funcionaba salvo en un
+        // caso, y era justo el que importa: con `utm_source` social y sin
+        // `gclid`, la línea de abajo añade «\n\n(Vengo de Instagram)» al
+        // mensaje, el texto deja de casar, y el enlace se va a wa.me sin
+        // registrar el traspaso. El tráfico de Google no se veía afectado
+        // porque `detectSource()` hace `return` en cuanto ve el `gclid`.
+        //
+        // O sea: el enrutado fallaba exactamente cuando el visitante venía de
+        // una campaña que no es de Google — y fallaba en silencio, porque el
+        // paciente llega a WhatsApp igual.
+        //
+        // Ahora se manda la clave, que esta función ya conoce, más el origen,
+        // que es lo único que distingue a ese paciente de uno directo: sin
+        // `gclid` su traspaso es idéntico al de alguien que escribió la URL.
+        // El texto lo sirve Zeus. Si tracking.js no cargó, se cae al `wa.me` de
+        // siempre CON la coletilla, que es el comportamiento de hoy.
         waLink(type) {
+          const CLAVES = { virtual: 'web_virtual', consultorio: 'web_consultorio' };
+          const ruta = window.lxRuta && window.lxRuta(CLAVES[type] || 'web', this.origen);
+          if (ruta) return ruta;
+
           const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
           let msg = 'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa';
 
