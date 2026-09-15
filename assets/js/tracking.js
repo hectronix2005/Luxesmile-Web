@@ -189,7 +189,32 @@
      Por eso el home no empareja: llama a `lxRuta(clave)` y manda la clave que ya
      conoce. El texto deja de ser la llave. Si este fichero no cargó, `lxRuta` no
      existe y quien llama se queda con su `wa.me` de siempre. */
-  function lxRuta(clave) {
+  /* ENLACE DE RESERVA. Condición que puso Héctor al autorizar el enrutado: si
+     nuestra ruta cae, el paciente tiene que llegar a WhatsApp igual. La
+     atribución vale menos que un paciente que llega.
+
+     SE EMPIEZA DEGRADADO Y SE PROMUEVE, no al revés. Es la decisión que manda
+     en todo este bloque:
+
+       · Si la sonda no contesta, tarda, la bloquea una extensión, o este código
+         tiene un fallo que no previmos, el href se queda en `wa.me` y el
+         paciente llega. Perdemos la atribución, que es barato.
+       · Al revés —empezar enrutado y degradar si falla— cualquiera de esos
+         mismos casos deja al paciente sin WhatsApp mientras la sonda decide.
+
+     O sea: el estado por defecto es el que no necesita que nada funcione.
+
+     Zeus avisó del modo de fallo contrario: una sonda que diera «rojo» siempre
+     degradaría el sitio de forma permanente y en silencio. Por eso el degradado
+     GRITA —`console.warn` y evento a GA4— y por eso la sonda mira su CUERPO y no
+     sólo el código: un 200 de «el servicio está en pie» con el diccionario de
+     esta clínica caído es el canario que no puede ponerse rojo. */
+  var SALUD = REDIRECTOR + '/salud';
+  var SONDA_MS = 2500;
+  var promocion = [];      // [[enlaceWaMe, rutaZeus], ...]
+  var saludOk = false;     // falso A PROPÓSITO: ver arriba
+
+  function lxRuta(clave, reserva) {
     if (!clave) return null;
     var destino = REDIRECTOR + '?m=' + encodeURIComponent(clave);
     var clic = clicVigente();
@@ -202,15 +227,86 @@
       var LARGO = { g: 'gclid', w: 'wbraid', b: 'gbraid' };
       if (LARGO[clic.tipo]) destino += '&t=' + LARGO[clic.tipo];
     }
-    return destino;
+
+    /* Sin reserva se devuelve la ruta tal cual: es lo que hacen las pruebas y
+       cualquier llamada que no tenga a dónde caer. Con reserva se anota el par
+       y se devuelve LA RESERVA hasta que la sonda diga que sí. */
+    if (!reserva) return destino;
+    promocion.push([reserva, destino]);
+    return saludOk ? destino : reserva;
   }
   window.lxRuta = lxRuta;
+
+  /* Promueve los href que ya estén pintados. Se vuelve a llamar desde el
+     observador porque Alpine pinta DESPUÉS de que corra este fichero, y vuelve
+     a poner la reserva en cada re-render. */
+  function promover() {
+    if (!saludOk || !promocion.length) return;
+    var enlaces = document.querySelectorAll('a[href*="wa.me"], a[href*="api.whatsapp.com"]');
+    for (var i = 0; i < enlaces.length; i++) {
+      for (var j = 0; j < promocion.length; j++) {
+        if (enlaces[i].href === promocion[j][0]) { enlaces[i].href = promocion[j][1]; break; }
+      }
+    }
+  }
+
+  function degradar(motivo) {
+    saludOk = false;
+    // QUE SE OIGA. Un sitio que pierde toda la atribución y sigue funcionando
+    // perfectamente es el fallo que no se descubre hasta que alguien va a mirar
+    // un número que lleva semanas en cero.
+    try { console.warn('[luxe] enrutado degradado a wa.me: ' + motivo); } catch (e) {}
+    try { if (window.gtag) window.gtag('event', 'enrutado_degradado', { motivo: motivo }); } catch (e) {}
+  }
+  // Expuestas para las pruebas y para poder diagnosticar desde la consola:
+  // `lxPromover()` aplica la sustitución que hace el observador, y `lxDegradar()`
+  // fuerza el modo reserva.
+  window.lxDegradar = degradar;
+  window.lxPromover = promover;
+
+  try {
+    var cortado = false;
+    var reloj = setTimeout(function () {
+      cortado = true; degradar('la sonda no contestó en ' + SONDA_MS + ' ms');
+    }, SONDA_MS);
+    fetch(SALUD, { cache: 'no-store', credentials: 'omit' })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject('HTTP ' + r.status); })
+      .then(function (j) {
+        if (cortado) return;
+        clearTimeout(reloj);
+        // EL CUERPO, NO SÓLO EL CÓDIGO. `numbers` es la lista blanca y
+        // `messages` el diccionario: si falta cualquiera, el servicio responde
+        // pero a esta clínica le sirve mal. `numbers: "memoria"` cuenta como
+        // bueno —los pacientes llegan—; es amarillo para Zeus, no para nosotros.
+        if (j && j.ok === true && j.messages === 'ok' && j.numbers !== 'falta') {
+          saludOk = true;
+          promover();
+        } else {
+          degradar('la sonda respondió ' + JSON.stringify(j));
+        }
+      })
+      .catch(function (e) { if (!cortado) { clearTimeout(reloj); degradar('la sonda falló: ' + e); } });
+  } catch (e) { degradar('no se pudo lanzar la sonda: ' + e); }
+
+  /* Sin esto la promoción sólo alcanzaría a los enlaces ya pintados — hoy,
+     ninguno de los del home. */
+  try {
+    if (window.MutationObserver) {
+      new MutationObserver(function () { promover(); })
+        .observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['href'] });
+    }
+  } catch (e) { /* sin observador: sólo lo ya pintado */ }
 
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
     var a = t.closest('a[href*="wa.me"], a[href*="api.whatsapp.com"]');
     if (!a) return;
+    // El otro extremo del reserva. Esta rama —blog y las tres páginas
+    // autocontenidas— enruta reescribiendo el href en el momento del clic, así
+    // que aquí degradar es simplemente NO reescribir: el enlace ya lleva su
+    // `wa.me` con el mensaje correcto puesto por la página.
+    if (!saludOk) return;
     try {
       var url = new URL(a.href);
       var destino = lxRuta(CLAVES[url.searchParams.get('text') || '']);

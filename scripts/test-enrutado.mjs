@@ -40,25 +40,39 @@ function documentoFalso(listeners) {
   };
 }
 
-function cargarTracking(clic) {
+function cargarTracking(clic, opciones) {
+  const o = opciones || {};
   const store = new Map();
   if (clic) store.set('lx_clic', JSON.stringify({ id: clic.id, tipo: clic.tipo, t: Date.now() }));
   const listeners = [];
+  const enlaces = (o.enlaces || []).map((h) => ({ href: h }));
   const ctx = {
-    console, URL, URLSearchParams, Date, JSON, Math, setTimeout, clearTimeout,
+    console: o.callado ? { warn() {}, log() {}, error() {} } : console,
+    URL, URLSearchParams, Date, JSON, Math, setTimeout, clearTimeout, Promise,
     location: { search: '', hostname: 'luxesmilee.com', href: 'https://luxesmilee.com/' },
     localStorage: {
       getItem: (k) => (store.has(k) ? store.get(k) : null),
       setItem: (k, v) => store.set(k, v), removeItem: (k) => store.delete(k),
     },
-    document: documentoFalso(listeners),
+    document: { ...documentoFalso(listeners), querySelectorAll: () => enlaces },
     navigator: { userAgent: 'node' },
   };
+  // La sonda de salud, gobernada desde fuera para poder probar los desenlaces.
+  if (o.sonda && o.sonda !== 'ausente') {
+    ctx.fetch = () => {
+      if (o.sonda === 'red') return Promise.reject(new Error('sin red'));
+      if (o.sonda === 'http500') return Promise.resolve({ ok: false, status: 500 });
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(o.sonda) });
+    };
+  }
   ctx.window = ctx; ctx.globalThis = ctx;
   vm.createContext(ctx);
   vm.runInContext(readFileSync('assets/js/tracking.js', 'utf8'), ctx);
-  return { ctx, listeners };
+  return { ctx, listeners, enlaces };
 }
+
+/** Deja correr las microtareas de la sonda antes de mirar el resultado. */
+const asentar = () => new Promise((r) => setTimeout(r, 0));
 
 function cargarApp({ conRuta }) {
   let comp = null, init = null;
@@ -154,6 +168,88 @@ console.log('\n3. cobertura: toda página con enlaces a WhatsApp tiene mecanismo
   }
   const generadas = conWa.filter(ES_BLOG_GENERADO).length;
   console.log(`  ..    ${generadas} páginas de blog generadas, cubiertas por la plantilla de build-blog.mjs`);
+}
+
+// ── 5. EL ENLACE DE RESERVA ────────────────────────────────────────────────
+// La condición que puso Héctor al autorizar el enrutado: si la ruta de Zeus cae,
+// el paciente tiene que llegar a WhatsApp igual.
+//
+// Lo que se comprueba aquí no es que funcione cuando todo va bien —eso son los
+// bloques 1 y 2— sino que CUANDO ALGO FALLA el href se queda en `wa.me`. Por eso
+// hay más casos rojos que verdes: el estado por defecto tiene que ser el que no
+// necesita que nada funcione.
+console.log('\n5. enlace de reserva');
+{
+  const SANA = { ok: true, numbers: 'ok', messages: 'ok' };
+  const WAME = 'https://wa.me/573163903511?text=Hola';
+  const RUTA = `${R}?m=home_info`;
+
+  const prueba = async (sonda, etq, enruta) => {
+    const t = cargarTracking(null, { sonda, callado: true, enlaces: [WAME] });
+    await asentar();
+    const dado = t.ctx.lxRuta('home_info', WAME);
+    ok(dado === (enruta ? RUTA : WAME), `${etq.padEnd(33)} -> ${enruta ? 'enruta' : 'wa.me'}`);
+    return t;
+  };
+
+  // EL INSTANTE QUE IMPORTA: antes de que la sonda conteste. Todos los demás
+  // casos miran DESPUÉS de resolverse, y por eso ninguno distingue «empieza en
+  // reserva y promueve» de «empieza enrutado y degrada» — que es la decisión de
+  // diseño entera. Sin esta comprobación, invertir el valor inicial de `saludOk`
+  // dejaba el fichero en verde: medido el 15-sep, 0 fallos.
+  {
+    const t = cargarTracking(null, { sonda: SANA, callado: true, enlaces: [WAME] });
+    // sin `asentar()`: la promesa de la sonda sigue pendiente aquí
+    ok(t.ctx.lxRuta('home_info', WAME) === WAME, 'sonda AÚN SIN CONTESTAR           -> wa.me');
+  }
+
+  await prueba(SANA, 'sonda sana', true);
+  // `numbers: memoria` es amarillo para Zeus y VERDE para nosotros: la lista no
+  // se puede releer en vivo, pero los pacientes llegan. Degradar aquí seria
+  // perder atribución por un problema que no afecta al paciente.
+  await prueba({ ok: true, numbers: 'memoria', messages: 'ok' }, 'numbers=memoria', true);
+
+  // Todo lo demás degrada. `numbers: falta` es el caso que nombró Zeus: el
+  // servicio responde 200 y a ESTA clínica le sirve mal.
+  await prueba({ ok: true, numbers: 'falta', messages: 'ok' }, 'numbers=falta', false);
+  await prueba({ ok: true, numbers: 'ok', messages: 'falta' }, 'messages=falta', false);
+  await prueba({ ok: false }, 'ok=false', false);
+  await prueba({}, 'cuerpo vacio', false);
+  await prueba('http500', 'HTTP 500', false);
+  await prueba('red', 'sin red', false);
+  await prueba('ausente', 'sin fetch en el navegador', false);
+
+  // LA PROMOCIÓN. Alpine pinta los href DESPUÉS de que corra tracking.js, así
+  // que sin esto el home se quedaría en wa.me para siempre aunque la sonda
+  // estuviera verde. Se simula lo que hace el observador.
+  {
+    const t = cargarTracking(null, { sonda: SANA, callado: true, enlaces: [WAME] });
+    await asentar();                       // la sonda ya dijo que sí
+    t.ctx.lxRuta('home_info', WAME);       // Alpine pinta: registra el par
+    ok(t.enlaces[0].href === WAME, 'el enlace recien pintado sigue en wa.me');
+    t.ctx.lxPromover();                    // lo que hace el observador
+    ok(t.enlaces[0].href === RUTA, `promover() lo sustituye -> ${t.enlaces[0].href.slice(-14)}`);
+
+    // Y NO promueve si la sonda no dijo que sí, que es la mitad que importa:
+    // si promoviera igual, el reserva no serviría de nada.
+    const malo = cargarTracking(null, { sonda: 'red', callado: true, enlaces: [WAME] });
+    await asentar();
+    malo.ctx.lxRuta('home_info', WAME);
+    malo.ctx.lxPromover();
+    ok(malo.enlaces[0].href === WAME, 'con la sonda caida, promover() no toca nada');
+  }
+
+  // EL OTRO EXTREMO: la rama por texto —blog y las tres autocontenidas— enruta
+  // reescribiendo el href en el clic, así que degradar ahí es NO reescribir.
+  for (const [sonda, etq, enruta] of [[SANA, 'sonda sana', true], ['red', 'sonda caida', false]]) {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda, callado: true });
+    await asentar();
+    const h = t.listeners.find(([ev]) => ev === 'click')[1];
+    const a = { href: `https://wa.me/573163903511?text=${encodeURIComponent('Hola, quiero agendar una valoración en Luxe-Smile.')}` };
+    h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
+    ok(enruta ? a.href.startsWith(R) : a.href.includes('wa.me'),
+      `handler por texto, ${etq.padEnd(11)} -> ${enruta ? 'enruta' : 'deja wa.me'}`);
+  }
 }
 
 console.log(`\n${fallos ? `FALLOS: ${fallos}` : 'todo en verde'}\n`);

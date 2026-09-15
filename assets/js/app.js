@@ -71,9 +71,17 @@ function registerAndInitialize() {
         virtual: 'home_virtual',
         consultorio: 'home_consultorio',
       };
-      const ruta = window.lxRuta && window.lxRuta(CLAVES[context] || 'home_general');
-      if (ruta) return ruta;
+      // LA RESERVA SE CALCULA PRIMERO, y se le pasa a `lxRuta`. Mientras la
+      // sonda de salud no confirme, `lxRuta` devuelve esta misma reserva y el
+      // enlace se queda en `wa.me`: el paciente llega aunque nuestra ruta esté
+      // caída. Cuando la sonda dice que sí, tracking.js sustituye el href.
+      const reserva = this.waMe(context);
+      return (window.lxRuta && window.lxRuta(CLAVES[context] || 'home_general', reserva)) || reserva;
+    },
 
+    // El enlace de siempre, sin enrutar. Es la reserva, y también lo que se
+    // sirve si tracking.js no llegó a cargar.
+    waMe(context) {
       const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
       const base = this.content.contact.whatsappMessage || 'Hola, quiero información sobre Luxe-Smile.';
       let msg;
