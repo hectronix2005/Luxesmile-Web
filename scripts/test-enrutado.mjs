@@ -252,5 +252,87 @@ console.log('\n5. enlace de reserva');
   }
 }
 
+console.log('\n6. la coletilla no puede salir dos veces');
+{
+  // Zeus pone la etiqueta de origen —«(Instagram)»— desde una tabla suya al
+  // servir el texto de `m=`. Nosotros la ponemos al componer el `wa.me` del
+  // reserva. Hoy no pueden coincidir porque `lxRuta` devuelve UNO de los dos,
+  // nunca los dos... pero eso es una propiedad que nadie comprueba, y el dia que
+  // alguien toque el reserva puede dejar de ser cierta sin hacer ruido: el
+  // sintoma seria un paciente escribiendo «...(Instagram) (Instagram)».
+  //
+  // La invariante que lo impide, y que este bloque fija:
+  //   un enlace lleva `m=` (lo redacta Zeus) O lleva `text=` (lo redactamos
+  //   nosotros). NUNCA los dos. Si algun dia lleva los dos, hay dos redactores
+  //   sobre el mismo mensaje y la coletilla es solo el primer sintoma.
+  const SANA = { ok: true, numbers: 'ok', messages: 'ok' };
+  const COLETILLA = '(Instagram)';
+  const WAME = `https://wa.me/573163903511?text=${encodeURIComponent('Hola, vengo de la web. ' + COLETILLA)}`;
+
+  const unSoloRedactor = (url, etq) => {
+    const m = /[?&]m=/.test(url);
+    const texto = /[?&]text=/.test(url);
+    ok(m !== texto, `${etq.padEnd(38)} m=${m ? 'si' : 'no'} text=${texto ? 'si' : 'no'}`);
+    // y la etiqueta, como mucho una vez en lo que se manda
+    const veces = decodeURIComponent(url).split(COLETILLA).length - 1;
+    ok(veces <= 1, `${etq.padEnd(38)} coletilla x${veces}`);
+  };
+
+  // enrutado: el texto lo redacta Zeus, nosotros NO mandamos ninguno
+  {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: SANA, callado: true, enlaces: [WAME] });
+    await asentar();
+    unSoloRedactor(t.ctx.lxRuta('home_info', WAME), 'sonda sana, lxRuta');
+    t.ctx.lxPromover();
+    unSoloRedactor(t.enlaces[0].href, 'sonda sana, tras promover');
+  }
+
+  // degradado: lo redactamos nosotros y Zeus no interviene
+  {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: 'red', callado: true, enlaces: [WAME] });
+    await asentar();
+    unSoloRedactor(t.ctx.lxRuta('home_info', WAME), 'sonda caida, lxRuta');
+    t.ctx.lxPromover();
+    unSoloRedactor(t.enlaces[0].href, 'sonda caida, tras promover');
+  }
+
+  // la rama por texto, que reescribe el href EN EL CLIC: al enrutar tiene que
+  // QUITAR el `text=`, no aniadir el `m=` al lado. Es el sitio por donde
+  // entraria la doble coletilla sin que nadie lo notase.
+  //
+  // OJO CON ESTE CASO. Primero lo escribi con un texto que llevaba la coletilla
+  // pegada, lo etiquete «enruta», y paso en verde: no enrutaba: el diccionario
+  // casa por texto EXACTO y ese texto no esta en el. `m=no text=si` cumple la
+  // invariante igual de bien cuando no ha pasado nada. La etiqueta decia una
+  // cosa y la asercion comprobaba otra, que es el mismo fallo que este fichero
+  // existe para cazar. Por eso aqui el texto es el del diccionario y se
+  // comprueba ADEMAS que enruto de verdad.
+  const DICC = 'Hola, quiero agendar una valoración en Luxe-Smile.';
+  {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: SANA, callado: true });
+    await asentar();
+    const h = t.listeners.find(([ev]) => ev === 'click')[1];
+    const a = { href: `https://wa.me/573163903511?text=${encodeURIComponent(DICC)}` };
+    h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
+    ok(a.href.startsWith(R), 'handler por texto: enruto de verdad');
+    unSoloRedactor(a.href, 'handler por texto, enrutado');
+  }
+
+  // Y EL BORDE QUE ESTO DESTAPA, fijado antes de que llegue: el dia que la
+  // pagina pegue la coletilla al componer el texto —que es lo que hace la rama
+  // del `o=`—, este handler DEJA DE CASAR y deja de enrutar, en silencio y sin
+  // que nada se ponga rojo. No es un fallo de hoy; es la razon por la que esa
+  // rama no puede limitarse a aniadir el origen al mensaje.
+  {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: SANA, callado: true });
+    await asentar();
+    const h = t.listeners.find(([ev]) => ev === 'click')[1];
+    const a = { href: `https://wa.me/573163903511?text=${encodeURIComponent(DICC + ' ' + COLETILLA)}` };
+    h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
+    ok(!a.href.startsWith(R), 'texto + coletilla local: HOY no enruta (documentado)');
+    unSoloRedactor(a.href, 'texto + coletilla local');
+  }
+}
+
 console.log(`\n${fallos ? `FALLOS: ${fallos}` : 'todo en verde'}\n`);
 process.exit(fallos ? 1 : 0);
