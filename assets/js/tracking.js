@@ -117,17 +117,20 @@
      atribución pero con el mensaje correcto. Perder una atribución es barato;
      servirle a un paciente un mensaje que no es el suyo, no.
 
-     Las que faltan están pedidas a Zeus y NO se enrutan hasta que existan:
-       - las variantes «de forma virtual» / «presencial en el consultorio»
-         de /diseno-de-sonrisa/
-       - el texto en inglés de /en/smile-design/
-       - el de /pacientes-internacionales/
-       - los tres de /wa/
-     Enrutarlas hoy con la clave más parecida sería exactamente el fallo que el
+     Lo que sigue SIN enrutar, porque no tiene clave y pedirla no compensa hoy:
+       - los tres mensajes de /wa/, que son suyos y distintos de todos éstos
+       - las dos variantes en inglés («via virtual consultation» y «and would
+         like an in-office appointment»): esa página tiene tráfico marginal y no
+         quiero multiplicar el diccionario antes de ver si la base funciona
+     Enrutarlas con la clave más parecida sería exactamente el fallo que el
      párrafo anterior describe. */
   var CLAVES = {
     'Hola, quiero agendar una valoración en Luxe-Smile.': 'valoracion',
-    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa.': 'web'
+    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa.': 'web',
+    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa de forma virtual.': 'web_virtual',
+    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa presencial en el consultorio.': 'web_consultorio',
+    'Hola Dra. Angela, soy paciente internacional y me gustaría agendar una consulta virtual para planificar mi tratamiento dental en Bogotá.': 'internacional',
+    "Hi Dr. Angela, I'm interested in a smile design consultation and I'm traveling from abroad.": 'smile_design_en'
   };
 
   /* Google usa tres parámetros distintos según el caso, y la API de conversiones
