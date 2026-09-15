@@ -172,6 +172,40 @@
      Ahora el traspaso se registra AUNQUE no haya identificador, y ése es
      justamente el caso que distingue «vino de orgánico» de «se rompió algo».
      Si se filtrara por `clicVigente()` volveríamos a no poder distinguirlos. */
+  /* La ruta, expuesta. El emparejamiento por texto de aquí abajo NO sirve para
+     el home: sus enlaces los compone Alpine al renderizar, con seis textos
+     propios que no están en HTML, y tres de ellos se derivan de
+     `content.contact.whatsappMessage` — un campo con `<input>` en el panel de la
+     doctora. Emparejar por texto ahí significa que una edición desde el admin
+     rompe la atribución EN SILENCIO: el botón sigue llevando a WhatsApp y nadie
+     ve nada.
+
+     Medido el 14-sep-2026: de los 9 enlaces del home, 0 casaban. El blog y las
+     tres páginas autocontenidas sí, porque su texto es literal y está en el
+     código. O sea que el mecanismo llevaba desde el despliegue cubriendo cuatro
+     de cinco páginas, y las dos comprobaciones que hicimos —Zeus, que el
+     diccionario responde; yo, que el fichero se sirve— pasaron las dos.
+
+     Por eso el home no empareja: llama a `lxRuta(clave)` y manda la clave que ya
+     conoce. El texto deja de ser la llave. Si este fichero no cargó, `lxRuta` no
+     existe y quien llama se queda con su `wa.me` de siempre. */
+  function lxRuta(clave) {
+    if (!clave) return null;
+    var destino = REDIRECTOR + '?m=' + encodeURIComponent(clave);
+    var clic = clicVigente();
+    if (clic && clic.id) {
+      destino += '&g=' + encodeURIComponent(clic.id);
+      // Zeus espera el nombre completo del parámetro de Google (`t=gclid`), no
+      // la inicial que guardamos nosotros. Si no está en la tabla no se manda
+      // `t` en absoluto: mejor que Zeus lo anote como desconocido a que lo
+      // anote como algo concreto y equivocado.
+      var LARGO = { g: 'gclid', w: 'wbraid', b: 'gbraid' };
+      if (LARGO[clic.tipo]) destino += '&t=' + LARGO[clic.tipo];
+    }
+    return destino;
+  }
+  window.lxRuta = lxRuta;
+
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
@@ -179,19 +213,8 @@
     if (!a) return;
     try {
       var url = new URL(a.href);
-      var clave = CLAVES[url.searchParams.get('text') || ''];
-      if (!clave) return;              // texto no mapeado: se deja ir a wa.me
-      var destino = REDIRECTOR + '?m=' + encodeURIComponent(clave);
-      var clic = clicVigente();
-      if (clic && clic.id) {
-        destino += '&g=' + encodeURIComponent(clic.id);
-        // Zeus espera el nombre completo del parámetro de Google (`t=gclid`), no
-        // la inicial que guardamos nosotros. Si no está en la tabla no se manda
-        // `t` en absoluto: mejor que Zeus lo anote como desconocido a que lo
-        // anote como algo concreto y equivocado.
-        var LARGO = { g: 'gclid', w: 'wbraid', b: 'gbraid' };
-        if (LARGO[clic.tipo]) destino += '&t=' + LARGO[clic.tipo];
-      }
+      var destino = lxRuta(CLAVES[url.searchParams.get('text') || '']);
+      if (!destino) return;            // texto no mapeado: se deja ir a wa.me
       a.href = destino;
     } catch (err) { /* href raro: se deja intacto */ }
   }, true);

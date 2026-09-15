@@ -46,7 +46,34 @@ function registerAndInitialize() {
       obs.observe(target);
     },
 
+    // LA CLAVE ES EL CONTEXTO, NO EL TEXTO.
+    //
+    // Antes esto devolvía siempre un `wa.me` con el mensaje dentro, y
+    // tracking.js lo reescribía DESPUÉS buscando ese mensaje en su diccionario.
+    // Medido el 14-sep-2026: de los 9 enlaces del home no casaba ninguno. Los
+    // otros sitios sí —blog y las tres páginas autocontenidas— porque su texto
+    // es literal; aquí tres de los seis salen de `whatsappMessage`, que tiene un
+    // `<input>` en el panel de la doctora, con un `.replace()` encima.
+    //
+    // Emparejar por texto un campo que se edita desde el admin significa que una
+    // edición rompe la atribución sin que nada falle: el botón sigue abriendo
+    // WhatsApp con el mensaje correcto. El fallo y el acierto se ven igual.
+    //
+    // Ahora se manda la clave, que esta función ya conoce, y el texto lo sirve
+    // Zeus. Si tracking.js no cargó, `lxRuta` no existe y se cae al `wa.me` de
+    // siempre: sin atribución, con el mensaje bueno. Ése es el lado correcto por
+    // el que fallar.
     waLink(context) {
+      const CLAVES = {
+        hero: 'home_info',
+        casos: 'home_casos',
+        contacto: 'home_contacto',
+        virtual: 'home_virtual',
+        consultorio: 'home_consultorio',
+      };
+      const ruta = window.lxRuta && window.lxRuta(CLAVES[context] || 'home_general');
+      if (ruta) return ruta;
+
       const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
       const base = this.content.contact.whatsappMessage || 'Hola, quiero información sobre Luxe-Smile.';
       let msg;
