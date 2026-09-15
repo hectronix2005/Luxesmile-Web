@@ -107,11 +107,20 @@
         // parecida: sin clave no se enruta, y el enlace se va a wa.me con su
         // texto correcto. Enrutarlas a `smile_design_en` daría un mensaje
         // distinto del que el botón prometió, sin error y sin aviso.
+        // LA RESERVA PRIMERO, y `this.origen` en el TERCER argumento: el segundo
+        // es la reserva. Ver la nota de `lxRuta` en tracking.js — con el origen
+        // en el segundo puesto, el href se quedaba en "ig" con la sonda caída.
+        //
+        // Sólo se enruta el mensaje base: las dos formas con `type` no tienen
+        // clave, y mandarlas a `smile_design_en` daría un mensaje distinto del
+        // que el botón prometió, sin error y sin aviso.
         waLink(type) {
           const clave = type ? null : 'smile_design_en';
-          const ruta = clave && window.lxRuta && window.lxRuta(clave, this.origen);
-          if (ruta) return ruta;
+          const reserva = this.waMe(type);
+          return (clave && window.lxRuta && window.lxRuta(clave, reserva, this.origen)) || reserva;
+        },
 
+        waMe(type) {
           const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
           let msg = "Hi Dr. Angela, I'm interested in a smile design consultation and I'm traveling from abroad";
 

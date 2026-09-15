@@ -40,25 +40,39 @@ function documentoFalso(listeners) {
   };
 }
 
-function cargarTracking(clic) {
+function cargarTracking(clic, opciones) {
+  const o = opciones || {};
   const store = new Map();
   if (clic) store.set('lx_clic', JSON.stringify({ id: clic.id, tipo: clic.tipo, t: Date.now() }));
   const listeners = [];
+  const enlaces = (o.enlaces || []).map((h) => ({ href: h }));
   const ctx = {
-    console, URL, URLSearchParams, Date, JSON, Math, setTimeout, clearTimeout,
+    console: o.callado ? { warn() {}, log() {}, error() {} } : console,
+    URL, URLSearchParams, Date, JSON, Math, setTimeout, clearTimeout, Promise,
     location: { search: '', hostname: 'luxesmilee.com', href: 'https://luxesmilee.com/' },
     localStorage: {
       getItem: (k) => (store.has(k) ? store.get(k) : null),
       setItem: (k, v) => store.set(k, v), removeItem: (k) => store.delete(k),
     },
-    document: documentoFalso(listeners),
+    document: { ...documentoFalso(listeners), querySelectorAll: () => enlaces },
     navigator: { userAgent: 'node' },
   };
+  // La sonda de salud, gobernada desde fuera para poder probar los desenlaces.
+  if (o.sonda && o.sonda !== 'ausente') {
+    ctx.fetch = () => {
+      if (o.sonda === 'red') return Promise.reject(new Error('sin red'));
+      if (o.sonda === 'http500') return Promise.resolve({ ok: false, status: 500 });
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(o.sonda) });
+    };
+  }
   ctx.window = ctx; ctx.globalThis = ctx;
   vm.createContext(ctx);
   vm.runInContext(readFileSync('assets/js/tracking.js', 'utf8'), ctx);
-  return { ctx, listeners };
+  return { ctx, listeners, enlaces };
 }
+
+/** Deja correr las microtareas de la sonda antes de mirar el resultado. */
+const asentar = () => new Promise((r) => setTimeout(r, 0));
 
 function cargarApp({ conRuta }) {
   let comp = null, init = null;
@@ -180,7 +194,13 @@ console.log('\n4. páginas autocontenidas: clave + origen')
     }
     ctx.window = ctx; ctx.globalThis = ctx
     ctx.window.LuxeContent = { DEFAULT_CONTENT: { contact: {} }, loadContent: async () => ({}) }
-    if (conRuta) ctx.window.lxRuta = (c, o) => (c ? `${R}?m=${c}${o ? `&o=${o}` : ''}` : null)
+    // LA `lxRuta` DE VERDAD, NO UN DOBLE. Aqui habia un stub de dos argumentos,
+    // `(c, o) => ...`, y por eso este bloque no pudo ver nunca que la firma real
+    // habia cambiado a `(clave, reserva, origen)`: el test declaraba el contrato
+    // que queria comprobar. Con el doble, pasar `this.origen` en el segundo
+    // puesto salia verde; con la funcion real, con la sonda caida, el href se
+    // quedaba en la cadena "ig".
+    if (conRuta) ctx.window.lxRuta = conRuta
     vm.createContext(ctx)
     vm.runInContext(m[1], ctx)
     if (init) init()
@@ -192,38 +212,223 @@ console.log('\n4. páginas autocontenidas: clave + origen')
   const ES = 'diseno-de-sonrisa/index.html'
   const EN = 'en/smile-design/index.html'
 
+  // Una `lxRuta` real, con la sonda verde, por cada situacion de clic.
+  const SANA4 = { ok: true, numbers: 'ok', messages: 'ok' }
+  const rutaReal = async (clic) => {
+    const t = cargarTracking(clic || null, { sonda: SANA4, callado: true, enlaces: [] })
+    await asentar()
+    return t.ctx.lxRuta
+  }
+  const RUTA = await rutaReal(null)
+  const RUTA_G = await rutaReal({ id: 'Cj0ABC', tipo: 'g' })
+
   // — el caso que estaba roto —
   for (const utm of ['instagram', 'ig', 'meta', 'facebook', 'fb']) {
-    const c = cargarPagina(ES, { conRuta: true, search: `?utm_source=${utm}` })
+    const c = cargarPagina(ES, { conRuta: RUTA, search: `?utm_source=${utm}` })
     ok(c.waLink().includes('m=web') && c.waLink().includes('o=ig'), `ES utm_source=${utm.padEnd(9)} -> m=web&o=ig`)
   }
-  const g = cargarPagina(ES, { conRuta: true, search: '?utm_source=google' })
+  const g = cargarPagina(ES, { conRuta: RUTA, search: '?utm_source=google' })
   ok(g.waLink().includes('o=google'), 'ES utm_source=google  -> o=google')
 
   // Con identificador de clic NO se manda origen: el gclid ya identifica, y
   // `detectSource()` hace return antes de fijarlo. Si esto fallara, estaríamos
   // mandando dos veces el mismo dato y uno de los dos podría contradecir al otro.
-  const cg = cargarPagina(ES, { conRuta: true, search: '?gclid=Cj0ABC&utm_source=instagram' })
+  const cg = cargarPagina(ES, { conRuta: RUTA_G, search: '?gclid=Cj0ABC&utm_source=instagram' })
   ok(!cg.waLink().includes('o='), 'ES con gclid          -> sin origen (lo identifica el gclid)')
 
   // Sin utm: enruta igual, sin origen.
-  const limpio = cargarPagina(ES, { conRuta: true, search: '' })
+  const limpio = cargarPagina(ES, { conRuta: RUTA, search: '' })
   ok(limpio.waLink().includes('m=web') && !limpio.waLink().includes('o='), 'ES sin utm            -> m=web, sin origen')
   ok(limpio.waLink('virtual').includes('m=web_virtual'), 'ES virtual            -> m=web_virtual')
   ok(limpio.waLink('consultorio').includes('m=web_consultorio'), 'ES consultorio        -> m=web_consultorio')
 
   // — la página en inglés —
-  const en = cargarPagina(EN, { conRuta: true, search: '?utm_source=instagram' })
+  const en = cargarPagina(EN, { conRuta: RUTA, search: '?utm_source=instagram' })
   ok(en.waLink().includes('m=smile_design_en') && en.waLink().includes('o=ig'), 'EN utm_source=instagram -> m=smile_design_en&o=ig')
   // Sus dos variantes NO tienen clave y NO deben enrutarse a la más parecida.
   ok(en.waLink('virtual').startsWith('https://wa.me/'), 'EN virtual            -> wa.me (sin clave, no se inventa)')
   ok(en.waLink('consultorio').startsWith('https://wa.me/'), 'EN consultorio        -> wa.me (sin clave, no se inventa)')
 
   // — el reserva: sin tracking.js sigue el comportamiento de hoy, coletilla incluida —
-  const sin = cargarPagina(ES, { conRuta: false, search: '?utm_source=instagram' })
+  const sin = cargarPagina(ES, { conRuta: null, search: '?utm_source=instagram' })
   const txt = decodeURIComponent(sin.waLink().split('text=')[1])
   ok(sin.waLink().startsWith('https://wa.me/573163903511?text='), 'ES sin tracking.js    -> wa.me con el número correcto')
   ok(txt.includes('(Vengo de Instagram)'), 'ES sin tracking.js    -> conserva la coletilla de hoy')
+
+  // EL CASO QUE ESTABA INVISIBLE: con la sonda CAIDA, el boton tiene que seguir
+  // siendo un `wa.me` que funciona. Es el unico dia en que el reserva sirve de
+  // algo, y era el unico que no se probaba. Con el origen en el segundo puesto
+  // esto devolvia la cadena "ig".
+  const caida = cargarTracking(null, { sonda: 'red', callado: true, enlaces: [] })
+  await asentar()
+  for (const [pag, etq] of [[ES, 'ES'], [EN, 'EN']]) {
+    const c = cargarPagina(pag, { conRuta: caida.ctx.lxRuta, search: '?utm_source=instagram' })
+    ok(c.waLink().startsWith('https://wa.me/'), `${etq} con la sonda caida  -> wa.me, no una cadena suelta`)
+  }
+}
+
+// ── 5. EL ENLACE DE RESERVA ────────────────────────────────────────────────
+// La condición que puso Héctor al autorizar el enrutado: si la ruta de Zeus cae,
+// el paciente tiene que llegar a WhatsApp igual.
+//
+// Lo que se comprueba aquí no es que funcione cuando todo va bien —eso son los
+// bloques 1 y 2— sino que CUANDO ALGO FALLA el href se queda en `wa.me`. Por eso
+// hay más casos rojos que verdes: el estado por defecto tiene que ser el que no
+// necesita que nada funcione.
+console.log('\n5. enlace de reserva');
+{
+  const SANA = { ok: true, numbers: 'ok', messages: 'ok' };
+  const WAME = 'https://wa.me/573163903511?text=Hola';
+  const RUTA = `${R}?m=home_info`;
+
+  const prueba = async (sonda, etq, enruta) => {
+    const t = cargarTracking(null, { sonda, callado: true, enlaces: [WAME] });
+    await asentar();
+    const dado = t.ctx.lxRuta('home_info', WAME);
+    ok(dado === (enruta ? RUTA : WAME), `${etq.padEnd(33)} -> ${enruta ? 'enruta' : 'wa.me'}`);
+    return t;
+  };
+
+  // EL INSTANTE QUE IMPORTA: antes de que la sonda conteste. Todos los demás
+  // casos miran DESPUÉS de resolverse, y por eso ninguno distingue «empieza en
+  // reserva y promueve» de «empieza enrutado y degrada» — que es la decisión de
+  // diseño entera. Sin esta comprobación, invertir el valor inicial de `saludOk`
+  // dejaba el fichero en verde: medido el 15-sep, 0 fallos.
+  {
+    const t = cargarTracking(null, { sonda: SANA, callado: true, enlaces: [WAME] });
+    // sin `asentar()`: la promesa de la sonda sigue pendiente aquí
+    ok(t.ctx.lxRuta('home_info', WAME) === WAME, 'sonda AÚN SIN CONTESTAR           -> wa.me');
+  }
+
+  await prueba(SANA, 'sonda sana', true);
+  // `numbers: memoria` es amarillo para Zeus y VERDE para nosotros: la lista no
+  // se puede releer en vivo, pero los pacientes llegan. Degradar aquí seria
+  // perder atribución por un problema que no afecta al paciente.
+  await prueba({ ok: true, numbers: 'memoria', messages: 'ok' }, 'numbers=memoria', true);
+
+  // Todo lo demás degrada. `numbers: falta` es el caso que nombró Zeus: el
+  // servicio responde 200 y a ESTA clínica le sirve mal.
+  await prueba({ ok: true, numbers: 'falta', messages: 'ok' }, 'numbers=falta', false);
+  await prueba({ ok: true, numbers: 'ok', messages: 'falta' }, 'messages=falta', false);
+  await prueba({ ok: false }, 'ok=false', false);
+  await prueba({}, 'cuerpo vacio', false);
+  await prueba('http500', 'HTTP 500', false);
+  await prueba('red', 'sin red', false);
+  await prueba('ausente', 'sin fetch en el navegador', false);
+
+  // LA PROMOCIÓN. Alpine pinta los href DESPUÉS de que corra tracking.js, así
+  // que sin esto el home se quedaría en wa.me para siempre aunque la sonda
+  // estuviera verde. Se simula lo que hace el observador.
+  {
+    const t = cargarTracking(null, { sonda: SANA, callado: true, enlaces: [WAME] });
+    await asentar();                       // la sonda ya dijo que sí
+    t.ctx.lxRuta('home_info', WAME);       // Alpine pinta: registra el par
+    ok(t.enlaces[0].href === WAME, 'el enlace recien pintado sigue en wa.me');
+    t.ctx.lxPromover();                    // lo que hace el observador
+    ok(t.enlaces[0].href === RUTA, `promover() lo sustituye -> ${t.enlaces[0].href.slice(-14)}`);
+
+    // Y NO promueve si la sonda no dijo que sí, que es la mitad que importa:
+    // si promoviera igual, el reserva no serviría de nada.
+    const malo = cargarTracking(null, { sonda: 'red', callado: true, enlaces: [WAME] });
+    await asentar();
+    malo.ctx.lxRuta('home_info', WAME);
+    malo.ctx.lxPromover();
+    ok(malo.enlaces[0].href === WAME, 'con la sonda caida, promover() no toca nada');
+  }
+
+  // EL OTRO EXTREMO: la rama por texto —blog y las tres autocontenidas— enruta
+  // reescribiendo el href en el clic, así que degradar ahí es NO reescribir.
+  for (const [sonda, etq, enruta] of [[SANA, 'sonda sana', true], ['red', 'sonda caida', false]]) {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda, callado: true });
+    await asentar();
+    const h = t.listeners.find(([ev]) => ev === 'click')[1];
+    const a = { href: `https://wa.me/573163903511?text=${encodeURIComponent('Hola, quiero agendar una valoración en Luxe-Smile.')}` };
+    h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
+    ok(enruta ? a.href.startsWith(R) : a.href.includes('wa.me'),
+      `handler por texto, ${etq.padEnd(11)} -> ${enruta ? 'enruta' : 'deja wa.me'}`);
+  }
+}
+
+console.log('\n6. la coletilla no puede salir dos veces');
+{
+  // Zeus pone la etiqueta de origen —«(Instagram)»— desde una tabla suya al
+  // servir el texto de `m=`. Nosotros la ponemos al componer el `wa.me` del
+  // reserva. Hoy no pueden coincidir porque `lxRuta` devuelve UNO de los dos,
+  // nunca los dos... pero eso es una propiedad que nadie comprueba, y el dia que
+  // alguien toque el reserva puede dejar de ser cierta sin hacer ruido: el
+  // sintoma seria un paciente escribiendo «...(Instagram) (Instagram)».
+  //
+  // La invariante que lo impide, y que este bloque fija:
+  //   un enlace lleva `m=` (lo redacta Zeus) O lleva `text=` (lo redactamos
+  //   nosotros). NUNCA los dos. Si algun dia lleva los dos, hay dos redactores
+  //   sobre el mismo mensaje y la coletilla es solo el primer sintoma.
+  const SANA = { ok: true, numbers: 'ok', messages: 'ok' };
+  const COLETILLA = '(Instagram)';
+  const WAME = `https://wa.me/573163903511?text=${encodeURIComponent('Hola, vengo de la web. ' + COLETILLA)}`;
+
+  const unSoloRedactor = (url, etq) => {
+    const m = /[?&]m=/.test(url);
+    const texto = /[?&]text=/.test(url);
+    ok(m !== texto, `${etq.padEnd(38)} m=${m ? 'si' : 'no'} text=${texto ? 'si' : 'no'}`);
+    // y la etiqueta, como mucho una vez en lo que se manda
+    const veces = decodeURIComponent(url).split(COLETILLA).length - 1;
+    ok(veces <= 1, `${etq.padEnd(38)} coletilla x${veces}`);
+  };
+
+  // enrutado: el texto lo redacta Zeus, nosotros NO mandamos ninguno
+  {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: SANA, callado: true, enlaces: [WAME] });
+    await asentar();
+    unSoloRedactor(t.ctx.lxRuta('home_info', WAME), 'sonda sana, lxRuta');
+    t.ctx.lxPromover();
+    unSoloRedactor(t.enlaces[0].href, 'sonda sana, tras promover');
+  }
+
+  // degradado: lo redactamos nosotros y Zeus no interviene
+  {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: 'red', callado: true, enlaces: [WAME] });
+    await asentar();
+    unSoloRedactor(t.ctx.lxRuta('home_info', WAME), 'sonda caida, lxRuta');
+    t.ctx.lxPromover();
+    unSoloRedactor(t.enlaces[0].href, 'sonda caida, tras promover');
+  }
+
+  // la rama por texto, que reescribe el href EN EL CLIC: al enrutar tiene que
+  // QUITAR el `text=`, no aniadir el `m=` al lado. Es el sitio por donde
+  // entraria la doble coletilla sin que nadie lo notase.
+  //
+  // OJO CON ESTE CASO. Primero lo escribi con un texto que llevaba la coletilla
+  // pegada, lo etiquete «enruta», y paso en verde: no enrutaba: el diccionario
+  // casa por texto EXACTO y ese texto no esta en el. `m=no text=si` cumple la
+  // invariante igual de bien cuando no ha pasado nada. La etiqueta decia una
+  // cosa y la asercion comprobaba otra, que es el mismo fallo que este fichero
+  // existe para cazar. Por eso aqui el texto es el del diccionario y se
+  // comprueba ADEMAS que enruto de verdad.
+  const DICC = 'Hola, quiero agendar una valoración en Luxe-Smile.';
+  {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: SANA, callado: true });
+    await asentar();
+    const h = t.listeners.find(([ev]) => ev === 'click')[1];
+    const a = { href: `https://wa.me/573163903511?text=${encodeURIComponent(DICC)}` };
+    h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
+    ok(a.href.startsWith(R), 'handler por texto: enruto de verdad');
+    unSoloRedactor(a.href, 'handler por texto, enrutado');
+  }
+
+  // Y EL BORDE QUE ESTO DESTAPA, fijado antes de que llegue: el dia que la
+  // pagina pegue la coletilla al componer el texto —que es lo que hace la rama
+  // del `o=`—, este handler DEJA DE CASAR y deja de enrutar, en silencio y sin
+  // que nada se ponga rojo. No es un fallo de hoy; es la razon por la que esa
+  // rama no puede limitarse a aniadir el origen al mensaje.
+  {
+    const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: SANA, callado: true });
+    await asentar();
+    const h = t.listeners.find(([ev]) => ev === 'click')[1];
+    const a = { href: `https://wa.me/573163903511?text=${encodeURIComponent(DICC + ' ' + COLETILLA)}` };
+    h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
+    ok(!a.href.startsWith(R), 'texto + coletilla local: HOY no enruta (documentado)');
+    unSoloRedactor(a.href, 'texto + coletilla local');
+  }
 }
 
 console.log(`\n${fallos ? `FALLOS: ${fallos}` : 'todo en verde'}\n`);

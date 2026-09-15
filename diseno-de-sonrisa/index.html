@@ -139,11 +139,20 @@
         // `gclid` su traspaso es idéntico al de alguien que escribió la URL.
         // El texto lo sirve Zeus. Si tracking.js no cargó, se cae al `wa.me` de
         // siempre CON la coletilla, que es el comportamiento de hoy.
+        // LA RESERVA SE CALCULA PRIMERO y se le pasa a `lxRuta`, igual que en el
+        // home. Mientras la sonda de salud no confirme, `lxRuta` devuelve esta
+        // misma reserva y el botón sigue siendo un `wa.me` que funciona.
+        //
+        // El tercer argumento es `this.origen`, NO el segundo: el segundo es la
+        // reserva. Pasarlo en el sitio equivocado dejaba el href literal "ig"
+        // cuando la sonda estaba caída — y sólo entonces.
         waLink(type) {
           const CLAVES = { virtual: 'web_virtual', consultorio: 'web_consultorio' };
-          const ruta = window.lxRuta && window.lxRuta(CLAVES[type] || 'web', this.origen);
-          if (ruta) return ruta;
+          const reserva = this.waMe(type);
+          return (window.lxRuta && window.lxRuta(CLAVES[type] || 'web', reserva, this.origen)) || reserva;
+        },
 
+        waMe(type) {
           const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
           let msg = 'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa';
 
