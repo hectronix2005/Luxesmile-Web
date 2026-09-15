@@ -85,10 +85,53 @@
      /wa/, que hace lo mismo y redirige. */
   var CLIC_KEY = 'lx_clic';
   var CLIC_DIAS = 90;
-  // Sin espacio tras los dos puntos a propósito: al serializar la URL el espacio
-  // se convierte en '+', y no todos los clientes de WhatsApp lo devuelven a
-  // espacio. Así el CRM siempre lee el mismo literal: Ref:<tipo>.<id>
-  var CLIC_MARCA = 'Ref:';
+
+  /* EL MENSAJE YA NO LLEVA MARCA. Antes viajaba `Ref:<tipo>.<id>` dentro del
+     texto prellenado: 91 caracteres que el paciente VE y puede borrar antes de
+     enviar, porque parecen un error. Cuando los borraba se perdía la atribución
+     de ese clic.
+
+     Ahora el enlace pasa por el redirector de Zeus, que registra el traspaso y
+     compone el texto desde su propio diccionario. El mensaje llega LIMPIO.
+
+     Y lo que gana no es sólo estética. Hoy un mensaje sin marca es ambiguo por
+     construcción —puede ser tráfico orgánico o puede ser una marca perdida— y
+     las dos cosas se ven igual. El redirector registra el paso de TODO el que
+     pulsa, lleve identificador o no, así que:
+
+        hay traspaso y no hay gclid  ->  orgánico, correcto, nada que hacer
+        no hay traspaso              ->  el mecanismo se rompió
+
+     Ésa es la razón de fondo del cambio, no la limpieza del texto. */
+  var REDIRECTOR = 'https://zeus.codi.com.co/6a7aa5453a2a5ee4405a7a6c/wa';
+
+  /* DICCIONARIO CERRADO Y COINCIDENCIA EXACTA, A PROPÓSITO.
+
+     La clave `m` no es el mensaje: es un índice al diccionario de Zeus. Si
+     mandamos una clave que no existe, Zeus NO falla — sirve su texto por
+     defecto. O sea que un error de mapeo no daría error: daría un mensaje
+     distinto del que la página prometió, sin avisar a nadie.
+
+     Por eso aquí se compara el texto ENTERO y literal. Lo que no esté en esta
+     tabla no se reescribe: el enlace sigue yendo a wa.me tal cual, sin
+     atribución pero con el mensaje correcto. Perder una atribución es barato;
+     servirle a un paciente un mensaje que no es el suyo, no.
+
+     Lo que sigue SIN enrutar, porque no tiene clave y pedirla no compensa hoy:
+       - los tres mensajes de /wa/, que son suyos y distintos de todos éstos
+       - las dos variantes en inglés («via virtual consultation» y «and would
+         like an in-office appointment»): esa página tiene tráfico marginal y no
+         quiero multiplicar el diccionario antes de ver si la base funciona
+     Enrutarlas con la clave más parecida sería exactamente el fallo que el
+     párrafo anterior describe. */
+  var CLAVES = {
+    'Hola, quiero agendar una valoración en Luxe-Smile.': 'valoracion',
+    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa.': 'web',
+    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa de forma virtual.': 'web_virtual',
+    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa presencial en el consultorio.': 'web_consultorio',
+    'Hola Dra. Angela, soy paciente internacional y me gustaría agendar una consulta virtual para planificar mi tratamiento dental en Bogotá.': 'internacional',
+    "Hi Dr. Angela, I'm interested in a smile design consultation and I'm traveling from abroad.": 'smile_design_en'
+  };
 
   /* Google usa tres parámetros distintos según el caso, y la API de conversiones
      offline los espera en CAMPOS DISTINTOS. Si solo enviamos el identificador sin
@@ -121,22 +164,35 @@
     } catch (e) { return null; }
   }
 
-  // Se reescribe el href en fase de captura, antes de que el navegador
-  // navegue y antes del listener de conversiones. Idempotente: si el mensaje
-  // ya lleva la referencia no se duplica.
+  /* Se reescribe el href en fase de captura, antes de que el navegador navegue
+     y antes del listener de conversiones.
+
+     Nótese que aquí NO se exige que haya un clic de anuncio vigente. Antes sí:
+     sin identificador no había nada que adjuntar y se dejaba el enlace intacto.
+     Ahora el traspaso se registra AUNQUE no haya identificador, y ése es
+     justamente el caso que distingue «vino de orgánico» de «se rompió algo».
+     Si se filtrara por `clicVigente()` volveríamos a no poder distinguirlos. */
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
     var a = t.closest('a[href*="wa.me"], a[href*="api.whatsapp.com"]');
     if (!a) return;
-    var clic = clicVigente();
-    if (!clic) return;
     try {
       var url = new URL(a.href);
-      var texto = url.searchParams.get('text') || '';
-      if (texto.indexOf(CLIC_MARCA) !== -1) return;
-      url.searchParams.set('text', texto + '\n\n' + CLIC_MARCA + clic.tipo + '.' + clic.id);
-      a.href = url.toString();
+      var clave = CLAVES[url.searchParams.get('text') || ''];
+      if (!clave) return;              // texto no mapeado: se deja ir a wa.me
+      var destino = REDIRECTOR + '?m=' + encodeURIComponent(clave);
+      var clic = clicVigente();
+      if (clic && clic.id) {
+        destino += '&g=' + encodeURIComponent(clic.id);
+        // Zeus espera el nombre completo del parámetro de Google (`t=gclid`), no
+        // la inicial que guardamos nosotros. Si no está en la tabla no se manda
+        // `t` en absoluto: mejor que Zeus lo anote como desconocido a que lo
+        // anote como algo concreto y equivocado.
+        var LARGO = { g: 'gclid', w: 'wbraid', b: 'gbraid' };
+        if (LARGO[clic.tipo]) destino += '&t=' + LARGO[clic.tipo];
+      }
+      a.href = destino;
     } catch (err) { /* href raro: se deja intacto */ }
   }, true);
 
