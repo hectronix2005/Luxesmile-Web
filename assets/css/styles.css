@@ -119,7 +119,11 @@ html {
   text-transform: uppercase;
   letter-spacing: 0.18em;
   font-size: 0.72rem;
-  color: var(--rosegold);
+  /* Estaba en var(--rosegold): 3,56:1 medido en produccion, y a 11,52px el
+     minimo AA es 4,5:1. Era el UNICO fallo de contraste del blog, en 20 sitios
+     —10 en el indice, uno por articulo y uno en privacidad— con una sola
+     regla. Mismo tono que los rotulos del resto del sitio (17-sep-2026). */
+  color: var(--rosegold-dark);
   margin-bottom: 0.75rem;
 }
 .blog-h1 {
