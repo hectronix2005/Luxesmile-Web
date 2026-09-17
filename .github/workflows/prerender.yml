@@ -39,6 +39,13 @@ jobs:
       # content.json manda sobre lo que está duplicado: la paleta de
       # styles.css, el bloque de contacto de DEFAULT_CONTENT y el número
       # escrito a mano. Sin esto vuelven a divergir en silencio (17-sep-2026).
+      # Hasta el 17-sep-2026 el detector de enrutado no lo ejecutaba nadie: ni npm
+      # ni el Action. Llevaba desde el 15-sep sin correr una sola vez, y tenía un
+      # fallo esperándole dentro. Un detector que no se ejecuta cuesta lo mismo
+      # que uno que nunca se pone rojo.
+      - name: Comprobaciones (enrutado a WhatsApp + guardas del admin)
+        run: npm test
+
       - name: Sincronizar fuentes duplicadas con content.json
         run: node scripts/sync-fuentes.mjs
 

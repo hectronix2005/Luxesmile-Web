@@ -140,6 +140,10 @@ console.log('\n3. cobertura: toda página con enlaces a WhatsApp tiene mecanismo
     'pacientes-internacionales/index.html': 'texto literal -> internacional',
     'en/smile-design/index.html': 'texto literal -> smile_design_en',
     'blog/index.html': 'texto literal -> valoracion',
+    // Se añadió el 17-sep-2026, cuando este test se enganchó a `npm test` y se
+    // ejecutó por primera vez desde que se escribió. Sí enruta: carga tracking.js
+    // y su texto casa exacto con la clave. Sólo faltaba estar declarada.
+    'privacidad/index.html': 'texto literal -> valoracion',
     'wa/index.html': 'puente propio: compone el wa.me él mismo, no pasa por el diccionario',
   };
   const ES_BLOG_GENERADO = (f) => f.startsWith('blog/') && f !== 'blog/index.html';
