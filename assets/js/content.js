@@ -235,7 +235,13 @@ async function loadContent() {
   const defaults = structuredClone(DEFAULT_CONTENT);
   try {
     const remote = await fetchRemoteContent();
-    localStorage.setItem(CACHE_KEY, JSON.stringify(remote));
+    // Guardar en caché es una comodidad, no un requisito. Estaba dentro del try
+    // grande: si localStorage se quedaba sin sitio —y se queda, porque entre que
+    // el admin publica y el Action convierte las imágenes, content.json lleva los
+    // base64 dentro— el setItem lanzaba, lo cazaba el catch de abajo y una
+    // descarga que había ido PERFECTA acababa sirviendo la copia vieja.
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(remote)); }
+    catch (e) { avisar('cache_no_cabe', String(e && e.name || e)); }
     return deepMerge(defaults, remote);
   } catch (e) {
     console.warn('No se pudo obtener content.json remoto, intentando caché local.', e);
@@ -426,7 +432,13 @@ async function publishContent(data, expectedSha) {
   if (currentSha) body.sha = currentSha;
 
   const result = await githubRequest(apiPath, { method: 'PUT', body });
-  localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  // Igual que en loadContent: esto va DESPUÉS de que el PUT haya funcionado, así
+  // que si peta —y con los base64 dentro peta por cuota— el error subía como si
+  // hubiese fallado la publicación. Y no había fallado: se veía «Error al
+  // publicar» con el contenido ya en GitHub, y al reintentar salía el aviso de
+  // conflicto, porque el sha de verdad ya era otro.
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); }
+  catch (e) { avisar('cache_no_cabe_al_publicar', String(e && e.name || e)); }
   return { result, newSha: result?.content?.sha, publishedAt };
 }
 
