@@ -13,6 +13,11 @@ on:
       - 'scripts/extract-images.mjs'
       - 'scripts/prerender.mjs'
       - 'scripts/build-blog.mjs'
+      # Sin estas dos, editar la fuente de una pieza duplicada no la propagaba: el
+      # build que lo haria no se disparaba. Anadido el 17-sep-2026, el mismo dia en
+      # que `npm test` resulto no ejecutarse nunca por esta misma razon.
+      - 'scripts/sync-fuentes.mjs'
+      - 'scripts/fragmentos/**'
       - 'package.json'
   workflow_dispatch: {}
 
