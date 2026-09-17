@@ -38,10 +38,10 @@
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260917c" />
-  <script src="../assets/js/content.js?v=20260917f"></script>
-  <script defer src="../assets/js/admin.js?v=20260909a"></script>
+  <script src="../assets/js/content.js?v=20260917g"></script>
+  <script defer src="../assets/js/admin.js?v=20260917g"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260909a';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260917g';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -109,6 +109,19 @@
         </button>
         <button @click="logout()" class="text-xs text-softblack/60 hover:text-rosegold px-2">Salir</button>
       </div>
+    </div>
+
+    <!-- Lectura degradada: había token pero GitHub no respondió, así que lo que se ve
+         viene del sitio público (CDN), que puede ir por detrás del repo. Avisamos aquí
+         y no sólo al pulsar publicar, para que no se descubra tras media hora editando. -->
+    <div
+      x-show="lecturaDegradada"
+      class="mb-6 px-5 py-4 rounded-2xl bg-rosegoldDark text-ivory text-sm leading-relaxed"
+    >
+      <strong>No se pudo leer del repositorio.</strong>
+      Lo que ves viene del sitio público y puede estar desactualizado, así que publicar está
+      bloqueado para no borrar cambios que no aparecen aquí.
+      <button @click="reloadFromRemote()" class="underline font-medium ml-1">Reintentar</button>
     </div>
 
     <!-- Loading -->
@@ -532,7 +545,10 @@
       </div>
 
       <div class="space-y-4">
-        <template x-for="(a, i) in content.blog.articles" :key="a.slug || i">
+        <!-- La clave era a.slug, que es justo el campo que se edita a mano: cambiaba con
+             cada tecla y Alpine rehacía la fila entera. El id sí es estable. El prefijo
+             del respaldo evita que un índice choque con un id que valga lo mismo. -->
+        <template x-for="(a, i) in content.blog.articles" :key="a.id || ('i' + i)">
           <div class="border border-charcoal/10 rounded p-4 bg-ivory/50 space-y-3">
             <div class="flex items-start justify-between gap-3">
               <div>

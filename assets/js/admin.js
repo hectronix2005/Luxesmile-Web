@@ -20,6 +20,9 @@ document.addEventListener('alpine:init', () => {
     loginError: '',
     content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
     snapshot: '',                          // JSON del último estado publicado/cargado (para detectar dirty)
+    // true cuando había token pero la lectura por API falló y se cayó al CDN.
+    // Es el caso peligroso: lo que se ve en pantalla puede ir por detrás del repo.
+    lecturaDegradada: false,
     tab: 'brand',
     toast: '',
     toastTone: 'ok',                       // 'ok' | 'err'
@@ -84,6 +87,7 @@ document.addEventListener('alpine:init', () => {
     // Carga content.json directamente del repo vía API (sin CDN cache).
     // Si no hay token, cae al fetch público (que puede estar cacheado en Pages CDN).
     async loadFreshContent() {
+      this.lecturaDegradada = false;
       const defaults = structuredClone(window.LuxeContent.DEFAULT_CONTENT);
       if (this.gh.token && this.gh.owner && this.gh.repo) {
         try {
@@ -95,6 +99,7 @@ document.addEventListener('alpine:init', () => {
           return;
         } catch (e) {
           console.warn('API load failed, falling back to public fetch:', e.message);
+          this.lecturaDegradada = true;
         }
       }
       this.content = await window.LuxeContent.loadContent();
@@ -176,6 +181,56 @@ document.addEventListener('alpine:init', () => {
     },
 
     /* ------------------- Publicar ------------------- */
+    // scripts/build-blog.mjs aborta si un artículo no trae título, contenido,
+    // imagen o fecha, y si aborta no se ejecutan los pasos siguientes del Action:
+    // no se hace commit de nada. O sea que un artículo a medio escribir no rompe
+    // el blog, rompe el build entero y deja el sitio sin regenerar. Se avisa aquí,
+    // donde se puede arreglar, y no en un log de CI que nadie abre.
+    problemasDelBlog() {
+      const articulos = (this.content.blog && this.content.blog.articles) || [];
+      const ETIQUETA = { title: 'título', content: 'contenido', image: 'imagen', date: 'fecha' };
+      const problemas = [];
+      const vistos = new Map();
+      articulos.forEach((a, i) => {
+        if (!a) return;
+        const nombre = (a.title || '').trim() || `artículo ${i + 1}`;
+        for (const campo of ['title', 'content', 'image', 'date']) {
+          const v = a[campo];
+          if (typeof v !== 'string' || !v.trim()) problemas.push(`«${nombre}»: falta ${ETIQUETA[campo]}`);
+        }
+        const slug = (a.slug || '').trim();
+        if (!slug) problemas.push(`«${nombre}»: falta el slug`);
+        else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) problemas.push(`«${nombre}»: el slug «${slug}» solo admite minúsculas, números y guiones`);
+        else if (vistos.has(slug)) problemas.push(`«${nombre}» y «${vistos.get(slug)}» comparten el slug «${slug}», y el slug es la carpeta: uno borraría al otro`);
+        else vistos.set(slug, nombre);
+      });
+      return problemas;
+    },
+
+    // Se llega aquí cuando el panel se cargó sin sha. Releemos del repo: si lo que
+    // hay allí es idéntico a lo que se cargó al abrir, nadie tocó nada entretanto y
+    // publicar es seguro. Si difiere, NO publicamos — es justo el caso en que se
+    // borraría el trabajo de otra persona. Y si la relectura tampoco funciona,
+    // tampoco: no saber es razón suficiente para no escribir.
+    async recuperarSha() {
+      let fresco;
+      try {
+        const defaults = structuredClone(window.LuxeContent.DEFAULT_CONTENT);
+        const { data, sha } = await window.LuxeContent.fetchContentViaAPI();
+        fresco = { texto: JSON.stringify(window.LuxeContent.deepMerge(defaults, data)), sha };
+      } catch (e) {
+        this.flash('No se pudo leer del repo lo que hay publicado ahora mismo, así que no se publica: no hay forma de saber si alguien más lo cambió. Comprueba la conexión y el token, y vuelve a intentarlo.', 'err', 12000);
+        return false;
+      }
+      if (!fresco.sha || fresco.texto !== this.snapshot) {
+        this.flash('Al abrir el panel no se pudo leer del repo y se trabajó sobre una copia desactualizada. Publicar ahora borraría cambios que no se ven aquí. Pulsa «Recargar desde el repo» y vuelve a aplicar lo tuyo.', 'err', 15000);
+        return false;
+      }
+      this.loadedSha = fresco.sha;
+      this.lecturaDegradada = false;
+      return true;
+    },
+
     async publish() {
       if (!this.gh.owner || !this.gh.repo || !this.gh.token) {
         this.tab = 'publish';
@@ -186,6 +241,18 @@ document.addEventListener('alpine:init', () => {
         this.flash('No hay cambios nuevos para publicar');
         return;
       }
+      // Sin sha no hay red de seguridad: publishContent sólo detecta conflictos si
+      // le pasamos el sha contra el que se editó. Hasta el 17-sep-2026 aquí se
+      // publicaba igual, y si al abrir el panel la lectura por API había fallado se
+      // editaba sobre la copia del CDN —que puede ir por detrás— y el PUT borraba en
+      // silencio todo lo cambiado desde entonces, sin un solo aviso en pantalla.
+      const malBlog = this.problemasDelBlog();
+      if (malBlog.length) {
+        this.tab = 'blog';
+        this.flash(`No se publica: esto haría fallar la generación del sitio. ${malBlog.join(' · ')}`, 'err', 15000);
+        return;
+      }
+      if (!this.loadedSha && !(await this.recuperarSha())) return;
       this.publishing = true;
       try {
         window.LuxeContent.setGithubConfig(this.gh);
@@ -468,10 +535,16 @@ document.addEventListener('alpine:init', () => {
       if (!this.content.blog) this.content.blog = { articles: [] };
       if (!this.content.blog.articles) this.content.blog.articles = [];
       const today = new Date().toISOString().slice(0, 10);
+      // Dos artículos nuevos seguidos compartían el slug «nuevo-articulo», y el
+      // slug es la carpeta: el segundo pisaba al primero al generar el blog y el
+      // índice mostraba dos tarjetas apuntando a la misma página.
+      const usados = new Set(this.content.blog.articles.map((a) => a && a.slug));
+      let slug = 'nuevo-articulo';
+      for (let n = 2; usados.has(slug); n++) slug = `nuevo-articulo-${n}`;
       this.content.blog.articles.unshift({
         id: Date.now(),
         title: 'Nuevo artículo',
-        slug: 'nuevo-articulo',
+        slug,
         excerpt: '',
         image: '',
         category: '',
@@ -838,7 +911,16 @@ document.addEventListener('alpine:init', () => {
       if (!file) return;
       try {
         const data = await window.LuxeContent.importContentJSON(file);
-        this.content = data;
+        // Antes bastaba con que fuese JSON válido: un `[]`, un `null` o el JSON de
+        // otra cosa entraban igual, el panel se quedaba vacío y publicar escribía
+        // eso en el repo. Y esto es justo la función de restaurar copia, la que se
+        // usa cuando algo ya ha salido mal.
+        if (!data || typeof data !== 'object' || Array.isArray(data) || !data.brand || !data.contact) {
+          this.flash('Ese archivo no es una copia del contenido del sitio: le faltan los bloques básicos. No se ha tocado nada.', 'err', 8000);
+          return;
+        }
+        this.content = window.LuxeContent.deepMerge(structuredClone(window.LuxeContent.DEFAULT_CONTENT), data);
+        window.LuxeContent.applyTheme(this.content.theme);
         this.flash('JSON importado — revisa y pulsa Publicar para subirlo');
       } catch {
         this.flash('Archivo inválido: no es un JSON válido', 'err');
