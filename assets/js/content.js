@@ -241,10 +241,25 @@ async function loadContent() {
     console.warn('No se pudo obtener content.json remoto, intentando caché local.', e);
     try {
       const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-      if (cached) return deepMerge(defaults, cached);
+      if (cached) { avisar('contenido_desde_cache', String(e && e.message || e)); return deepMerge(defaults, cached); }
     } catch {}
+    // Éste es el caso malo: ni red ni caché, o sea primera visita con un
+    // tropiezo. Hasta el 17-sep-2026 aquí se servían datos de plantilla y el
+    // botón de WhatsApp llevaba a un número que no era el de la doctora. Ya
+    // no, pero que ocurra sigue siendo un fallo y hasta hoy NO SE REGISTRABA
+    // EN NINGUNA PARTE: sólo un console.warn que no sale del navegador. Un
+    // fallo que no deja rastro es un fallo que nadie descubre.
+    avisar('contenido_fallback', String(e && e.message || e));
     return defaults;
   }
+}
+
+/* Mismo patrón que `degradar()` en tracking.js: si gtag no está —porque el
+   fichero no cargó, o lo bloqueó una extensión, o esto corre en el admin— no
+   pasa nada. Perder el aviso no puede costar la carga de la página. */
+function avisar(evento, motivo) {
+  try { console.warn('[luxe] ' + evento + ': ' + motivo); } catch (e) {}
+  try { if (window.gtag) window.gtag('event', evento, { motivo: motivo }); } catch (e) {}
 }
 
 /* --------------------- Config GitHub API --------------------- */
