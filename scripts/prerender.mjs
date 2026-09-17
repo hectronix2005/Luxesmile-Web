@@ -68,7 +68,7 @@ const services = (content.services || [])
       `<div class="service-card" data-prerendered>` +
       `<h3 class="font-serif text-2xl mb-3">${esc(s.title)}</h3>` +
       `<p class="text-softblack/70 leading-relaxed text-sm">${esc(s.desc)}</p>` +
-      (s.price ? `<p class="mt-3 text-xs font-semibold tracking-wide text-rosegold uppercase">${esc(s.price)}</p>` : '') +
+      (s.price ? `<p class="mt-3 text-xs font-semibold tracking-wide text-rosegoldDark uppercase">${esc(s.price)}</p>` : '') +
       `</div>`,
   )
   .join('');
