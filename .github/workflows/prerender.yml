@@ -36,6 +36,12 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      # content.json manda sobre styles.css. Sin esto, el blog y /privacidad/
+      # se quedan con la paleta anterior cuando se cambia el tema desde el
+      # admin: no ejecutan applyTheme() (17-sep-2026).
+      - name: Sincronizar el tema con content.json
+        run: node scripts/sync-theme.mjs
+
       - name: Extraer imágenes base64 → WebP
         run: node scripts/extract-images.mjs
 

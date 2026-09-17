@@ -9,7 +9,8 @@
     "build:prerender": "node scripts/prerender.mjs",
     "build:blog": "node scripts/build-blog.mjs",
     "build:css": "tailwindcss -c tailwind.config.js -i assets/css/tailwind.src.css -o assets/css/tailwind.css --minify",
-    "build": "npm run build:images && npm run build:prerender && npm run build:blog && npm run build:css"
+    "build": "npm run build:theme && npm run build:images && npm run build:prerender && npm run build:blog && npm run build:css",
+    "build:theme": "node scripts/sync-theme.mjs"
   },
   "devDependencies": {
     "sharp": "^0.33.5",
