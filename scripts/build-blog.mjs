@@ -227,7 +227,7 @@ function indexPage() {
 
   return `${head({ title, desc, url, image: articles[0]?.image, jsonld })}
 ${topbar()}
-  <main class="blog-container blog-index">
+  <main class="blog-container">
     <nav class="blog-breadcrumb" aria-label="Ruta de navegación">
       <a href="/">Inicio</a> <span>›</span> <span class="current">Blog</span>
     </nav>

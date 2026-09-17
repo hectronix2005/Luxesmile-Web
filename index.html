@@ -465,7 +465,7 @@
       <!-- Featured articles grid -->
       <div class="grid md:grid-cols-3 gap-8">
         <template x-for="article in (content.blog?.articles || []).slice(0, 3)" :key="article.id">
-          <a :href="'/blog/' + article.slug + '/'" class="blog-card reveal group cursor-pointer" style="display:block;">
+          <a :href="'/blog/' + article.slug + '/'" class="reveal group cursor-pointer" style="display:block;">
             <!-- Image -->
             <div class="relative mb-6 overflow-hidden rounded-lg aspect-video bg-porcelain/50">
               <img
