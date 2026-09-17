@@ -40,12 +40,25 @@ function documentoFalso(listeners) {
   };
 }
 
+// Doble de un <a>: además del href necesita atributos, porque tracking.js MARCA
+// el enlace antes de reescribirlo (después ya no se sabe que era de WhatsApp) y
+// el listener de conversiones busca esa marca. Sin setAttribute, la reescritura
+// lanza dentro de su propio try y el enlace se queda en wa.me sin decir nada.
+function enlaceFalso(href) {
+  return {
+    href,
+    attrs: {},
+    setAttribute(k, v) { this.attrs[k] = v; },
+    getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; },
+  };
+}
+
 function cargarTracking(clic, opciones) {
   const o = opciones || {};
   const store = new Map();
   if (clic) store.set('lx_clic', JSON.stringify({ id: clic.id, tipo: clic.tipo, t: Date.now() }));
   const listeners = [];
-  const enlaces = (o.enlaces || []).map((h) => ({ href: h }));
+  const enlaces = (o.enlaces || []).map(enlaceFalso);
   const ctx = {
     console: o.callado ? { warn() {}, log() {}, error() {} } : console,
     URL, URLSearchParams, Date, JSON, Math, setTimeout, clearTimeout, Promise,
@@ -346,7 +359,7 @@ console.log('\n5. enlace de reserva');
     const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda, callado: true });
     await asentar();
     const h = t.listeners.find(([ev]) => ev === 'click')[1];
-    const a = { href: `https://wa.me/573163903511?text=${encodeURIComponent('Hola, quiero agendar una valoración en Luxe-Smile.')}` };
+    const a = enlaceFalso(`https://wa.me/573163903511?text=${encodeURIComponent('Hola, quiero agendar una valoración en Luxe-Smile.')}`);
     h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
     ok(enruta ? a.href.startsWith(R) : a.href.includes('wa.me'),
       `handler por texto, ${etq.padEnd(11)} -> ${enruta ? 'enruta' : 'deja wa.me'}`);
@@ -413,7 +426,7 @@ console.log('\n6. la coletilla no puede salir dos veces');
     const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: SANA, callado: true });
     await asentar();
     const h = t.listeners.find(([ev]) => ev === 'click')[1];
-    const a = { href: `https://wa.me/573163903511?text=${encodeURIComponent(DICC)}` };
+    const a = enlaceFalso(`https://wa.me/573163903511?text=${encodeURIComponent(DICC)}`);
     h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
     ok(a.href.startsWith(R), 'handler por texto: enruto de verdad');
     unSoloRedactor(a.href, 'handler por texto, enrutado');
@@ -432,6 +445,85 @@ console.log('\n6. la coletilla no puede salir dos veces');
     h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
     ok(!a.href.startsWith(R), 'texto + coletilla local: HOY no enruta (documentado)');
     unSoloRedactor(a.href, 'texto + coletilla local');
+  }
+}
+
+
+console.log('\n7. la junta con la MEDICIÓN: un enlace ya enrutado sigue contando');
+{
+  /* El fallo que fija este bloque, encontrado el 17-sep-2026 en producción:
+     el listener de conversiones buscaba `a[href*="wa.me"]`, y desde que el
+     enrutado salió NINGÚN enlace contiene ya «wa.me» cuando ese listener corre.
+     En el home porque `promover()` los reescribe nada más responder la sonda;
+     en el blog porque el que enruta va en fase de CAPTURA y el de conversiones
+     en BURBUJA, o sea después. Resultado: cero conversiones de Google Ads, cero
+     `whatsapp_click` en GA4 y cero `Contact` en Meta, en todo el sitio.
+
+     Otra vez el síntoma es un botón que funciona: el paciente llega a WhatsApp
+     con su mensaje. Lo único que desaparece es la cuenta.
+
+     Aquí no se comprueba el href: se comprueba que el enlace SIGA disparando la
+     conversión después de enrutarlo. Es la junta, no las piezas. */
+
+  const SANA = { ok: true, numbers: 'ok', messages: 'ok' };
+  const WAME = 'https://wa.me/573163903511?text=Hola';
+
+  // Stand-in de `closest` para los selectores que usa tracking.js.
+  const casa = (a, sel) => sel.split(',').map((x) => x.trim()).some((parte) => {
+    const porHref = /\[href\*="([^"]+)"\]/.exec(parte);
+    if (porHref) return a.href.includes(porHref[1]);
+    const porAtributo = /\[([a-z-]+)\]$/.exec(parte);
+    if (porAtributo) return a.getAttribute(porAtributo[1]) !== null;
+    return false;
+  });
+
+  const conversionesDe = (t, a) => {
+    const eventos = [];
+    t.ctx.gtag = (...args) => eventos.push(args[1]);          // gtag('event', nombre, …)
+    t.ctx.fbq = (...args) => eventos.push('fb:' + args[1]);
+    const clicks = t.listeners.filter(([ev]) => ev === 'click').map(([, fn]) => fn);
+    clicks[clicks.length - 1]({ target: { closest: (sel) => (casa(a, sel) ? a : null) } });
+    return eventos;
+  };
+
+  // a) enlace sin tocar: tiene que contar (control — si esto falla, el doble miente)
+  {
+    const t = cargarTracking(null, { sonda: 'red', callado: true });
+    await asentar();
+    const ev = conversionesDe(t, enlaceFalso(WAME));
+    ok(ev.length > 0, `enlace en wa.me, sin enrutar        -> cuenta (${ev.join(', ') || 'NADA'})`);
+  }
+
+  // b) home: promover() ya lo mandó a Zeus. ESTE es el que estaba roto.
+  {
+    const t = cargarTracking(null, { sonda: SANA, callado: true, enlaces: [WAME] });
+    await asentar();
+    t.ctx.lxRuta('home_info', WAME);
+    t.ctx.lxPromover();
+    const a = t.enlaces[0];
+    ok(!a.href.includes('wa.me'), '   (y ya no contiene wa.me, que es el problema)');
+    const ev = conversionesDe(t, a);
+    ok(ev.length > 0, `home, ya promovido a Zeus          -> cuenta (${ev.join(', ') || 'NADA'})`);
+  }
+
+  // c) blog: reescrito en el clic, por el listener de captura, antes que éste.
+  {
+    const t = cargarTracking(null, { sonda: SANA, callado: true });
+    await asentar();
+    const a = enlaceFalso(`https://wa.me/573163903511?text=${encodeURIComponent('Hola, quiero agendar una valoración en Luxe-Smile.')}`);
+    const clicks = t.listeners.filter(([ev]) => ev === 'click').map(([, fn]) => fn);
+    clicks[0]({ target: { closest: (sel) => (casa(a, sel) ? a : null) } });   // captura: enruta
+    ok(a.href.startsWith(R), '   (el de captura lo enrutó primero)');
+    const ev = conversionesDe(t, a);
+    ok(ev.length > 0, `blog, reescrito en el clic         -> cuenta (${ev.join(', ') || 'NADA'})`);
+  }
+
+  // d) y un enlace que nunca fue de WhatsApp NO puede contar como tal.
+  {
+    const t = cargarTracking(null, { sonda: 'red', callado: true });
+    await asentar();
+    const ev = conversionesDe(t, enlaceFalso('https://luxesmilee.com/blog/'));
+    ok(ev.length === 0, `un enlace cualquiera               -> no cuenta (${ev.join(', ') || 'nada'})`);
   }
 }
 

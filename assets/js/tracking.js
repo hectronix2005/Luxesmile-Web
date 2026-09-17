@@ -210,6 +210,18 @@
      sólo el código: un 200 de «el servicio está en pie» con el diccionario de
      esta clínica caído es el canario que no puede ponerse rojo. */
   var SALUD = REDIRECTOR + '/salud';
+  /* Marca que ponen los DOS sitios que reescriben un enlace de WhatsApp para
+     mandarlo por Zeus. Existe porque el enlace deja de contener «wa.me», y el
+     listener de conversiones buscaba exactamente eso: desde que el enrutado
+     salió a producción, ningún clic en WhatsApp disparaba ya la conversión de
+     Google Ads, ni `whatsapp_click` en GA4, ni `Contact` en Meta. Comprobado en
+     producción el 17-sep-2026: los 7 enlaces del home apuntaban a Zeus y
+     ninguno casaba con el selector.
+
+     El síntoma de este fallo es un botón que funciona: el paciente llega a
+     WhatsApp con el mensaje correcto. Lo único que desaparece es la cuenta. */
+  var MARCA_WA = 'data-lx-wa';
+
   var SONDA_MS = 2500;
   var promocion = [];      // [[enlaceWaMe, rutaZeus], ...]
   var saludOk = false;     // falso A PROPÓSITO: ver arriba
@@ -271,10 +283,23 @@
     var enlaces = document.querySelectorAll('a[href*="wa.me"], a[href*="api.whatsapp.com"]');
     for (var i = 0; i < enlaces.length; i++) {
       for (var j = 0; j < promocion.length; j++) {
-        if (enlaces[i].href === promocion[j][0]) { enlaces[i].href = promocion[j][1]; break; }
+        if (enlaces[i].href === promocion[j][0]) {
+          enlaces[i].setAttribute(MARCA_WA, '1');
+          enlaces[i].href = promocion[j][1];
+          break;
+        }
       }
     }
   }
+
+  /* La cola de `gtag` se declara AQUÍ, no junto a la carga de la etiqueta, porque
+     `degradar()` se llama de forma síncrona desde el catch de la sonda —el caso
+     en que la sonda ni siquiera se puede lanzar— y allí `window.gtag` todavía no
+     existía: el aviso a GA4 se perdía justo en el fallo más grave, mientras que
+     los leves sí llegaban. Declararla antes no carga nada: sólo encola. */
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { window.dataLayer.push(arguments); }
+  window.gtag = gtag;
 
   function degradar(motivo) {
     saludOk = false;
@@ -337,6 +362,7 @@
       var url = new URL(a.href);
       var destino = lxRuta(CLAVES[url.searchParams.get('text') || '']);
       if (!destino) return;            // texto no mapeado: se deja ir a wa.me
+      a.setAttribute(MARCA_WA, '1');   // antes de tocar el href: después ya no se sabe que lo era
       a.href = destino;
     } catch (err) { /* href raro: se deja intacto */ }
   }, true);
@@ -358,10 +384,6 @@
   }
 
   /* ---------------- Google tag (GA4 + Google Ads) ---------------- */
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { window.dataLayer.push(arguments); }
-  window.gtag = gtag;
-
   if (isSet(TRACKING.ga4) || isSet(TRACKING.googleAds)) {
     var loaderId = isSet(TRACKING.ga4) ? TRACKING.ga4 : TRACKING.googleAds;
     var s = document.createElement('script');
@@ -432,7 +454,10 @@
     if (!t || !t.closest) return;
 
     // 1) WhatsApp — conversión PRINCIPAL
-    if (t.closest('a[href*="wa.me"], a[href*="api.whatsapp.com"]')) {
+    // La marca es imprescindible: este listener va en fase de BURBUJA y el que
+    // enruta va en CAPTURA, o sea que cuando llegamos aquí el href ya es el de
+    // Zeus y «wa.me» ya no está. Los enlaces del home ni siquiera llegan con él.
+    if (t.closest('a[href*="wa.me"], a[href*="api.whatsapp.com"], a[' + MARCA_WA + ']')) {
       adsConversion(TRACKING.labels.whatsapp);
       ga4Event('whatsapp_click');
       metaEvent('Contact');
