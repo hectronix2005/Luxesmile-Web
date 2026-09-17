@@ -32,12 +32,18 @@ const esc = (s) =>
 
 // Reemplaza el interior de una región <!--PR:key--> ... <!--/PR:key-->.
 const missing = [];
+const vacias = [];
+/* Se mide el TEXTO VISIBLE, no la cadena: el H1 vacío sigue produciendo
+   `<span class="block" data-prerendered></span>`, que no está vacío como
+   cadena pero no dice nada a nadie. */
+const sinTexto = (s) => !String(s).replace(/<[^>]*>/g, '').replace(/&nbsp;|\s/g, '');
 function region(key, inner) {
   const re = new RegExp(`(<!--PR:${key}-->)[\\s\\S]*?(<!--/PR:${key}-->)`);
   if (!re.test(html)) {
     missing.push(key);
     return;
   }
+  if (sinTexto(inner)) vacias.push(key);
   html = html.replace(re, `$1${inner}$2`);
 }
 
@@ -76,6 +82,22 @@ region('services', services);
 
 if (missing.length) {
   console.error('✗ Marcadores PR no encontrados en index.html:', missing.join(', '));
+  process.exit(1);
+}
+
+/* QUE NO SE ESCRIBA UN HOME MUDO.
+
+   Antes, si content.json perdía un campo —un guardado del admin a medias, una
+   clave renombrada—, esto vaciaba la región, escribía el fichero y decía
+   «✓ Pre-render aplicado». El home salía con el <h1> EN BLANCO, que es justo
+   lo que lee Google y lo que ve quien no tiene JS, y el Action lo commiteaba.
+   El éxito y el fallo tenían el mismo síntoma (17-sep-2026).
+
+   Se falla ANTES de escribir: más vale un despliegue detenido y ruidoso que un
+   titular vacío en produccion que nadie mira hasta dentro de un mes. */
+if (vacias.length) {
+  console.error('✗ Estas regiones quedarían vacías, así que no se escribe nada:', vacias.join(', '));
+  console.error('  Revisa que content.json tenga esos campos.');
   process.exit(1);
 }
 
