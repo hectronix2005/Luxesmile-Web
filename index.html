@@ -729,5 +729,38 @@
   <!-- Pre-render: quita el contenido estático de las listas (H1, servicios) antes de que
        Alpine hidrate, para no duplicarlo. Corre durante el parseo, antes de los scripts defer. -->
   <script>document.querySelectorAll('[data-prerendered]').forEach(function(n){n.remove();});</script>
+  <!-- RED DE SEGURIDAD DEL FADE-IN. La vigila scripts/test-paginas.mjs, que además
+       comprueba que las cuatro páginas lleven exactamente esta misma copia. -->
+  <script data-lx="red-fade">
+  /* Las secciones nacen con opacity:0 y sólo las revela un IntersectionObserver que
+     monta Alpine. Si Alpine no arranca —la segunda causa del incidente del
+     7-jul-2026— el visitante ve una página en blanco y nada falla en voz alta.
+
+     Esto NO cambia la animación. Sólo actúa si no se ha revelado ni una sección
+     habiendo alguna dentro de la pantalla: ésa es la firma de que el mecanismo está
+     muerto, y no la de que el visitante aún no ha hecho scroll. Con la pestaña en
+     segundo plano no se toca nada, porque ahí el observador no dispara por diseño
+     del navegador y todo parecería roto. */
+  (function () {
+    var reloj = null;
+    function parar() { if (reloj) { clearInterval(reloj); reloj = null; } }
+    function mirar() {
+      if (document.visibilityState !== 'visible') return;
+      if (document.querySelector('.reveal.in-view')) return parar();
+      var e = document.querySelectorAll('.reveal');
+      if (!e.length) return parar();
+      var i, r, dentro = false;
+      for (i = 0; i < e.length; i++) {
+        r = e[i].getBoundingClientRect();
+        if (r.height > 0 && r.top < window.innerHeight && r.bottom > 0) { dentro = true; break; }
+      }
+      if (!dentro) return;
+      parar();
+      for (i = 0; i < e.length; i++) e[i].classList.add('in-view');
+      try { if (window.gtag) window.gtag('event', 'fade_red_de_seguridad'); } catch (err) {}
+    }
+    setTimeout(function () { mirar(); reloj = setInterval(mirar, 2000); setTimeout(parar, 30000); }, 4000);
+  })();
+  </script>
 </body>
 </html>
