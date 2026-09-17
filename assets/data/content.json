@@ -210,9 +210,9 @@
     "articles": [
       {
         "id": 1,
-        "title": "Guía Completa: Diseño de Sonrisa Digital",
+        "title": "Diseño de Sonrisa Digital: cómo funciona, paso a paso",
         "slug": "diseno-sonrisa-digital",
-        "excerpt": "Descubre cómo la tecnología digital revoluciona el diseño de sonrisa, permitiendo visualizar resultados antes del tratamiento.",
+        "excerpt": "Cómo se planifica una sonrisa en digital: de las fotos al diseño que apruebas antes de empezar. Qué ves y qué puedes cambiar.",
         "image": "/assets/img/content/blog-0-ad8fe220c1c8.webp",
         "category": "Técnicas",
         "author": "Dra. Angela Barbosa",
@@ -224,9 +224,9 @@
       },
       {
         "id": 2,
-        "title": "Carillas de Porcelana: Durabilidad y Resultados",
+        "title": "Carillas de Porcelana: durabilidad y resultados reales",
         "slug": "carillas-porcelana",
-        "excerpt": "Todo lo que necesitas saber sobre las carillas de porcelana: durabilidad, cuidados y resultados a largo plazo.",
+        "excerpt": "Durabilidad, cuidados y en qué casos conviene la porcelana. Qué esperar de una carilla cerámica y qué la hace durar más.",
         "image": "/assets/img/content/blog-1-4b7cc895350b.webp",
         "category": "Procedimientos",
         "author": "Dra. Angela Barbosa",
@@ -238,9 +238,9 @@
       },
       {
         "id": 3,
-        "title": "Blanqueamiento Dental: Métodos Seguros y Efectivos",
+        "title": "Blanqueamiento Dental: métodos seguros y qué esperar",
         "slug": "blanqueamiento-dental",
-        "excerpt": "Explora los diferentes métodos de blanqueamiento dental y cómo elegir el más seguro y efectivo para ti.",
+        "excerpt": "Los métodos de blanqueamiento dental, cuál es seguro para tu esmalte y cuánto dura el resultado. Y por qué no todos los dientes blanquean igual.",
         "image": "/assets/img/content/blog-2-b877423bbc70.webp",
         "category": "Cuidados",
         "author": "Dra. Angela Barbosa",
@@ -254,7 +254,7 @@
         "id": 4,
         "title": "¿Cuánto Cuesta un Diseño de Sonrisa en Bogotá?",
         "slug": "precio-diseno-sonrisa-bogota",
-        "excerpt": "Qué factores determinan el precio de un diseño de sonrisa en Bogotá y cómo obtener un presupuesto personalizado y transparente.",
+        "excerpt": "Qué factores determinan el precio de un diseño de sonrisa en Bogotá y cómo saber el tuyo. Sin cifras genéricas: depende de tu caso.",
         "image": "/assets/img/content/blog-3-3aba405db22f.webp",
         "category": "Precios",
         "author": "Dra. Angela Barbosa",
@@ -266,9 +266,9 @@
       },
       {
         "id": 5,
-        "title": "Carillas de Resina vs Porcelana: ¿Cuál Elegir?",
+        "title": "Carillas de Resina o Porcelana: ¿cuál te conviene?",
         "slug": "carillas-resina-vs-porcelana",
-        "excerpt": "Comparamos carillas de resina y de porcelana en estética, durabilidad y precio para ayudarte a decidir con criterio.",
+        "excerpt": "Comparamos resina y porcelana en estética, duración, manchas y precio, y qué debe decidir tu caso más allá del presupuesto.",
         "image": "/assets/img/content/blog-4-dacbc23d82de.webp",
         "category": "Comparativas",
         "author": "Dra. Angela Barbosa",
@@ -280,9 +280,9 @@
       },
       {
         "id": 6,
-        "title": "Implantes Dentales en Bogotá: Guía Completa",
+        "title": "Implantes Dentales en Bogotá: el proceso y los cuidados",
         "slug": "implantes-dentales-bogota",
-        "excerpt": "Qué son los implantes dentales, cómo es el proceso, cuidados y para quién son la mejor solución para reemplazar dientes perdidos.",
+        "excerpt": "Qué son, cómo es el proceso paso a paso, qué cuidados necesitan y para quién son la mejor opción. Guía de la Dra. Angela Barbosa, en Bogotá.",
         "image": "/assets/img/content/blog-5-4fadb6addad2.webp",
         "category": "Procedimientos",
         "author": "Dra. Angela Barbosa",
@@ -294,9 +294,9 @@
       },
       {
         "id": 7,
-        "title": "¿Cuánto Dura una Carilla Dental?",
+        "title": "¿Cuánto Dura una Carilla de Porcelana o Cerámica?",
         "slug": "cuanto-dura-una-carilla-dental",
-        "excerpt": "Cuánto duran las carillas de porcelana y de resina, qué factores influyen en su vida útil y cómo hacer que duren más.",
+        "excerpt": "Cuánto duran las carillas de porcelana, cerámica y resina, qué acorta su vida y cómo alargarla. Lo que más influye no es el material.",
         "image": "/assets/img/content/blog-6-b051b7063352.webp",
         "category": "Cuidados",
         "author": "Dra. Angela Barbosa",
@@ -308,9 +308,9 @@
       },
       {
         "id": 8,
-        "title": "Diseño de Sonrisa vs Carillas: ¿Cuál es la Diferencia?",
+        "title": "Diseño de Sonrisa o Carillas: en qué se diferencian",
         "slug": "diseno-sonrisa-vs-carillas",
-        "excerpt": "Aclaramos la diferencia entre un diseño de sonrisa y las carillas dentales, y cuándo se combinan.",
+        "excerpt": "Un diseño de sonrisa es un plan; las carillas, uno de sus tratamientos. Qué necesitas tú y por qué no son lo mismo.",
         "image": "/assets/img/content/blog-7-7ba216c355a4.webp",
         "category": "Comparativas",
         "author": "Dra. Angela Barbosa",
@@ -322,9 +322,9 @@
       },
       {
         "id": 9,
-        "title": "Rehabilitación Oral en Bogotá: Función y Estética",
+        "title": "Rehabilitación Oral Bogotá: qué incluye y cuándo hace falta",
         "slug": "rehabilitacion-oral-bogota",
-        "excerpt": "Qué es la rehabilitación oral, cuándo se necesita y cómo devuelve la función de morder y la estética de tu sonrisa.",
+        "excerpt": "Qué es la rehabilitación oral, cuándo se necesita y cómo devuelve función y estética a la boca. Explicado por una prostodoncista en Bogotá.",
         "image": "/assets/img/content/blog-8-f996cadecc7c.webp",
         "category": "Procedimientos",
         "author": "Dra. Angela Barbosa",
@@ -334,7 +334,9 @@
         "featured": false,
         "content": "<p>La <strong>rehabilitación oral</strong> es el conjunto de tratamientos que devuelven la <strong>función</strong> (morder y masticar) y la <strong>estética</strong> cuando hay un deterioro importante de la boca. Es la solución integral para casos complejos.</p><h3>¿Cuándo se necesita?</h3><ul><li>Pérdida de varias piezas dentales.</li><li>Desgaste severo por bruxismo o el paso del tiempo.</li><li>Enfermedad periodontal avanzada ya controlada.</li><li>Traumatismos o tratamientos previos que requieren rehacerse.</li></ul><h3>¿Qué puede incluir?</h3><p>Cada plan es único y puede combinar varios procedimientos:</p><ul><li><strong>Implantes dentales</strong> para reemplazar piezas ausentes.</li><li><strong>Coronas y puentes</strong> para reconstruir dientes muy dañados.</li><li><strong>Carillas</strong> para la parte estética del sector visible.</li><li>Tratamiento de encías y ajuste de la mordida.</li></ul><h3>Beneficios</h3><ul><li>Recuperas la capacidad de comer con comodidad y confianza.</li><li>Mejora la estética y la armonía de tu sonrisa.</li><li>Se protege la salud de las articulaciones y los dientes restantes.</li></ul><p>Una rehabilitación oral se planifica en detalle tras un diagnóstico completo. Agenda tu valoración con la Dra. Angela Barbosa en nuestro consultorio de Chico, Bogotá.</p>"
       }
-    ]
+    ],
+    "metaDescription": "Artículos sobre diseño de sonrisa, carillas de porcelana y resina, blanqueamiento e implantes, escritos desde la consulta en Bogotá.",
+    "indexTitle": "Blog · Diseño de Sonrisa, Carillas e Implantes"
   },
   "_publishedAt": "2026-07-14T03:57:50.354Z"
 }
