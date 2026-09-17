@@ -181,18 +181,20 @@ const DEFAULT_CONTENT = {
     { value: '5.0', label: 'Calificación promedio' },
   ],
   contact: {
-    whatsapp: '573001234567',
-    whatsappMessage: 'Hola Dra. Angela, me gustaría agendar una cita en Luxe-Smile.',
-    phone: '+57 300 123 4567',
-    email: 'contacto@luxe-smile.com',
-    address: 'Calle 123 #45-67, Consultorio 802, Bogotá',
-    hours: 'Lun a Vie · 8:00 am – 6:00 pm\nSábados · 9:00 am – 1:00 pm',
-    mapsEmbed: '', // Pega aquí el src del iframe desde Google Maps → Compartir → Insertar mapa
-    calendar: 'https://calendar.app.google/xvX6k3Zy4tsACvCr7',        // cita virtual (con Google Meet)
-    calendarOffice: 'https://calendar.app.google/xvX6k3Zy4tsACvCr7',  // cita presencial en consultorio
-    instagram: '',
-    facebook: '',
-    tiktok: '',
+    // GENERADO por scripts/sync-fuentes.mjs desde content.json. No editar a mano:
+    // es el fallback que ve quien entra si el fetch de content.json falla.
+    whatsapp: "+57 3163903511",
+    whatsappMessage: "Hola Dra. Angela, me gustaría agendar una cita con usted en Luxe-Smile.",
+    phone: "+57 3163903511",
+    email: "consultoriosespecialistasinspi@gmail.com",
+    address: "Cl. 90 #14-16, Consultorio 508 · Chico, Chapinero · Bogotá",
+    hours: "Lun a Vie · 8:00 am – 6:00 pm\nSábados · 9:00 am – 1:00 pm",
+    mapsEmbed: "https://maps.google.com/maps?q=Dra%20Angela%20Barbosa%20Rehabilitaci%C3%B3n%20oral%20y%20Est%C3%A9tica&ll=4.6742261,-74.0524029&z=17&hl=es&output=embed",
+    calendar: "https://calendly.com/consultoriosespecialistasinspi/1-hora",
+    calendarOffice: "https://calendar.app.google/Cbrw5xtAuiNHf63S7",
+    instagram: "https://www.instagram.com/luxesmilee_?igsh=YTIyZ2Uwb3prOW9x",
+    facebook: "",
+    tiktok: "",
   },
   footer: {
     tagline: 'Odontología estética con alma. Sonrisas hechas a medida.',
