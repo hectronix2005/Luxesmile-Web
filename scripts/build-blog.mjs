@@ -251,6 +251,8 @@ function sitemap() {
     { loc: `${SITE}/pacientes-internacionales/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/en/smile-design/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/blog/`, priority: '0.7', changefreq: 'weekly' },
+    // Publicada el 17-sep-2026 y se habia quedado fuera del sitemap.
+    { loc: `${SITE}/privacidad/`, priority: '0.3', changefreq: 'yearly' },
     ...articles.map((a) => ({
       loc: `${SITE}/blog/${a.slug}/`,
       priority: '0.7',
