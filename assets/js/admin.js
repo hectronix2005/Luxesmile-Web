@@ -897,7 +897,12 @@ document.addEventListener('alpine:init', () => {
        ================================================== */
 
     metrics: {
-      pixel: { running: false, ran: false, ids: null, pages: [], error: '' },
+      // ids arranca relleno, no en null: x-show oculta el bloque pero Alpine
+      // sigue evaluando las expresiones de dentro, y `null.problems` lanzaba.
+      pixel: {
+        running: false, ran: false, pages: [], error: '',
+        ids: { ga4: '', googleAds: '', metaPixel: '', whatsapp: '', agenda: '', llamada: '', problems: [] },
+      },
       ga: {
         clientId: localStorage.getItem('luxesmile_ga_client_id') || '',
         propertyId: localStorage.getItem('luxesmile_ga_property_id') || '',
@@ -937,7 +942,7 @@ document.addEventListener('alpine:init', () => {
           return m ? m[1] : '';
         };
         const isPlaceholder = (v) => !v || /XXX|TU_PIXEL_ID/i.test(v);
-        p.ids = {
+        const ids = {
           ga4: pick('ga4'),
           googleAds: pick('googleAds'),
           metaPixel: pick('metaPixel'),
@@ -945,9 +950,8 @@ document.addEventListener('alpine:init', () => {
           agenda: pick('agenda'),
           llamada: pick('llamada'),
         };
-        p.ids.problems = Object.entries(p.ids)
-          .filter(([k, v]) => k !== 'problems' && isPlaceholder(v))
-          .map(([k]) => k);
+        ids.problems = Object.entries(ids).filter(([, v]) => isPlaceholder(v)).map(([k]) => k);
+        p.ids = ids;   // una sola asignacion: nunca hay un estado intermedio sin `problems`
 
         // --- Cobertura por página ---
         for (const page of this._publicPages) {

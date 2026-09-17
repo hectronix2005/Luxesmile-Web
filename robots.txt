@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /admin.html
+Disallow: /marketing/
 
 Sitemap: https://luxesmilee.com/sitemap.xml

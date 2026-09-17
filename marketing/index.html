@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketing · Luxe-Smile</title>
+  <meta name="robots" content="noindex,nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ivory:        'rgb(var(--ivory-rgb) / <alpha-value>)',
+            porcelain:    'rgb(var(--porcelain-rgb) / <alpha-value>)',
+            rosegold:     'rgb(var(--rosegold-rgb) / <alpha-value>)',
+            rosegoldDark: 'rgb(var(--rosegold-dark-rgb) / <alpha-value>)',
+            gold:         'rgb(var(--gold-rgb) / <alpha-value>)',
+            charcoal:     'rgb(var(--charcoal-rgb) / <alpha-value>)',
+            softblack:    'rgb(var(--softblack-rgb) / <alpha-value>)',
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260713m" />
+  <script src="../assets/js/content.js?v=20260910a"></script>
+  <script defer src="../assets/js/marketing.js?v=20260909b"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body x-data="marketing" x-cloak class="admin-shell">
+
+  <!-- ====================== LOGIN ====================== -->
+  <div x-show="!authed" class="min-h-screen flex items-center justify-center p-6">
+    <form @submit.prevent="login()" class="admin-card w-full max-w-md text-center">
+      <p class="font-serif text-4xl mb-2">Luxe-Smile</p>
+      <p class="text-xs uppercase tracking-[0.25em] text-softblack/60 mb-8">Panel de marketing</p>
+
+      <div x-show="needsSetup" class="text-left text-sm bg-porcelain border border-charcoal/10 rounded-lg p-4 mb-6" style="display:none">
+        <p class="font-semibold mb-1">Este navegador todavía no tiene contraseña</p>
+        <p class="text-softblack/70">
+          Se define una sola vez desde el panel admin y sirve para las dos páginas.
+          <a href="../admin/" class="underline">Ir al panel admin</a>.
+        </p>
+      </div>
+
+      <input
+        type="password"
+        x-model="passwordInput"
+        placeholder="Contraseña"
+        class="admin-input text-center"
+        autocomplete="current-password"
+      />
+      <button type="submit" class="btn-primary w-full mt-4">Entrar</button>
+      <p x-show="loginError" x-text="loginError" class="text-rosegold text-sm mt-3" style="display:none"></p>
+      <p class="text-xs text-softblack/50 mt-6">Es la misma contraseña del panel admin.</p>
+    </form>
+  </div>
+
+  <!-- ====================== PANEL ====================== -->
+  <div x-show="authed" class="max-w-6xl mx-auto px-4 md:px-8 py-8" style="display:none">
+
+    <!-- Header -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div>
+        <p class="font-serif text-3xl leading-none">Luxe-Smile</p>
+        <p class="text-xs uppercase tracking-[0.25em] text-softblack/60 mt-1">Panel de marketing</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="../admin/" class="btn-ghost text-xs">Panel admin ↗</a>
+        <a href="../index.html" target="_blank" class="btn-ghost text-xs">Ver sitio ↗</a>
+        <button @click="logout()" class="text-xs text-softblack/60 hover:text-rosegold px-2">Salir</button>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div
+      x-show="toast"
+      x-transition
+      style="display:none"
+      class="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-lg text-sm shadow-lg"
+      :class="toastTone === 'ok' ? 'bg-charcoal text-ivory' : 'bg-rosegold text-white'"
+      x-text="toast"
+    ></div>
+
+    <!-- Pestañas -->
+    <div class="flex flex-wrap gap-2 mb-6">
+      <template x-for="t in tabs" :key="t.id">
+        <button class="admin-tab" :class="{ 'active': tab === t.id }" @click="tab = t.id" x-text="t.label"></button>
+      </template>
+    </div>
+
+    <!-- ============ TRÁFICO ============ -->
+    <div x-show="tab === 'traffic'" class="space-y-6">
+
+      <div class="admin-card space-y-5">
+        <div>
+          <h2 class="font-serif text-2xl">Tráfico del sitio</h2>
+          <p class="text-sm text-softblack/70 mt-1">
+            En vivo desde Google Analytics. Te autenticas con tu propia cuenta: el permiso
+            es de solo lectura y el acceso caduca solo. El token no se guarda en ningún sitio.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="admin-label block mb-2">OAuth Client ID</label>
+            <input class="admin-input font-mono text-xs" x-model="ga.clientId"
+                   placeholder="123456789-abc.apps.googleusercontent.com" />
+          </div>
+          <div>
+            <label class="admin-label block mb-2">ID de propiedad GA4 (numérico)</label>
+            <input class="admin-input font-mono text-xs" x-model="ga.propertyId" placeholder="123456789" />
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button @click="saveGaConfig()" class="btn-ghost text-xs">Guardar configuración</button>
+          <button x-show="!ga.token" @click="gaConnect()" :disabled="ga.connecting"
+                  class="btn-primary text-xs" :class="{ 'opacity-50 cursor-not-allowed': ga.connecting }">
+            <span x-show="!ga.connecting">Conectar Google Analytics</span>
+            <span x-show="ga.connecting" style="display:none">Conectando…</span>
+          </button>
+          <template x-if="ga.token">
+            <div class="flex items-center gap-3">
+              <select class="admin-input w-auto text-xs" x-model.number="ga.days" @change="gaLoadReports()">
+                <option :value="7">Últimos 7 días</option>
+                <option :value="28">Últimos 28 días</option>
+                <option :value="90">Últimos 90 días</option>
+              </select>
+              <button @click="gaLoadReports()" class="btn-ghost text-xs">Actualizar</button>
+              <button @click="gaDisconnect()" class="text-xs text-softblack/60 hover:text-rosegold">Desconectar</button>
+            </div>
+          </template>
+        </div>
+
+        <p x-show="ga.error" x-text="ga.error" class="text-sm text-rosegold" style="display:none"></p>
+        <p x-show="ga.loading" class="text-sm text-softblack/60" style="display:none">Cargando informes…</p>
+
+        <template x-if="ga.summary">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <template x-for="c in [
+              { label: 'Usuarios', v: ga.summary.users },
+              { label: 'Sesiones', v: ga.summary.sessions },
+              { label: 'Vistas',   v: ga.summary.views },
+              { label: 'Rebote %', v: ga.summary.bounce }
+            ]" :key="c.label">
+              <div class="bg-porcelain rounded-lg px-4 py-3">
+                <p class="text-xs uppercase tracking-wide text-softblack/60" x-text="c.label"></p>
+                <p class="font-serif text-3xl mt-1" x-text="fmt(c.v)"></p>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <div class="grid md:grid-cols-2 gap-6" x-show="ga.sources.length || ga.pages.length" style="display:none">
+          <div>
+            <p class="admin-label mb-3">De dónde llega la gente</p>
+            <table class="w-full text-sm">
+              <template x-for="r in ga.sources" :key="r.label">
+                <tr class="border-b border-charcoal/5">
+                  <td class="py-1.5 pr-3 text-softblack/80" x-text="r.label"></td>
+                  <td class="py-1.5 text-right font-mono text-xs" x-text="fmt(r.value)"></td>
+                </tr>
+              </template>
+            </table>
+          </div>
+          <div>
+            <p class="admin-label mb-3">Páginas más vistas</p>
+            <table class="w-full text-sm">
+              <template x-for="r in ga.pages" :key="r.label">
+                <tr class="border-b border-charcoal/5">
+                  <td class="py-1.5 pr-3 text-softblack/80 truncate max-w-[220px]" x-text="r.label"></td>
+                  <td class="py-1.5 text-right font-mono text-xs" x-text="fmt(r.value)"></td>
+                </tr>
+              </template>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reparto por día de la semana -->
+      <div class="admin-card space-y-4" x-show="ga.byDow.length" style="display:none">
+        <div>
+          <h2 class="font-serif text-2xl">Por día de la semana</h2>
+          <p class="text-sm text-softblack/70 mt-1">
+            La pregunta abierta: en las conversaciones de WhatsApp no entra ni un contacto
+            nuevo en fin de semana. Aquí se ve si el fin de semana llega tráfico al sitio.
+            Si llega tráfico y no llegan contactos, el problema no es la pauta.
+          </p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-softblack/60 border-b border-charcoal/10">
+                <th class="py-2 pr-3 font-medium">Día</th>
+                <th class="py-2 px-3 font-medium">Sesiones</th>
+                <th class="py-2 px-3 font-medium w-1/2">&nbsp;</th>
+                <th class="py-2 px-3 font-medium text-right">Clics WA</th>
+                <th class="py-2 pl-3 font-medium text-right">%</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="d in ga.byDow" :key="d.label">
+                <tr class="border-b border-charcoal/5" :class="d.finde ? 'bg-porcelain/60' : ''">
+                  <td class="py-2 pr-3 capitalize" :class="d.finde ? 'font-medium' : ''" x-text="d.label"></td>
+                  <td class="py-2 px-3 font-mono text-xs" x-text="fmt(d.sessions)"></td>
+                  <td class="py-2 px-3">
+                    <div class="h-2 rounded-full bg-charcoal/10">
+                      <div class="h-2 rounded-full"
+                           :class="d.finde ? 'bg-rosegold' : 'bg-charcoal/40'"
+                           :style="`width:${(100 * d.sessions / maxDowSessions).toFixed(1)}%`"></div>
+                    </div>
+                  </td>
+                  <td class="py-2 px-3 text-right font-mono text-xs" x-text="fmt(d.wa)"></td>
+                  <td class="py-2 pl-3 text-right font-mono text-xs text-softblack/60"
+                      x-text="d.rate === null ? '—' : d.rate.toFixed(1) + '%'"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-softblack/60 leading-relaxed">
+          Sábado y domingo van resaltados. «Clics WA» es el evento
+          <code>whatsapp_click</code> del sitio, no conversaciones abiertas: entre el clic
+          y la conversación hay una caída que esta página todavía no puede medir.
+        </p>
+      </div>
+    </div>
+
+    <!-- ============ EMBUDO ============ -->
+    <div x-show="tab === 'funnel'" class="space-y-6" style="display:none">
+      <div class="admin-card space-y-5">
+        <div>
+          <h2 class="font-serif text-2xl">Embudo</h2>
+          <p class="text-sm text-softblack/70 mt-1">
+            Todo lo de aquí sale de los mismos informes de GA4 de la pestaña anterior.
+            No hay ninguna cifra guardada ni escrita a mano.
+          </p>
+        </div>
+
+        <p x-show="!ga.summary" class="text-sm text-softblack/60">
+          Conecta Google Analytics en la pestaña «Tráfico» para ver el embudo.
+        </p>
+
+        <template x-if="funnel">
+          <div class="space-y-3">
+            <template x-for="p in funnel.pasos" :key="p.label">
+              <div>
+                <div class="flex items-baseline justify-between gap-3 mb-1">
+                  <span class="text-sm text-softblack/80" x-text="p.label"></span>
+                  <span class="font-mono text-xs text-softblack/60">
+                    <span x-text="fmt(p.v)"></span>
+                    <span x-show="p.pct !== null && p.pct < 100" x-text="` · ${p.pct.toFixed(2)}%`"></span>
+                  </span>
+                </div>
+                <div class="h-6 rounded bg-charcoal/10 overflow-hidden">
+                  <div class="h-6 bg-rosegold/80"
+                       :style="`width:${Math.max(p.pct === null ? 0 : p.pct, p.v > 0 ? 0.4 : 0)}%`"></div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <div class="bg-porcelain border border-charcoal/10 rounded-lg p-4 text-sm leading-relaxed" x-show="funnel" style="display:none">
+          <p class="font-semibold mb-1">Dónde se corta este embudo</p>
+          <p class="text-softblack/75">
+            El último escalón que el sitio puede ver es el clic. Lo que pasa después
+            —si la conversación se abre, si la clínica responde, si acaba en cita—
+            vive en el CRM de ZEUS, y su API no permite que el navegador la consulte.
+            Por eso esa parte del análisis todavía no está aquí; ver «Qué falta».
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ ETIQUETADO ============ -->
+    <div x-show="tab === 'pixel'" class="space-y-6" style="display:none">
+      <div class="admin-card space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="font-serif text-2xl">Pixel y etiquetas</h2>
+            <p class="text-sm text-softblack/70 mt-1">
+              Revisa los IDs de seguimiento y verifica que cada página pública los cargue.
+              No usa credenciales ni envía datos a nadie.
+            </p>
+          </div>
+          <button @click="runPixelCheck()" :disabled="pixel.running" class="btn-primary text-xs whitespace-nowrap"
+                  :class="{ 'opacity-50 cursor-not-allowed': pixel.running }">
+            <span x-show="!pixel.running">Revisar ahora</span>
+            <span x-show="pixel.running" style="display:none">Revisando…</span>
+          </button>
+        </div>
+
+        <p x-show="pixel.error" x-text="pixel.error" class="text-sm text-rosegold" style="display:none"></p>
+
+        <div x-show="pixel.ran" style="display:none" class="space-y-6">
+          <div>
+            <p class="admin-label mb-3">IDs configurados</p>
+            <div class="grid sm:grid-cols-2 gap-2 text-sm">
+              <template x-for="row in [
+                { k: 'ga4', label: 'Google Analytics 4' },
+                { k: 'googleAds', label: 'Google Ads' },
+                { k: 'metaPixel', label: 'Meta Pixel' },
+                { k: 'whatsapp', label: 'Etiqueta · WhatsApp' },
+                { k: 'agenda', label: 'Etiqueta · Agendar' },
+                { k: 'llamada', label: 'Etiqueta · Llamada' }
+              ]" :key="row.k">
+                <div class="flex items-center justify-between gap-3 bg-porcelain rounded-lg px-3 py-2">
+                  <span class="text-softblack/70" x-text="row.label"></span>
+                  <span class="font-mono text-xs"
+                        :class="pixel.ids.problems.includes(row.k) ? 'text-rosegold' : 'text-charcoal'"
+                        x-text="pixel.ids[row.k] || 'sin configurar'"></span>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <div>
+            <p class="admin-label mb-3">Cobertura por página</p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-left text-softblack/60 border-b border-charcoal/10">
+                    <th class="py-2 pr-3 font-medium">Página</th>
+                    <th class="py-2 px-3 font-medium">tracking.js</th>
+                    <th class="py-2 px-3 font-medium">CTA WhatsApp</th>
+                    <th class="py-2 pl-3 font-medium">CTA Agenda</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="row in pixel.pages" :key="row.label">
+                    <tr class="border-b border-charcoal/5">
+                      <td class="py-2 pr-3" x-text="row.label"></td>
+                      <td class="py-2 px-3">
+                        <span x-show="row.tracking" class="text-emerald-700">✓ sí</span>
+                        <span x-show="!row.tracking" class="text-rosegold" style="display:none">✕ falta</span>
+                      </td>
+                      <td class="py-2 px-3" :class="row.wa > 0 ? '' : 'text-rosegold'" x-text="row.wa > 0 ? row.wa : 'ninguno'"></td>
+                      <td class="py-2 pl-3" :class="row.agenda > 0 ? '' : 'text-softblack/40'" x-text="row.agenda > 0 ? row.agenda : '—'"></td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ QUÉ FALTA ============ -->
+    <div x-show="tab === 'pending'" class="space-y-6" style="display:none">
+      <div class="admin-card space-y-4">
+        <h2 class="font-serif text-2xl">Qué falta en esta página, y por qué</h2>
+        <p class="text-sm text-softblack/70 leading-relaxed">
+          Esta página muestra solo lo que el navegador puede consultar por sí mismo.
+          Dos análisis que sí estamos haciendo no están aquí, y conviene saber el motivo
+          en vez de encontrarse una pestaña vacía.
+        </p>
+
+        <div class="space-y-4 text-sm leading-relaxed">
+          <div class="border-l-2 border-rosegold pl-4">
+            <p class="font-semibold">Análisis de campañas (Google Ads)</p>
+            <p class="text-softblack/75 mt-1">
+              La API de Google Ads necesita un developer token y no admite llamadas desde
+              el navegador. Meterlo en esta página sería publicarlo: el repositorio del
+              sitio es público. Hoy el análisis de campañas se hace fuera y se entrega
+              como informe.
+            </p>
+          </div>
+
+          <div class="border-l-2 border-rosegold pl-4">
+            <p class="font-semibold">Análisis de conversaciones (WhatsApp / CRM)</p>
+            <p class="text-softblack/75 mt-1">
+              Comprobado el 09-09-2026: la API de ZEUS no envía cabecera
+              <code>Access-Control-Allow-Origin</code>, así que el navegador bloquea la
+              consulta aunque haya credencial. Y aunque la enviara, no se puede poner un
+              token de lectura del CRM en una página servida desde un repositorio público.
+            </p>
+          </div>
+
+          <div class="border-l-2 border-charcoal/20 pl-4">
+            <p class="font-semibold">La salida, cuando se decida</p>
+            <p class="text-softblack/75 mt-1">
+              Generar un archivo de agregados fuera y cargarlo aquí desde el disco, sin
+              commitearlo. Queda pendiente de decisión: mientras tanto, ninguna cifra de
+              campañas o conversaciones se guarda en este repositorio.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

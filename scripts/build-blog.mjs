@@ -17,8 +17,8 @@ import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://luxesmilee.com';
-const V = '20260707j'; // cache-bust de CSS
-const VJS = '20260814b'; // cache-bust de tracking.js (mantener en sync con index/landings)
+const V = '20260916b'; // cache-bust de CSS
+const VJS = '20260915b'; // cache-bust de tracking.js (mantener en sync con index/landings)
 
 const content = JSON.parse(readFileSync(join(ROOT, 'assets/data/content.json'), 'utf8'));
 const brand = content.brand || {};
@@ -130,7 +130,13 @@ function relatedList(current) {
 
 function articlePage(a) {
   const url = `${SITE}/blog/${a.slug}/`;
-  const title = `${a.title} | Luxe-Smile Bogotá`;
+  // El sufijo de marca SOLO si cabe. Google corta el <title> sobre los 60
+  // caracteres y lo que pierde es el final, que es justo la parte util; 7 de
+  // los 9 articulos se estaban cortando por culpa de estos 20 caracteres. Y la
+  // marca «luxe smile» trae 50 impresiones en 3 meses, asi que no vale su
+  // espacio a cualquier precio (Search Console, 17-sep-2026).
+  const SUFIJO = ' | Luxe-Smile Bogotá';
+  const title = (a.title.length + SUFIJO.length) <= 60 ? `${a.title}${SUFIJO}` : a.title;
   const desc = a.excerpt || blog.subtitle || '';
   const jsonld = [
     {

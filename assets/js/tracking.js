@@ -85,10 +85,53 @@
      /wa/, que hace lo mismo y redirige. */
   var CLIC_KEY = 'lx_clic';
   var CLIC_DIAS = 90;
-  // Sin espacio tras los dos puntos a propósito: al serializar la URL el espacio
-  // se convierte en '+', y no todos los clientes de WhatsApp lo devuelven a
-  // espacio. Así el CRM siempre lee el mismo literal: Ref:<tipo>.<id>
-  var CLIC_MARCA = 'Ref:';
+
+  /* EL MENSAJE YA NO LLEVA MARCA. Antes viajaba `Ref:<tipo>.<id>` dentro del
+     texto prellenado: 91 caracteres que el paciente VE y puede borrar antes de
+     enviar, porque parecen un error. Cuando los borraba se perdía la atribución
+     de ese clic.
+
+     Ahora el enlace pasa por el redirector de Zeus, que registra el traspaso y
+     compone el texto desde su propio diccionario. El mensaje llega LIMPIO.
+
+     Y lo que gana no es sólo estética. Hoy un mensaje sin marca es ambiguo por
+     construcción —puede ser tráfico orgánico o puede ser una marca perdida— y
+     las dos cosas se ven igual. El redirector registra el paso de TODO el que
+     pulsa, lleve identificador o no, así que:
+
+        hay traspaso y no hay gclid  ->  orgánico, correcto, nada que hacer
+        no hay traspaso              ->  el mecanismo se rompió
+
+     Ésa es la razón de fondo del cambio, no la limpieza del texto. */
+  var REDIRECTOR = 'https://zeus.codi.com.co/6a7aa5453a2a5ee4405a7a6c/wa';
+
+  /* DICCIONARIO CERRADO Y COINCIDENCIA EXACTA, A PROPÓSITO.
+
+     La clave `m` no es el mensaje: es un índice al diccionario de Zeus. Si
+     mandamos una clave que no existe, Zeus NO falla — sirve su texto por
+     defecto. O sea que un error de mapeo no daría error: daría un mensaje
+     distinto del que la página prometió, sin avisar a nadie.
+
+     Por eso aquí se compara el texto ENTERO y literal. Lo que no esté en esta
+     tabla no se reescribe: el enlace sigue yendo a wa.me tal cual, sin
+     atribución pero con el mensaje correcto. Perder una atribución es barato;
+     servirle a un paciente un mensaje que no es el suyo, no.
+
+     Lo que sigue SIN enrutar, porque no tiene clave y pedirla no compensa hoy:
+       - los tres mensajes de /wa/, que son suyos y distintos de todos éstos
+       - las dos variantes en inglés («via virtual consultation» y «and would
+         like an in-office appointment»): esa página tiene tráfico marginal y no
+         quiero multiplicar el diccionario antes de ver si la base funciona
+     Enrutarlas con la clave más parecida sería exactamente el fallo que el
+     párrafo anterior describe. */
+  var CLAVES = {
+    'Hola, quiero agendar una valoración en Luxe-Smile.': 'valoracion',
+    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa.': 'web',
+    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa de forma virtual.': 'web_virtual',
+    'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa presencial en el consultorio.': 'web_consultorio',
+    'Hola Dra. Angela, soy paciente internacional y me gustaría agendar una consulta virtual para planificar mi tratamiento dental en Bogotá.': 'internacional',
+    "Hi Dr. Angela, I'm interested in a smile design consultation and I'm traveling from abroad.": 'smile_design_en'
+  };
 
   /* Google usa tres parámetros distintos según el caso, y la API de conversiones
      offline los espera en CAMPOS DISTINTOS. Si solo enviamos el identificador sin
@@ -121,22 +164,180 @@
     } catch (e) { return null; }
   }
 
-  // Se reescribe el href en fase de captura, antes de que el navegador
-  // navegue y antes del listener de conversiones. Idempotente: si el mensaje
-  // ya lleva la referencia no se duplica.
+  /* Se reescribe el href en fase de captura, antes de que el navegador navegue
+     y antes del listener de conversiones.
+
+     Nótese que aquí NO se exige que haya un clic de anuncio vigente. Antes sí:
+     sin identificador no había nada que adjuntar y se dejaba el enlace intacto.
+     Ahora el traspaso se registra AUNQUE no haya identificador, y ése es
+     justamente el caso que distingue «vino de orgánico» de «se rompió algo».
+     Si se filtrara por `clicVigente()` volveríamos a no poder distinguirlos. */
+  /* La ruta, expuesta. El emparejamiento por texto de aquí abajo NO sirve para
+     el home: sus enlaces los compone Alpine al renderizar, con seis textos
+     propios que no están en HTML, y tres de ellos se derivan de
+     `content.contact.whatsappMessage` — un campo con `<input>` en el panel de la
+     doctora. Emparejar por texto ahí significa que una edición desde el admin
+     rompe la atribución EN SILENCIO: el botón sigue llevando a WhatsApp y nadie
+     ve nada.
+
+     Medido el 14-sep-2026: de los 9 enlaces del home, 0 casaban. El blog y las
+     tres páginas autocontenidas sí, porque su texto es literal y está en el
+     código. O sea que el mecanismo llevaba desde el despliegue cubriendo cuatro
+     de cinco páginas, y las dos comprobaciones que hicimos —Zeus, que el
+     diccionario responde; yo, que el fichero se sirve— pasaron las dos.
+
+     Por eso el home no empareja: llama a `lxRuta(clave)` y manda la clave que ya
+     conoce. El texto deja de ser la llave. Si este fichero no cargó, `lxRuta` no
+     existe y quien llama se queda con su `wa.me` de siempre. */
+  /* ENLACE DE RESERVA. Condición que puso Héctor al autorizar el enrutado: si
+     nuestra ruta cae, el paciente tiene que llegar a WhatsApp igual. La
+     atribución vale menos que un paciente que llega.
+
+     SE EMPIEZA DEGRADADO Y SE PROMUEVE, no al revés. Es la decisión que manda
+     en todo este bloque:
+
+       · Si la sonda no contesta, tarda, la bloquea una extensión, o este código
+         tiene un fallo que no previmos, el href se queda en `wa.me` y el
+         paciente llega. Perdemos la atribución, que es barato.
+       · Al revés —empezar enrutado y degradar si falla— cualquiera de esos
+         mismos casos deja al paciente sin WhatsApp mientras la sonda decide.
+
+     O sea: el estado por defecto es el que no necesita que nada funcione.
+
+     Zeus avisó del modo de fallo contrario: una sonda que diera «rojo» siempre
+     degradaría el sitio de forma permanente y en silencio. Por eso el degradado
+     GRITA —`console.warn` y evento a GA4— y por eso la sonda mira su CUERPO y no
+     sólo el código: un 200 de «el servicio está en pie» con el diccionario de
+     esta clínica caído es el canario que no puede ponerse rojo. */
+  var SALUD = REDIRECTOR + '/salud';
+  var SONDA_MS = 2500;
+  var promocion = [];      // [[enlaceWaMe, rutaZeus], ...]
+  var saludOk = false;     // falso A PROPÓSITO: ver arriba
+
+  /* EL ORDEN DE LOS ARGUMENTOS NO ES CASUAL: `reserva` SEGUNDO.
+     Esta rama y `main` divergieron aqui y las dos firmas eran correctas por
+     separado: la rama tenia `(clave, origen)` y `main` `(clave, reserva)`.
+     Mezcladas sin mirar, las paginas pasaban `this.origen` donde `main` espera
+     el enlace de reserva, y con la sonda caida el boton se quedaba con el href
+     literal "ig". Comprobado ejecutandolo el 15-sep, no leyendo las firmas.
+
+     Lo que lo hacia invisible: con la sonda VERDE no se nota nada, y con la
+     sonda verde es como se prueba todo. El fallo solo aparecia el dia que Zeus
+     se cayera — el unico dia para el que existe el reserva.
+
+     Por eso `reserva` conserva el segundo puesto, que es el que ya usan las
+     llamadas de `main`, y `origen` va tercero. */
+  function lxRuta(clave, reserva, origen) {
+    if (!clave) return null;
+    var destino = REDIRECTOR + '?m=' + encodeURIComponent(clave);
+    var clic = clicVigente();
+    if (clic && clic.id) {
+      destino += '&g=' + encodeURIComponent(clic.id);
+      // Zeus espera el nombre completo del parámetro de Google (`t=gclid`), no
+      // la inicial que guardamos nosotros. Si no está en la tabla no se manda
+      // `t` en absoluto: mejor que Zeus lo anote como desconocido a que lo
+      // anote como algo concreto y equivocado.
+      var LARGO = { g: 'gclid', w: 'wbraid', b: 'gbraid' };
+      if (LARGO[clic.tipo]) destino += '&t=' + LARGO[clic.tipo];
+    }
+    /* ORIGEN, sólo cuando NO hay identificador de clic.
+       Google ya viene identificado por el `gclid`; el tráfico social no trae
+       nada, así que su traspaso es hoy indistinguible de uno directo. Este
+       parámetro es lo único que los separa.
+
+       Valores: 'ig' | 'google'. Códigos cortos y estables, NO el texto legible
+       —«Vengo de Instagram»—, que se redacta para que lo lea una persona y por
+       tanto puede cambiar sin avisar. Un índice que se puede reescribir no es
+       un índice.
+
+       Zeus TOLERA el parámetro hoy (comprobado: sirve el 302 correcto) pero no
+       lo registra ni lo refleja. Hasta que lo haga, esto no desplegado. */
+    if (origen) destino += '&o=' + encodeURIComponent(origen);
+
+    /* Sin reserva se devuelve la ruta tal cual: es lo que hacen las pruebas y
+       cualquier llamada que no tenga a dónde caer. Con reserva se anota el par
+       y se devuelve LA RESERVA hasta que la sonda diga que sí. */
+    if (!reserva) return destino;
+    promocion.push([reserva, destino]);
+    return saludOk ? destino : reserva;
+  }
+  window.lxRuta = lxRuta;
+
+  /* Promueve los href que ya estén pintados. Se vuelve a llamar desde el
+     observador porque Alpine pinta DESPUÉS de que corra este fichero, y vuelve
+     a poner la reserva en cada re-render. */
+  function promover() {
+    if (!saludOk || !promocion.length) return;
+    var enlaces = document.querySelectorAll('a[href*="wa.me"], a[href*="api.whatsapp.com"]');
+    for (var i = 0; i < enlaces.length; i++) {
+      for (var j = 0; j < promocion.length; j++) {
+        if (enlaces[i].href === promocion[j][0]) { enlaces[i].href = promocion[j][1]; break; }
+      }
+    }
+  }
+
+  function degradar(motivo) {
+    saludOk = false;
+    // QUE SE OIGA. Un sitio que pierde toda la atribución y sigue funcionando
+    // perfectamente es el fallo que no se descubre hasta que alguien va a mirar
+    // un número que lleva semanas en cero.
+    try { console.warn('[luxe] enrutado degradado a wa.me: ' + motivo); } catch (e) {}
+    try { if (window.gtag) window.gtag('event', 'enrutado_degradado', { motivo: motivo }); } catch (e) {}
+  }
+  // Expuestas para las pruebas y para poder diagnosticar desde la consola:
+  // `lxPromover()` aplica la sustitución que hace el observador, y `lxDegradar()`
+  // fuerza el modo reserva.
+  window.lxDegradar = degradar;
+  window.lxPromover = promover;
+
+  try {
+    var cortado = false;
+    var reloj = setTimeout(function () {
+      cortado = true; degradar('la sonda no contestó en ' + SONDA_MS + ' ms');
+    }, SONDA_MS);
+    fetch(SALUD, { cache: 'no-store', credentials: 'omit' })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject('HTTP ' + r.status); })
+      .then(function (j) {
+        if (cortado) return;
+        clearTimeout(reloj);
+        // EL CUERPO, NO SÓLO EL CÓDIGO. `numbers` es la lista blanca y
+        // `messages` el diccionario: si falta cualquiera, el servicio responde
+        // pero a esta clínica le sirve mal. `numbers: "memoria"` cuenta como
+        // bueno —los pacientes llegan—; es amarillo para Zeus, no para nosotros.
+        if (j && j.ok === true && j.messages === 'ok' && j.numbers !== 'falta') {
+          saludOk = true;
+          promover();
+        } else {
+          degradar('la sonda respondió ' + JSON.stringify(j));
+        }
+      })
+      .catch(function (e) { if (!cortado) { clearTimeout(reloj); degradar('la sonda falló: ' + e); } });
+  } catch (e) { degradar('no se pudo lanzar la sonda: ' + e); }
+
+  /* Sin esto la promoción sólo alcanzaría a los enlaces ya pintados — hoy,
+     ninguno de los del home. */
+  try {
+    if (window.MutationObserver) {
+      new MutationObserver(function () { promover(); })
+        .observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['href'] });
+    }
+  } catch (e) { /* sin observador: sólo lo ya pintado */ }
+
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
     var a = t.closest('a[href*="wa.me"], a[href*="api.whatsapp.com"]');
     if (!a) return;
-    var clic = clicVigente();
-    if (!clic) return;
+    // El otro extremo del reserva. Esta rama —blog y las tres páginas
+    // autocontenidas— enruta reescribiendo el href en el momento del clic, así
+    // que aquí degradar es simplemente NO reescribir: el enlace ya lleva su
+    // `wa.me` con el mensaje correcto puesto por la página.
+    if (!saludOk) return;
     try {
       var url = new URL(a.href);
-      var texto = url.searchParams.get('text') || '';
-      if (texto.indexOf(CLIC_MARCA) !== -1) return;
-      url.searchParams.set('text', texto + '\n\n' + CLIC_MARCA + clic.tipo + '.' + clic.id);
-      a.href = url.toString();
+      var destino = lxRuta(CLAVES[url.searchParams.get('text') || '']);
+      if (!destino) return;            // texto no mapeado: se deja ir a wa.me
+      a.href = destino;
     } catch (err) { /* href raro: se deja intacto */ }
   }, true);
 

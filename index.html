@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Diseño de Sonrisa en Bogotá | Dra. Angela Barbosa — Luxe-Smile</title>
+  <title>Luxe-Smile · Diseño de Sonrisa y Carillas en el Chico</title>
   <meta
     name="description"
-    content="Diseño de sonrisa en Bogotá con la Dra. Angela Barbosa, especialista en rehabilitación oral y estética. Técnica mínimamente invasiva, sin desgaste. Primera valoración sin costo · Chico · Bogotá Norte."
+    content="Diseño de sonrisa, carillas de porcelana e implantes con la Dra. Angela Barbosa, prostodoncista. Consultorio en el Chico, Bogotá. Valoración sin costo."
   />
   <link rel="canonical" href="https://luxesmilee.com/" />
   <meta name="theme-color" content="#FAF7F2" />
@@ -16,7 +16,7 @@
   <meta property="og:site_name" content="Luxe-Smile" />
   <meta property="og:locale" content="es_CO" />
   <meta property="og:url" content="https://luxesmilee.com/" />
-  <meta property="og:title" content="Diseño de Sonrisa en Bogotá | Dra. Angela Barbosa — Luxe-Smile" />
+  <meta property="og:title" content="Luxe-Smile · Diseño de Sonrisa y Carillas en el Chico" />
   <meta property="og:description" content="Odontología estética de alta gama en el Chico, Bogotá. Diseño de sonrisa, carillas, blanqueamiento e implantes. Primera valoración sin costo." />
   <meta property="og:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
   <meta property="og:image:width" content="1280" />
@@ -24,7 +24,7 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Diseño de Sonrisa en Bogotá | Dra. Angela Barbosa — Luxe-Smile" />
+  <meta name="twitter:title" content="Luxe-Smile · Diseño de Sonrisa y Carillas en el Chico" />
   <meta name="twitter:description" content="Odontología estética de alta gama en el Chico, Bogotá. Primera valoración sin costo." />
   <meta name="twitter:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
 
@@ -34,6 +34,7 @@
     "@context": "https://schema.org",
     "@type": "Dentist",
     "name": "Luxe-Smile — Dra. Angela Barbosa",
+    "alternateName": ["Luxe Smile", "Luxe Smiles", "LuxeSmile", "Dra Angela Barbosa Rehabilitación oral y Estética"],
     "image": "https://luxesmilee.com/assets/img/og-cover.jpg",
     "url": "https://luxesmilee.com/",
     "telephone": "+573163903511",
@@ -65,7 +66,7 @@
         "closes": "13:00"
       }
     ],
-    "sameAs": ["https://www.instagram.com/luxesmilee_"],
+    "sameAs": ["https://www.instagram.com/luxesmilee_", "https://maps.google.com/?cid=2846959231365109133"],
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "5.0",
@@ -75,7 +76,7 @@
   </script>
 
   <!-- Seguimiento de conversiones (GA4 + Google Ads + Meta Pixel). Editar los IDs en assets/js/tracking.js -->
-  <script src="assets/js/tracking.js?v=20260814b"></script>
+  <script src="assets/js/tracking.js?v=20260915b"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -89,11 +90,11 @@
   </noscript>
 
   <!-- Tailwind compilado (reemplaza el CDN, no apto para producción). Se genera en build. -->
-  <link rel="stylesheet" href="assets/css/tailwind.css?v=20260704a" />
+  <link rel="stylesheet" href="assets/css/tailwind.css?v=20260916b" />
 
   <link rel="stylesheet" href="assets/css/styles.css?v=20260707j" />
-  <script src="assets/js/content.js?v=20260810a"></script>
-  <script src="assets/js/app.js?v=20260809a"></script>
+  <script src="assets/js/content.js?v=20260910a"></script>
+  <script src="assets/js/app.js?v=20260915a"></script>
   <script defer src="assets/js/alpine.min.js?v=3.14.9"></script>
 </head>
 
@@ -190,7 +191,7 @@
   <section id="inicio" class="relative pt-32 pb-24 hero-aura overflow-hidden">
     <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-12 items-center">
       <div class="lg:col-span-7 reveal">
-        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-6" x-text="content.hero.eyebrow"><!--PR:eyebrow-->Odontología estética · Diseño de sonrisa<!--/PR:eyebrow--></p>
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-6" x-text="content.hero.eyebrow"><!--PR:eyebrow-->Odontología estética · Diseño de sonrisa<!--/PR:eyebrow--></p>
         <h1
           class="hero-title text-6xl md:text-7xl lg:text-[5.5rem]"
         >
@@ -252,7 +253,7 @@
         <div
           class="hidden md:block absolute -bottom-8 -left-8 bg-white px-6 py-5 rounded-sm shadow-xl border border-charcoal/5 w-60"
         >
-          <p class="font-serif text-3xl text-rosegold leading-none">5.0</p>
+          <p class="font-serif text-3xl text-rosegoldDark leading-none">5.0</p>
           <p class="text-gold text-sm mt-1">★ ★ ★ ★ ★</p>
           <p class="text-xs text-softblack/70 mt-2 leading-snug">
             Basado en cientos de pacientes que ya confían su sonrisa en Luxe-Smile.
@@ -269,7 +270,7 @@
     >
       <template x-for="stat in content.stats" :key="stat.label">
         <div class="text-center reveal">
-          <p class="font-serif text-4xl md:text-5xl text-rosegold" x-text="stat.value"></p>
+          <p class="font-serif text-4xl md:text-5xl text-rosegoldDark" x-text="stat.value"></p>
           <p class="mt-2 text-xs uppercase tracking-[0.2em] text-softblack/70" x-text="stat.label"></p>
         </div>
       </template>
@@ -295,7 +296,7 @@
       </div>
 
       <div class="lg:col-span-7 order-1 lg:order-2 reveal">
-        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Sobre mí</p>
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Sobre mí</p>
         <h2 class="font-serif text-5xl md:text-6xl leading-[1] mb-3" x-text="content.about.title"><!--PR:aboutTitle-->Dra. Angela Barbosa Gómez<!--/PR:aboutTitle--></h2>
         <p class="font-serif italic text-xl text-softblack/70 mb-8" x-text="content.about.subtitle"><!--PR:aboutSubtitle-->Prostodoncista · Especialista en Rehabilitación Oral y Estética · +10 años<!--/PR:aboutSubtitle--></p>
         <p class="text-softblack/80 leading-relaxed text-lg" x-text="content.about.text"><!--PR:aboutText-->Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.<!--/PR:aboutText--></p>
@@ -316,7 +317,7 @@
   <section id="servicios" class="py-24 lg:py-32 bg-porcelain/50 border-y border-charcoal/5">
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
       <div class="text-center max-w-2xl mx-auto mb-16 reveal">
-        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Servicios</p>
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Servicios</p>
         <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]">
           Tratamientos pensados <em class="text-rosegold">para ti</em>
         </h2>
@@ -327,13 +328,13 @@
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!--PR:services--><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Diseño de Sonrisa</h3><p class="text-softblack/70 leading-relaxed text-sm">Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Carillas de Porcelana</h3><p class="text-softblack/70 leading-relaxed text-sm">Carillas ultrafinas que corrigen forma, color y alineación en pocas sesiones, con resultados del más alto nivel estético.</p><p class="mt-3 text-xs font-semibold tracking-wide text-rosegold uppercase">desde $6.000.000</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Blanqueamiento Premium</h3><p class="text-softblack/70 leading-relaxed text-sm">Tratamiento en consultorio con geles de última generación. Hasta 3 tonos más blanco sin sensibilidad.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Rehabilitación de Alta Complejidad </h3><p class="text-softblack/70 leading-relaxed text-sm">Tratamiento para reconstruir la dentadura completa o parcial cuando existe un deterioro Severo, pérdida de piezas, enfermedades periodontales avanzadas o traumas. </p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Implantes Dentales</h3><p class="text-softblack/70 leading-relaxed text-sm">Reemplaza dientes perdidos con implantes de titanio de grado médico. Función y estética para toda la vida.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Odontología Preventiva</h3><p class="text-softblack/70 leading-relaxed text-sm">Profilaxis, detartraje y control periódico para mantener tu sonrisa saludable y prevenir tratamientos mayores.</p></div><!--/PR:services-->
+        <!--PR:services--><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Diseño de Sonrisa</h3><p class="text-softblack/70 leading-relaxed text-sm">Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Carillas de Porcelana</h3><p class="text-softblack/70 leading-relaxed text-sm">Carillas ultrafinas que corrigen forma, color y alineación en pocas sesiones, con resultados del más alto nivel estético.</p><p class="mt-3 text-xs font-semibold tracking-wide text-rosegoldDark uppercase">desde $6.000.000</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Blanqueamiento Premium</h3><p class="text-softblack/70 leading-relaxed text-sm">Tratamiento en consultorio con geles de última generación. Hasta 3 tonos más blanco sin sensibilidad.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Rehabilitación de Alta Complejidad </h3><p class="text-softblack/70 leading-relaxed text-sm">Tratamiento para reconstruir la dentadura completa o parcial cuando existe un deterioro Severo, pérdida de piezas, enfermedades periodontales avanzadas o traumas. </p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Implantes Dentales</h3><p class="text-softblack/70 leading-relaxed text-sm">Reemplaza dientes perdidos con implantes de titanio de grado médico. Función y estética para toda la vida.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Odontología Preventiva</h3><p class="text-softblack/70 leading-relaxed text-sm">Profilaxis, detartraje y control periódico para mantener tu sonrisa saludable y prevenir tratamientos mayores.</p></div><!--/PR:services-->
         <template x-for="(service, i) in content.services" :key="i">
           <div class="service-card reveal">
             <div class="service-icon" x-text="service.icon"></div>
             <h3 class="font-serif text-2xl mb-3" x-text="service.title"></h3>
             <p class="text-softblack/70 leading-relaxed text-sm" x-text="service.desc"></p>
-            <p x-show="service.price" class="mt-3 text-xs font-semibold tracking-wide text-rosegold uppercase" x-text="service.price"></p>
+            <p x-show="service.price" class="mt-3 text-xs font-semibold tracking-wide text-rosegoldDark uppercase" x-text="service.price"></p>
           </div>
         </template>
       </div>
@@ -362,13 +363,13 @@
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
       <div class="flex items-end justify-between flex-wrap gap-6 mb-12 reveal">
         <div>
-          <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Galería</p>
+          <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Galería</p>
           <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]">
             Sonrisas <em class="text-rosegold">reales</em>
           </h2>
         </div>
         <div class="max-w-md">
-          <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-3">Antes / Después</p>
+          <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-3">Antes / Después</p>
           <p class="text-softblack/70 leading-relaxed">
             Cada caso es único. Así lucen algunos de nuestros resultados recientes, siempre con el
             permiso y la felicidad de nuestros pacientes.
@@ -400,7 +401,7 @@
   >
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
       <div class="text-center max-w-2xl mx-auto mb-12 reveal">
-        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Testimonios</p>
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Testimonios</p>
         <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]">
           Lo que dicen <em class="text-rosegold">de nosotros</em>
         </h2>
@@ -456,7 +457,7 @@
   >
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
       <div class="text-center max-w-2xl mx-auto mb-16 reveal">
-        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Blog</p>
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Blog</p>
         <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]" x-text="content.blog?.title"></h2>
         <p class="text-softblack/70 text-lg mt-4" x-text="content.blog?.subtitle"></p>
       </div>
@@ -478,7 +479,7 @@
             <!-- Content -->
             <div>
               <div class="flex items-center gap-3 mb-3">
-                <span class="inline-block px-3 py-1 bg-rosegold/10 text-rosegold text-xs font-medium rounded-full" x-text="article.category"></span>
+                <span class="inline-block px-3 py-1 bg-rosegold/10 text-rosegoldDark text-xs font-medium rounded-full" x-text="article.category"></span>
                 <span class="text-xs text-softblack/60" x-text="article.readTime"></span>
               </div>
 
@@ -504,7 +505,7 @@
   <section id="contacto" class="py-24 lg:py-32">
     <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-12">
       <div class="lg:col-span-5 reveal">
-        <p class="uppercase tracking-[0.3em] text-xs text-rosegold mb-4">Contacto</p>
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Contacto</p>
         <h2 class="font-serif text-5xl md:text-6xl leading-[1.05] mb-6">
           Agenda tu <em class="text-rosegold">cita</em>
         </h2>
@@ -593,7 +594,7 @@
           <p class="mt-3 text-sm text-ivory/60 leading-relaxed max-w-xs" x-text="content.footer.tagline"></p>
         </div>
         <div>
-          <p class="admin-label text-[11px] text-ivory/50 mb-4">Explora</p>
+          <p class="tracking-widest uppercase font-medium text-[11px] text-ivory/50 mb-4">Explora</p>
           <ul class="space-y-2 text-sm">
             <template x-for="link in content.nav" :key="link.href">
               <li>
@@ -603,7 +604,7 @@
           </ul>
         </div>
         <div>
-          <p class="admin-label text-[11px] text-ivory/50 mb-4">Contacto directo</p>
+          <p class="tracking-widest uppercase font-medium text-[11px] text-ivory/50 mb-4">Contacto directo</p>
           <ul class="space-y-2 text-sm text-ivory/80">
             <li x-text="content.contact.phone"></li>
             <li x-text="content.contact.email"></li>
@@ -625,6 +626,7 @@
       </div>
       <div class="pt-6 flex flex-wrap items-center justify-between gap-3 text-xs text-ivory/50">
         <p x-text="content.footer.copyright"></p>
+        <p class="max-w-2xl">Luxe-Smile —también escrito <strong>Luxe Smile</strong>— es el consultorio de la <strong>Dra. Angela Barbosa</strong>, especialista en <strong>Rehabilitación Oral y Estética</strong>, en el Chico, Bogotá.</p>
         <a href="admin/" class="hover:text-rosegold">Panel admin</a>
       </div>
     </div>

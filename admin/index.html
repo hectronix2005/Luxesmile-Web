@@ -38,10 +38,10 @@
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260713m" />
-  <script src="../assets/js/content.js?v=20260810a"></script>
-  <script defer src="../assets/js/admin.js?v=20260810a"></script>
+  <script src="../assets/js/content.js?v=20260910a"></script>
+  <script defer src="../assets/js/admin.js?v=20260909a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260810a';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260909a';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -96,6 +96,7 @@
           class="text-xs text-rosegold font-medium"
           title="Tienes cambios sin publicar"
         >● Cambios sin publicar</span>
+        <a href="../marketing/" class="btn-ghost text-xs">Marketing ↗</a>
         <a href="../index.html" target="_blank" class="btn-ghost text-xs">Ver sitio ↗</a>
         <button
           @click="publish()"
