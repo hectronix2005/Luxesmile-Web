@@ -170,7 +170,7 @@ function articlePage(a) {
 
   return `${head({ title, desc, url, image: a.image, jsonld })}
 ${topbar()}
-  <main class="blog-container blog-article">
+  <main class="blog-container">
     <nav class="blog-breadcrumb" aria-label="Ruta de navegación">
       <a href="/">Inicio</a> <span>›</span> <a href="/blog/">Blog</a> <span>›</span> <span class="current">${escText(a.title)}</span>
     </nav>
