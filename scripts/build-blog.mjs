@@ -40,6 +40,34 @@ if (!articles.length) {
   process.exit(1);
 }
 
+/* CAMPOS OBLIGATORIOS, Y QUE FALLEN TODOS IGUAL.
+
+   Medido el 17-sep-2026, con content.json degradado: faltaba `title` y esto
+   reventaba con una traza cruda de Node que no decia ni que articulo era;
+   faltaba `image` y generaba la pagina con src="" tan contento; faltaba
+   `date` y la generaba sin datePublished. Tres formas distintas de fallar
+   para el mismo tipo de problema, y dos de ellas en silencio.
+
+   Se revisan TODOS antes de escribir y se listan todos los problemas de una
+   vez: quien lo arregle quiere verlos juntos, no descubrirlos de uno en uno
+   en tres despliegues fallidos. `excerpt` no entra: cae a blog.subtitle a
+   proposito. */
+const OBLIGATORIOS = ['title', 'content', 'image', 'date'];
+const problemas = [];
+for (const a of articles) {
+  for (const campo of OBLIGATORIOS) {
+    const v = a[campo];
+    if (typeof v !== 'string' || !v.trim()) {
+      problemas.push(`/blog/${a.slug}/ · falta «${campo}»`);
+    }
+  }
+}
+if (problemas.length) {
+  console.error('✗ Articulos incompletos en content.json. No se escribe nada:');
+  problemas.forEach((p) => console.error('   ' + p));
+  process.exit(1);
+}
+
 // --- helpers ---
 const escAttr = (s) =>
   String(s ?? '')
