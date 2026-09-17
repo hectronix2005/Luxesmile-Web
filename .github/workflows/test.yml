@@ -1,0 +1,25 @@
+name: Comprobaciones
+
+# El paso de `npm test` vive también dentro del flujo de Build, pero ese tiene
+# filtros de rutas: sólo se dispara si cambia content.json o uno de los scripts
+# de build. O sea que un commit que rompiese tracking.js, app.js o el HTML de una
+# página no ejecutaba los detectores. Lo comprobé el 17-sep-2026 mirando la
+# ejecución de un commit que SÍ tocaba package.json y daba verde: coincidir no es
+# comprobar. Este flujo no lleva filtros y corre en cada push.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm test
