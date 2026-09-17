@@ -269,6 +269,14 @@ async function getGithubConfig() {
     const res = await fetch('/assets/data/github-config.json');
     if (res.ok) {
       const fileConfig = await res.json();
+      /* OJO: github-config.json ES PUBLICO —se sirve en el dominio y esta
+         commiteado en un repo publico—. Hoy su `token` esta vacio y por eso
+         esta rama no se toma nunca. Si alguien lo rellena para ahorrarse
+         configurar cada navegador, ese token queda legible por cualquiera con
+         permiso de escritura sobre el repo, al instante y sin que nada avise.
+         El sitio para el que se pone es justamente el peor sitio donde ponerlo.
+         Revisado el 17-sep-2026: se mantiene la rama por decision de Hector,
+         con el aviso puesto tambien dentro del propio fichero. */
       if (fileConfig.token) {
         return fileConfig; // Usa el token del archivo si existe
       }

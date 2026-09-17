@@ -1,4 +1,5 @@
 {
+  "_AVISO": "ESTE FICHERO ES PUBLICO: se sirve en https://luxesmilee.com/assets/data/github-config.json y esta commiteado en un repo publico. NO PONGAS EL TOKEN AQUI. Si lo rellenas, cualquiera en internet tendra permiso de escritura sobre el repo, al instante y sin aviso. El token va en el localStorage de cada navegador, desde el propio panel. Dejalo en cadena vacia. (17-sep-2026)",
   "owner": "hectronix2005",
   "repo": "Luxesmile-Web",
   "branch": "main",
