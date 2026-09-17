@@ -32,6 +32,10 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const leerDisco = (p) => readFileSync(join(ROOT, p), 'utf8');
 
+const PAGINAS_CON_RED = ['index.html', 'diseno-de-sonrisa/index.html',
+  'pacientes-internacionales/index.html', 'en/smile-design/index.html'];
+const RED_RE = /  <!-- RED DE SEGURIDAD DEL FADE-IN[\s\S]*?<\/script>/;
+
 const VARS = { ivory: 'ivory', porcelain: 'porcelain', rosegold: 'rosegold',
   rosegoldDark: 'rosegold-dark', gold: 'gold', charcoal: 'charcoal', softblack: 'softblack' };
 
@@ -102,6 +106,23 @@ function sincronizar(leer) {
     ['wa/index.html',                        /(wa\.me\/)57\d{10}/g,               `$1${dig}`,    'wa.me'],
     ['wa/index.html',                        /(var NUMERO = ')57\d{10}(')/g,      `$1${dig}$2`,  'NUMERO'],
   ];
+  /* 4) Red de seguridad del fade-in -> las cuatro páginas con secciones ocultas.
+     Tiene que ir inline en cada una (ver scripts/fragmentos/red-fade.html), así que
+     son cuatro copias por diseño. Lo que no puede ser es que diverjan: la fuente es
+     el fragmento y esto las reescribe. scripts/test-paginas.mjs lo comprueba además
+     desde fuera, por si alguien edita las páginas sin pasar por el build. */
+  {
+    const fragmento = leer('scripts/fragmentos/red-fade.html').replace(/\n$/, '');
+    for (const ruta of PAGINAS_CON_RED) {
+      editar(ruta, (s) => {
+        if (!RED_RE.test(s)) { fallos.push(`no encuentro la red del fade en ${ruta}`); return s; }
+        const nuevo = s.replace(RED_RE, fragmento);
+        if (nuevo !== s) cambios.push(`${ruta}  red del fade-in`);
+        return nuevo;
+      });
+    }
+  }
+
   for (const [ruta, re, rep, etiqueta] of PATRONES) {
     editar(ruta, (s) => {
       re.lastIndex = 0;
@@ -124,6 +145,7 @@ function autotest() {
     ['contacto en content.js', 'assets/js/content.js',  (s) => s.replace(/(phone: ")[^"]+(")/, '$1+57 3009999999$2')],
     ['número en /wa/',         'wa/index.html',         (s) => s.replace(/(wa\.me\/)57\d{10}/, '$1573009999999')],
     ['telephone del JSON-LD',  'index.html',            (s) => s.replace(/("telephone":\s*")\+?57\d{10}(")/, '$1+573009999999$2')],
+    ['red del fade en la landing EN', 'en/smile-design/index.html', (s) => s.replace('setTimeout(parar, 30000)', 'setTimeout(parar, 99999)')],
   ];
   // Antes de nada: en limpio NO puede haber cambios. Si los hay, el resto no prueba nada.
   const limpio = sincronizar(leerDisco);

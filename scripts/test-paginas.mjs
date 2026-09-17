@@ -112,5 +112,34 @@ ok(ninguna(correr({ visible: false, yaRevelada: false, enPantalla: true })),
 ok(ninguna(correr({ visible: true, yaRevelada: false, enPantalla: false })),
    'todo por debajo del pliegue                -> no toca nada');
 
+// ── 4. el JS inline parsea, y el JSON-LD es JSON ────────────────────────────
+// Una errata en un <script> inline no da error en ningun sitio hasta que un
+// visitante abre la pagina: el HTML se sirve igual y el navegador se calla. Y un
+// JSON-LD roto no rompe nada visible — solo deja de existir para Google.
+//
+// OJO: la primera version de esto daba 6 fallos que no eran fallos. Metia los
+// bloques `application/ld+json` por `node --check` como si fueran JavaScript.
+// El comprobador estaba mal, no las paginas.
+console.log('\n4. el JavaScript inline parsea y el JSON-LD es JSON');
+{
+  let jsOk = 0, ldOk = 0;
+  for (const f of htmls) {
+    const s = readFileSync(f, 'utf8');
+    for (const m of s.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)) {
+      const attrs = m[1], cuerpo = m[2];
+      if (/\bsrc=/.test(attrs) || !cuerpo.trim()) continue;
+      if (/ld\+json/.test(attrs)) {
+        try { JSON.parse(cuerpo); ldOk++; }
+        catch (e) { ok(false, `${f}: JSON-LD no parsea — ${e.message.slice(0, 60)}`); }
+      } else {
+        try { new vm.Script(cuerpo); jsOk++; }
+        catch (e) { ok(false, `${f}: JS inline no parsea — ${e.message.slice(0, 60)}`); }
+      }
+    }
+  }
+  ok(jsOk > 0, `${jsOk} bloques de JavaScript inline parsean`);
+  ok(ldOk > 0, `${ldOk} bloques de JSON-LD son JSON válido`);
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);

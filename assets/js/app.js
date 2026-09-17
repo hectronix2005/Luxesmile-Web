@@ -23,7 +23,7 @@ function registerAndInitialize() {
     // para que coincida con el <title> del HTML y no lo pise con uno genérico.
     document.title = 'Diseño de Sonrisa en Bogotá | Dra. Angela Barbosa — Luxe-Smile';
     this.$nextTick(() => {
-      this.setupReveal();
+      window.LuxeContent.revelarAlEntrar();
       this.loadElfsightIfNeeded();
     });
   },
@@ -134,25 +134,6 @@ function registerAndInitialize() {
       return full + empty;
     },
 
-    setupReveal() {
-      const els = document.querySelectorAll('.reveal');
-      if (!('IntersectionObserver' in window)) {
-        els.forEach((el) => el.classList.add('in-view'));
-        return;
-      }
-      const io = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) {
-              e.target.classList.add('in-view');
-              io.unobserve(e.target);
-            }
-          });
-        },
-        { threshold: 0.12 },
-      );
-      els.forEach((el) => io.observe(el));
-    },
   }));
 
   // Marcar <body> con x-data. Como esto corre en 'alpine:init' (antes del walk

@@ -133,7 +133,7 @@
   <!-- Compiled Tailwind (same build as the main site) -->
   <link rel="stylesheet" href="../../assets/css/tailwind.css?v=20260917c" />
   <link rel="stylesheet" href="../../assets/css/styles.css?v=20260917c" />
-  <script src="../../assets/js/content.js?v=20260917g"></script>
+  <script src="../../assets/js/content.js?v=20260917h"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <!-- Landing logic (self-contained, reuses images from content.json) -->
@@ -153,7 +153,7 @@
           this.content.brand.doctor = this.content.brand.doctor.replace(/^Dra\./, 'Dr.');
           window.LuxeContent.applyTheme(this.content.theme);
           this.detectSource();
-          this.$nextTick(() => this.setupReveal());
+          this.$nextTick(() => window.LuxeContent.revelarAlEntrar());
         },
 
         detectSource() {
@@ -208,25 +208,6 @@
           return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
         },
 
-        setupReveal() {
-          const els = document.querySelectorAll('.reveal');
-          if (!('IntersectionObserver' in window)) {
-            els.forEach((el) => el.classList.add('in-view'));
-            return;
-          }
-          const io = new IntersectionObserver(
-            (entries) => {
-              entries.forEach((e) => {
-                if (e.isIntersecting) {
-                  e.target.classList.add('in-view');
-                  io.unobserve(e.target);
-                }
-              });
-            },
-            { threshold: 0.12 },
-          );
-          els.forEach((el) => io.observe(el));
-        },
       }));
     });
   </script>

@@ -223,6 +223,33 @@ function deepMerge(base, override) {
   return override !== undefined ? override : base;
 }
 
+/* --------------------- Fade-in de secciones --------------------- */
+/* Vivía copiada cuatro veces —app.js y las tres páginas autocontenidas— byte a
+   byte idéntica. Cuatro copias de la misma lógica son cuatro sitios donde
+   arreglar el mismo fallo, y el cuarto siempre se olvida. Aquí sólo hay una.
+   La RED de seguridad sigue inline en cada página a propósito, porque tiene que
+   sobrevivir a que este fichero no cargue; esto no: sin content.js la página no
+   tiene contenido que revelar. */
+function revelarAlEntrar() {
+  const els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    els.forEach((el) => el.classList.add('in-view'));
+    return;
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          io.unobserve(e.target);
+        }
+      });
+    },
+    { threshold: 0.12 },
+  );
+  els.forEach((el) => io.observe(el));
+}
+
 /* --------------------- Carga de contenido --------------------- */
 async function fetchRemoteContent() {
   const url = `${CONTENT_URL}?v=${Date.now()}`;
@@ -524,6 +551,7 @@ window.LuxeContent = {
   exportContentJSON,
   importContentJSON,
   deepMerge,
+  revelarAlEntrar,
 };
 
 /* Aplica tema desde cache local al instante, antes de que Alpine inicialice,
