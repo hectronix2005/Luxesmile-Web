@@ -62,6 +62,75 @@
   }
   </script>
 
+
+  <!-- Datos estructurados: preguntas frecuentes (opta a resultado enriquecido).
+       El texto de cada respuesta debe seguir siendo EL MISMO que se ve en la
+       seccion #preguntas: si divergen, Google lo trata como marcado enganoso. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "\u00bfEl dise\u00f1o de sonrisa duele?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El dise\u00f1o en s\u00ed \u2014el estudio, la planificaci\u00f3n digital y el mock-up\u2014 no implica dolor. Si eres una persona nerviosa o notas alguna molestia, se trabaja con anestesia digital, que ayuda mucho con lo que pueda incomodarte."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfHay que desgastar los dientes?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No siempre. Hay casos que se resuelven sin desgaste: la odontolog\u00eda de hoy es m\u00ednimamente invasiva. Pero los dise\u00f1os no son est\u00e1ndar, y qu\u00e9 necesita el tuyo sale de la valoraci\u00f3n. Cu\u00e1nto se va a desgastar se te dice antes de empezar, no durante."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfCu\u00e1nto cuesta un dise\u00f1o de sonrisa en Bogot\u00e1?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El dise\u00f1o de sonrisa parte desde $2.000.000, y las carillas de porcelana desde $6.000.000. El tuyo depende de cu\u00e1ntos dientes entran en el plan, del material elegido y de si antes hay algo que tratar: en la valoraci\u00f3n sin costo sales con el plan y el presupuesto exacto."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfCu\u00e1nto duran las carillas?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Con buena higiene y controles peri\u00f3dicos, las de porcelana son las de mayor duraci\u00f3n. Lo que m\u00e1s acorta la vida de una carilla no suele ser el material: es el bruxismo sin tratar. Para eso est\u00e1 la placa de descarga al terminar el tratamiento, y en ciertos casos la toxina botul\u00ednica."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfSe notan falsas?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Solo si se dise\u00f1an para verse as\u00ed. El objetivo aqu\u00ed es el contrario: que la sonrisa se vea tuya. Para eso existe la prueba en boca antes de lo definitivo \u2014 si algo se ve artificial, se corrige en esa etapa y no despu\u00e9s."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfNecesito ortodoncia antes?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A veces. En el dise\u00f1o se corrigen rotaciones m\u00ednimas, pero si la mordida no cierra bien lo ideal es resolver la funci\u00f3n antes que la est\u00e9tica: el resultado es m\u00e1s conservador y m\u00e1s duradero. En la valoraci\u00f3n se te dice si es tu caso."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfPuedo hacerlo si no vivo en Bogot\u00e1?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "S\u00ed. La valoraci\u00f3n inicial puede ser virtual y el plan se organiza para concentrar las citas presenciales en el menor n\u00famero de viajes posible. Si vienes de otro pa\u00eds, tenemos una p\u00e1gina con los detalles: pacientes internacionales."
+        }
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -70,7 +139,7 @@
   />
 
   <!-- Tailwind compilado (mismo build que el sitio principal) -->
-  <link rel="stylesheet" href="../assets/css/tailwind.css?v=20260910a" />
+  <link rel="stylesheet" href="../assets/css/tailwind.css?v=20260916b" />
 
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260518e" />
 
@@ -243,7 +312,7 @@
             <span class="text-sm font-medium text-softblack">Primera valoración <strong>sin costo</strong></span>
           </div>
           <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rosegold/10 border border-rosegold/25">
-            <span class="text-xs font-semibold tracking-wide text-rosegold uppercase">Carillas desde $6.000.000</span>
+            <span class="text-xs font-semibold tracking-wide text-rosegoldDark uppercase">Diseño de sonrisa desde $2.000.000</span>
           </div>
         </div>
 
@@ -299,6 +368,235 @@
           </figure>
         </template>
       </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== QUE ES ===================== -->
+  <section id="que-es" class="py-20 lg:py-28">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-3">El tratamiento</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-7">¿Qué es un diseño de sonrisa?</h2>
+
+      <p class="text-lg text-softblack/80 leading-relaxed mb-5">
+        Un diseño de sonrisa no es un solo tratamiento: es un plan. Antes de tocar un diente se
+        estudia la proporción de tu rostro, la línea de los labios, el tono de tu piel y la forma
+        de tus dientes actuales, y con eso se proyecta cómo puede verse tu sonrisa. Ese proyecto se
+        planifica de forma digital, así que lo ves y lo apruebas <strong>antes</strong> de que
+        empiece cualquier procedimiento.
+      </p>
+
+      <p class="text-lg text-softblack/80 leading-relaxed mb-5">
+        Según lo que necesite tu caso, el plan puede combinar carillas de porcelana o de resina,
+        blanqueamiento, ajuste del contorno de la encía, ortodoncia previa o rehabilitación sobre
+        implantes. Dos personas que piden «diseño de sonrisa» casi nunca terminan con el mismo
+        tratamiento, y por eso tampoco tienen el mismo precio.
+      </p>
+
+      <p class="text-lg text-softblack/80 leading-relaxed">
+        Lo que no es: un molde igual para todos. Aquí te atiende directamente la
+        <span x-text="content.brand.doctor">Dra. Angela Barbosa</span>, prostodoncista especialista
+        en rehabilitación oral y estética, y el diseño se hace sobre tu rostro, no sobre un catálogo.
+      </p>
+
+      <p class="mt-7 text-sm"><a href="/blog/diseno-sonrisa-vs-carillas/" class="text-rosegoldDark underline hover:no-underline">Diseño de sonrisa o carillas: en qué se diferencian →</a></p>
+    </div>
+  </section>
+
+  <!-- ===================== EL PROCESO ===================== -->
+  <section id="proceso" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-3">Cómo funciona</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-9">El proceso, paso a paso</h2>
+
+      <ol class="space-y-7">
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegold leading-none pt-1">1</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Valoración sin costo</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Hablamos de lo que no te gusta de tu sonrisa y de lo que esperas. Se revisa el estado
+              de dientes y encías, porque la salud oral va antes que la estética. Puede ser
+              presencial en el consultorio del Chico o virtual.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegold leading-none pt-1">2</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Diagnóstico</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Fotografías de tu sonrisa y la valoración clínica. De ahí sale el diagnóstico y las
+              alternativas que tu caso admite. Si hay algo que resolver antes —una caries, una encía
+              inflamada, una mordida que conviene corregir primero—, aparece aquí.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegold leading-none pt-1">3</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Diseño digital</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Sobre tus propias fotos se proyecta la nueva sonrisa. La ves en pantalla y se ajusta
+              hasta que te convenza: largo, forma, color y cuánto se ven los dientes al sonreír.
+            </p>
+            <p class="mt-2 text-sm"><a href="/blog/diseno-sonrisa-digital/" class="text-rosegoldDark underline hover:no-underline">Cómo funciona el diseño de sonrisa digital →</a></p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegold leading-none pt-1">4</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Prueba en boca</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Es el <strong>mock-up</strong>: una maqueta de tu sonrisa en dientes temporales. Sales
+              del consultorio con la sonrisa puesta, la ves unos días en tu vida real y todavía se
+              puede cambiar.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegold leading-none pt-1">5</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Ejecución</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Con el diseño ya aprobado se realizan las carillas o el tratamiento que corresponda,
+              con la técnica más conservadora que tu caso permita.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegold leading-none pt-1">6</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Controles</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Citas de seguimiento e indicaciones de cuidado para que el resultado dure.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <p class="text-softblack/70 leading-relaxed mt-9">
+        Cuánto tarda depende del caso: un plan resuelto solo con carillas puede completarse en pocas
+        semanas; si antes hace falta ortodoncia o implantes, el tratamiento es más largo — y eso se
+        te dice desde la valoración, no sobre la marcha.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== TECNOLOGIA / ESCANER INTRAORAL ===================== -->
+  <!-- Contenido pedido y redactado por la Dra. Angela Barbosa (17-sep-2026). Las
+       cinco ventajas son suyas; aqui solo estan puestas en la voz de la pagina. -->
+  <section id="tecnologia" class="py-20 lg:py-28">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-3">La tecnología</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-7">Escáner intraoral, sin pastas de silicona</h2>
+
+      <p class="text-lg text-softblack/80 leading-relaxed mb-9">
+        Las impresiones de tu boca se toman con un <strong>escáner intraoral</strong>: una cámara que
+        recorre los dientes y levanta un modelo tridimensional en pantalla. Sustituye a las cubetas
+        con pasta de silicona, y eso cambia la experiencia de la cita entera.
+      </p>
+
+      <div class="space-y-7">
+        <div>
+          <h3 class="font-semibold text-lg mb-1">Más cómodo</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Se elimina el uso de pastas de silicona, que es lo que provoca las náuseas y la
+            incomodidad de la toma tradicional.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg mb-1">Más preciso</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Captura imágenes tridimensionales detalladas, lo que reduce los errores de distorsión y
+            la necesidad de repetir la toma.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg mb-1">Más rápido</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            El registro digital se envía de forma inmediata al laboratorio o a la impresora 3D, y eso
+            acorta el tiempo total del tratamiento.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg mb-1">Menos invasivo y más seguro</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Disminuye el riesgo de infecciones y permite un flujo de trabajo más limpio que el
+            sistema convencional.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg mb-1">Lo ves en el momento</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            El modelo de tu boca aparece en la pantalla mientras se toma, así que entiendes lo que se
+            va a hacer viéndolo, no imaginándolo.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PORCELANA O RESINA ===================== -->
+  <section id="materiales" class="py-20 lg:py-28">
+    <div class="max-w-4xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-3">La decisión</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-6">Carillas de porcelana o de resina</h2>
+      <p class="text-lg text-softblack/80 leading-relaxed mb-9">
+        Es la pregunta que más nos hacen, y no tiene una respuesta única. Cada material gana en
+        cosas distintas:
+      </p>
+
+      <div class="overflow-x-auto rounded-2xl border border-charcoal/10">
+        <table class="w-full min-w-[34rem] text-left border-collapse">
+          <thead>
+            <tr class="bg-porcelain/60">
+              <th class="py-4 px-5 text-sm font-semibold"></th>
+              <th class="py-4 px-5 text-sm font-semibold">Porcelana (cerámica)</th>
+              <th class="py-4 px-5 text-sm font-semibold">Resina (composite)</th>
+            </tr>
+          </thead>
+          <tbody class="text-softblack/80">
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Aspecto</td>
+              <td class="py-4 px-5">Imita mejor la translucidez del diente natural</td>
+              <td class="py-4 px-5">Muy buen resultado, algo menos translúcido</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Duración</td>
+              <td class="py-4 px-5">La mayor de las dos</td>
+              <td class="py-4 px-5">Menor; se renueva o retoca con más frecuencia</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Manchas</td>
+              <td class="py-4 px-5">No se pigmenta con café, vino o cigarrillo</td>
+              <td class="py-4 px-5">Puede pigmentarse con el tiempo</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Citas</td>
+              <td class="py-4 px-5">Requiere laboratorio y varias citas</td>
+              <td class="py-4 px-5">Se resuelve en menos citas</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Si se fractura</td>
+              <td class="py-4 px-5">Se reemplaza la carilla</td>
+              <td class="py-4 px-5">Se puede reparar directamente en boca</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Inversión</td>
+              <td class="py-4 px-5">Más alta</td>
+              <td class="py-4 px-5">Más accesible</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-softblack/80 leading-relaxed mt-8">
+        Lo que decide no es solo el presupuesto: pesan cuánto esmalte conservas, si aprietas los
+        dientes por la noche, el color del que partes y qué tan estable es tu mordida. Eso se define
+        viéndote, no por teléfono.
+      </p>
+      <p class="mt-2 text-sm"><a href="/blog/carillas-resina-vs-porcelana/" class="text-rosegoldDark underline hover:no-underline">Comparativa completa: carillas de resina frente a porcelana →</a></p>
     </div>
   </section>
 
@@ -365,6 +663,85 @@
             </footer>
           </blockquote>
         </template>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== PREGUNTAS FRECUENTES ===================== -->
+  <section id="preguntas" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegold mb-3">Dudas habituales</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-10">Preguntas frecuentes</h2>
+
+      <div class="space-y-8">
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿El diseño de sonrisa duele?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            El diseño en sí —el estudio, la planificación digital y el mock-up— no implica dolor.
+            Si eres una persona nerviosa o notas alguna molestia, se trabaja con anestesia
+            digital, que ayuda mucho con lo que pueda incomodarte.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Hay que desgastar los dientes?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            No siempre. Hay casos que se resuelven sin desgaste: la odontología de hoy es
+            mínimamente invasiva. Pero los diseños no son estándar, y qué necesita el tuyo sale de
+            la valoración. Cuánto se va a desgastar se te dice antes de empezar, no durante.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Cuánto cuesta un diseño de sonrisa en Bogotá?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            El diseño de sonrisa parte desde $2.000.000, y las carillas de porcelana desde
+            $6.000.000. El tuyo depende de cuántos dientes entran en el plan, del material elegido
+            y de si antes hay algo que tratar: en la valoración sin costo sales con el plan y el
+            presupuesto exacto.
+          </p>
+          <p class="mt-2 text-sm"><a href="/blog/precio-diseno-sonrisa-bogota/" class="text-rosegoldDark underline hover:no-underline">Qué influye en el precio, explicado en detalle →</a></p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Cuánto duran las carillas?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Con buena higiene y controles periódicos, las de porcelana son las de mayor duración.
+            Lo que más acorta la vida de una carilla no suele ser el material: es el bruxismo sin
+            tratar. Para eso está la placa de descarga al terminar el tratamiento, y en ciertos
+            casos la toxina botulínica.
+          </p>
+          <p class="mt-2 text-sm"><a href="/blog/cuanto-dura-una-carilla-dental/" class="text-rosegoldDark underline hover:no-underline">Cuánto dura realmente una carilla dental →</a></p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Se notan falsas?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Solo si se diseñan para verse así. El objetivo aquí es el contrario: que la sonrisa se vea
+            tuya. Para eso existe la prueba en boca antes de lo definitivo — si algo se ve artificial,
+            se corrige en esa etapa y no después.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Necesito ortodoncia antes?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            A veces. En el diseño se corrigen rotaciones mínimas, pero si la mordida no cierra
+            bien lo ideal es resolver la función antes que la estética: el resultado es más
+            conservador y más duradero. En la valoración se te dice si es tu caso.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Puedo hacerlo si no vivo en Bogotá?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Sí. La valoración inicial puede ser virtual y el plan se organiza para concentrar las
+            citas presenciales en el menor número de viajes posible. Si vienes de otro país, tenemos
+            una página con los detalles:
+            <a href="/pacientes-internacionales/" class="text-rosegoldDark underline hover:no-underline">pacientes internacionales</a>.
+          </p>
+        </div>
       </div>
     </div>
   </section>
