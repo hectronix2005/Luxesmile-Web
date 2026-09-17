@@ -11,7 +11,7 @@
 
    Uso:  node scripts/build-blog.mjs   (corre también en CI)
    ===================================================================== */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -25,6 +25,20 @@ const brand = content.brand || {};
 const contact = content.contact || {};
 const blog = content.blog || {};
 const articles = (blog.articles || []).filter((a) => a && a.slug);
+
+/* QUE PERDER EL BLOG ENTERO NO REPORTE EXITO.
+
+   Medido el 17-sep-2026: con `articles: []` este script borraba el indice y
+   dejaba el sitemap sin articulos, y terminaba diciendo
+   «✓ Blog generado: 0 articulos». Salida 0, el Action lo commiteaba.
+
+   Los nueve articulos vienen de content.json, que lo escribe el admin: un
+   guardado a medias o un merge malo bastan. Se falla ANTES de escribir nada. */
+if (!articles.length) {
+  console.error('✗ content.json no trae ni un articulo con slug. No se escribe nada.');
+  console.error('  Si de verdad quieres dejar el blog vacio, hay que hacerlo a mano.');
+  process.exit(1);
+}
 
 // --- helpers ---
 const escAttr = (s) =>
@@ -278,6 +292,32 @@ for (const a of articles) {
 mkdirSync(join(ROOT, 'blog'), { recursive: true });
 writeFileSync(join(ROOT, 'blog', 'index.html'), indexPage());
 writeFileSync(join(ROOT, 'sitemap.xml'), sitemap());
+
+/* CARPETAS HUERFANAS.
+
+   Este script generaba paginas y no borraba ninguna: si un articulo se
+   eliminaba o se le cambiaba el slug desde el admin, su carpeta se quedaba y
+   su pagina seguia VIVA en su URL, huerfana del indice y del sitemap, y
+   Google la conservaba indexada. extract-images.mjs si limpia sus huerfanos;
+   aqui no se limpiaba nada, y esa diferencia no la decidio nadie.
+
+   Conservador a proposito: solo se borra una carpeta si contiene UNICAMENTE
+   un index.html. Si alguien puso algo mas ahi dentro, se avisa y no se toca. */
+const vivos = new Set(articles.map((a) => a.slug));
+const huerfanas = [];
+for (const d of readdirSync(join(ROOT, 'blog'), { withFileTypes: true })) {
+  if (!d.isDirectory() || vivos.has(d.name)) continue;
+  const dir = join(ROOT, 'blog', d.name);
+  if (!existsSync(join(dir, 'index.html'))) continue;
+  const dentro = readdirSync(dir);
+  if (dentro.length === 1 && dentro[0] === 'index.html') {
+    rmSync(dir, { recursive: true });
+    huerfanas.push(d.name);
+  } else {
+    console.warn(`  ! /blog/${d.name}/ sobra pero tiene mas ficheros (${dentro.join(', ')}): no se toca`);
+  }
+}
+if (huerfanas.length) huerfanas.forEach((h) => console.log(`   · huerfana eliminada: /blog/${h}/`));
 
 console.log(`✓ Blog generado: ${articles.length} artículos + índice + sitemap.xml`);
 articles.forEach((a) => console.log(`   /blog/${a.slug}/`));
