@@ -39,9 +39,9 @@
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260917c" />
   <script src="../assets/js/content.js?v=20260917g"></script>
-  <script defer src="../assets/js/admin.js?v=20260917g"></script>
+  <script defer src="../assets/js/admin.js?v=20260917h"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script>window.__LUXE_ADMIN_VERSION__ = '20260917g';</script>
+  <script>window.__LUXE_ADMIN_VERSION__ = '20260917h';</script>
 </head>
 
 <body x-data="admin" x-cloak class="admin-shell">
@@ -242,7 +242,7 @@
               <div class="flex gap-1">
                 <button class="admin-tab" @click="move(content.nav, i, -1)">↑</button>
                 <button class="admin-tab" @click="move(content.nav, i, 1)">↓</button>
-                <button class="admin-tab" @click="remove(content.nav, i)">✕</button>
+                <button class="admin-tab" @click="remove(content.nav, i, 'este enlace del menú')">✕</button>
               </div>
             </div>
           </template>
@@ -424,7 +424,7 @@
               <input class="admin-input" x-model="content.about.credentials[i]" />
               <button class="admin-tab" @click="move(content.about.credentials, i, -1)">↑</button>
               <button class="admin-tab" @click="move(content.about.credentials, i, 1)">↓</button>
-              <button class="admin-tab" @click="remove(content.about.credentials, i)">✕</button>
+              <button class="admin-tab" @click="remove(content.about.credentials, i, 'esta credencial')">✕</button>
             </div>
           </template>
         </div>
@@ -445,7 +445,7 @@
               <div class="flex gap-1">
                 <button class="admin-tab" @click="move(content.services, i, -1)">↑</button>
                 <button class="admin-tab" @click="move(content.services, i, 1)">↓</button>
-                <button class="admin-tab" @click="remove(content.services, i)">✕</button>
+                <button class="admin-tab" @click="remove(content.services, i, 'este servicio')">✕</button>
               </div>
             </div>
             <div class="grid md:grid-cols-[100px,1fr] gap-3">
@@ -503,7 +503,7 @@
             <div class="flex justify-end gap-1">
               <button class="admin-tab" @click="move(content.gallery, i, -1)">↑</button>
               <button class="admin-tab" @click="move(content.gallery, i, 1)">↓</button>
-              <button class="admin-tab" @click="remove(content.gallery, i)">✕ Eliminar</button>
+              <button class="admin-tab" @click="remove(content.gallery, i, 'esta imagen de la galería')">✕ Eliminar</button>
             </div>
           </div>
         </template>
@@ -558,7 +558,7 @@
               <div class="flex gap-1 shrink-0">
                 <button class="admin-tab" @click="move(content.blog.articles, i, -1)">↑</button>
                 <button class="admin-tab" @click="move(content.blog.articles, i, 1)">↓</button>
-                <button class="admin-tab text-xs" @click="remove(content.blog.articles, i)">✕ Eliminar</button>
+                <button class="admin-tab text-xs" @click="remove(content.blog.articles, i, 'este artículo')">✕ Eliminar</button>
               </div>
             </div>
             <template x-if="a.image">
@@ -737,7 +737,7 @@
             <div class="flex gap-1">
               <button class="admin-tab" @click="move(content.stats, i, -1)">↑</button>
               <button class="admin-tab" @click="move(content.stats, i, 1)">↓</button>
-              <button class="admin-tab" @click="remove(content.stats, i)">✕</button>
+              <button class="admin-tab" @click="remove(content.stats, i, 'esta cifra')">✕</button>
             </div>
           </div>
         </template>
@@ -852,6 +852,9 @@
         </div>
 
         <p x-show="metrics.pixel.error" x-text="metrics.pixel.error" class="text-sm text-rosegold" style="display:none"></p>
+        <!-- Si el sitemap no se pudo leer, el diagnóstico mira menos páginas de las que
+             hay. Decirlo: un diagnóstico que no dice lo que NO miró se lee como completo. -->
+        <p x-show="metrics.pixel.aviso" x-text="metrics.pixel.aviso" class="text-sm text-rosegoldDark" style="display:none"></p>
 
         <div x-show="metrics.pixel.ran" style="display:none" class="space-y-6">
           <!-- IDs -->

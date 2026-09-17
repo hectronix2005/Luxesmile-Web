@@ -82,6 +82,14 @@ document.addEventListener('alpine:init', () => {
       this.gh = { ...this.gh, ...cfg };
       await this.loadFreshContent();
       this.loading = false;
+      // No había nada que avisase al cerrar la pestaña: escribir un artículo durante
+      // una hora y cerrar sin publicar lo perdía entero, en silencio. `reloadFromRemote`
+      // sí confirmaba; salirse, no.
+      window.addEventListener('beforeunload', (e) => {
+        if (!this.dirty) return;
+        e.preventDefault();
+        e.returnValue = '';
+      });
     },
 
     // Carga content.json directamente del repo vía API (sin CDN cache).
@@ -402,7 +410,15 @@ document.addEventListener('alpine:init', () => {
     addCredential() {
       this.content.about.credentials.push('Nueva credencial');
     },
-    remove(arr, i) { arr.splice(i, 1); },
+    // Un solo clic en la ✕ se llevaba un artículo entero —título, HTML e imagen—
+    // sin confirmar y sin deshacer. Y como hasta hoy tampoco había aviso al cerrar
+    // la pestaña, bastaba no darse cuenta.
+    remove(arr, i, que = 'este elemento') {
+      const it = arr[i] || {};
+      const nombre = (it.title || it.label || it.name || it.text || '').toString().trim();
+      if (!confirm(`¿Eliminar ${nombre ? `«${nombre}»` : que}? No se puede deshacer desde el panel.`)) return;
+      arr.splice(i, 1);
+    },
     move(arr, i, dir) {
       const j = i + dir;
       if (j < 0 || j >= arr.length) return;
@@ -982,7 +998,7 @@ document.addEventListener('alpine:init', () => {
       // ids arranca relleno, no en null: x-show oculta el bloque pero Alpine
       // sigue evaluando las expresiones de dentro, y `null.problems` lanzaba.
       pixel: {
-        running: false, ran: false, pages: [], error: '',
+        running: false, ran: false, pages: [], error: '', aviso: '',
         ids: { ga4: '', googleAds: '', metaPixel: '', whatsapp: '', agenda: '', llamada: '', problems: [] },
       },
       ga: {
@@ -1003,19 +1019,41 @@ document.addEventListener('alpine:init', () => {
     /* ---------------- 1. Diagnóstico de pixel ---------------- */
 
     // Páginas públicas que deben llevar el tracking.
-    get _publicPages() {
-      return [
-        { label: 'Home', url: '../index.html' },
-        { label: 'Landing diseño de sonrisa', url: '../diseno-de-sonrisa/index.html' },
-        { label: 'Pacientes internacionales', url: '../pacientes-internacionales/index.html' },
-        { label: 'Landing EN', url: '../en/smile-design/index.html' },
-        { label: 'Blog', url: '../blog/index.html' },
-      ];
+    //
+    // Esto era una lista escrita a mano de cinco páginas, y el sitio tiene quince:
+    // se dejaban fuera /privacidad/ y los nueve artículos del blog, todos con su
+    // enlace a WhatsApp. O sea que el diagnóstico salía en verde sin haber mirado
+    // dos tercios del sitio. Ahora sale del sitemap, que lo genera build-blog.mjs
+    // desde content.json: una página nueva entra sola.
+    async _paginasPublicas() {
+      try {
+        const xml = await fetch('../sitemap.xml?ts=' + Date.now()).then((r) => {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.text();
+        });
+        const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+        if (!locs.length) throw new Error('sitemap sin URLs');
+        return locs.map((u) => {
+          const ruta = u.replace(/^https?:\/\/[^/]+/, '') || '/';
+          return { label: ruta === '/' ? 'Home' : ruta, url: '..' + ruta };
+        });
+      } catch (e) {
+        // Que falle el sitemap no puede dejar el diagnóstico mudo, pero tampoco
+        // puede fingir que miró el sitio entero: se dice cuántas mira.
+        this.metrics.pixel.aviso = `No se pudo leer el sitemap (${e.message}); se revisan solo las páginas principales.`;
+        return [
+          { label: 'Home', url: '../index.html' },
+          { label: '/diseno-de-sonrisa/', url: '../diseno-de-sonrisa/index.html' },
+          { label: '/pacientes-internacionales/', url: '../pacientes-internacionales/index.html' },
+          { label: '/en/smile-design/', url: '../en/smile-design/index.html' },
+          { label: '/blog/', url: '../blog/index.html' },
+        ];
+      }
     },
 
     async runPixelCheck() {
       const p = this.metrics.pixel;
-      p.running = true; p.error = ''; p.pages = [];
+      p.running = true; p.error = ''; p.pages = []; p.aviso = '';
       try {
         // --- IDs configurados, leídos del propio tracking.js ---
         const src = await fetch('../assets/js/tracking.js?ts=' + Date.now()).then((r) => r.text());
@@ -1036,7 +1074,7 @@ document.addEventListener('alpine:init', () => {
         p.ids = ids;   // una sola asignacion: nunca hay un estado intermedio sin `problems`
 
         // --- Cobertura por página ---
-        for (const page of this._publicPages) {
+        for (const page of await this._paginasPublicas()) {
           const row = { label: page.label, ok: false, tracking: false, wa: 0, agenda: 0, error: '' };
           try {
             const html = await fetch(page.url + '?ts=' + Date.now()).then((r) => {

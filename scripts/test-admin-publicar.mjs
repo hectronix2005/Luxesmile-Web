@@ -31,6 +31,8 @@ import { fileURLToPath } from 'node:url';
 // verificar que este test se pone rojo. Sin argumento, mira el fichero real.
 const RUTA = process.argv[2] || fileURLToPath(new URL('../assets/js/admin.js', import.meta.url));
 
+let ctxConfirm = () => true;   // lo cambia cada caso
+
 function cargarComponente(codigo) {
   let fabrica = null;
   const ctx = {
@@ -41,6 +43,7 @@ function cargarComponente(codigo) {
     window: {}, sessionStorage: { getItem: () => null, removeItem() {} },
     localStorage: { getItem: () => null, setItem() {}, removeItem() {} },
     FileReader: function () {}, Image: function () {},
+    confirm: () => ctxConfirm(),
   };
   ctx.window.LuxeContent = {};
   ctx.globalThis = ctx;
@@ -88,6 +91,41 @@ async function correr({ codigo, repoIgualAlBaseline, apiRota, blog, conSha }) {
   return escrituras > 0;
 }
 
+// ── Borrar sin querer ───────────────────────────────────────────────────────
+// La ✕ de cada lista llamaba a remove() directo: un clic se llevaba un artículo
+// entero, sin confirmar y sin deshacer.
+async function borrar({ codigo, respuesta }) {
+  const { fabrica, ctx } = cargarComponente(codigo);
+  ctx.window.LuxeContent = { DEFAULT_CONTENT: {}, hasAdminPassword: () => true, deepMerge: (b, o) => ({ ...b, ...o }) };
+  const app = fabrica();
+  let pregunta = '';
+  ctxConfirm = () => { pregunta = 'preguntó'; return respuesta; };
+  const lista = [{ title: 'Carillas de Porcelana' }, { title: 'Otro' }];
+  app.remove(lista, 0, 'este artículo');
+  return { quedan: lista.length, pregunta };
+}
+
+// ── Cerrar la pestaña con cambios sin publicar ──────────────────────────────
+async function alCerrar({ codigo, sucio }) {
+  const { fabrica, ctx } = cargarComponente(codigo);
+  const oyentes = [];
+  ctx.window.addEventListener = (ev, fn) => oyentes.push([ev, fn]);
+  ctx.window.LuxeContent = {
+    DEFAULT_CONTENT: {}, hasAdminPassword: () => true, deepMerge: (b, o) => ({ ...b, ...o }),
+    getGithubConfig: async () => ({ owner: '', repo: '', token: '' }),
+    loadContent: async () => ({ brand: {} }),
+    applyTheme() {}, fetchContentViaAPI: async () => { throw new Error('sin token'); },
+  };
+  const app = fabrica();
+  await app.init();
+  const oyente = oyentes.find(([ev]) => ev === 'beforeunload');
+  if (!oyente) return { registrado: false, avisa: false };
+  if (sucio) app.content = { brand: { doctor: 'cambiado' } };
+  let avisado = false;
+  oyente[1]({ preventDefault: () => { avisado = true; }, set returnValue(v) { avisado = true; } });
+  return { registrado: true, avisa: avisado };
+}
+
 const codigo = fs.readFileSync(RUTA, 'utf8');
 const ok = (extra) => ({ id: 1, title: 'T', slug: 'uno', image: 'x.webp', date: '2026-09-17', content: '<p>a</p>', ...extra });
 
@@ -111,10 +149,23 @@ const casos = [
 ];
 
 let fallos = 0;
-for (const [nombre, opts, esperado] of casos) {
-  const real = await correr({ codigo, ...opts });
-  const ok = real === esperado;
+const comprobar = (nombre, real, esperado) => {
+  const ok = JSON.stringify(real) === JSON.stringify(esperado);
   if (!ok) fallos++;
-  console.log(`${ok ? '✓' : '✗'} ${nombre} · publicó=${real} esperado=${esperado}`);
+  console.log(`${ok ? '✓' : '✗'} ${nombre} · ${JSON.stringify(real)}${ok ? '' : ` esperado ${JSON.stringify(esperado)}`}`);
+};
+
+for (const [nombre, opts, esperado] of casos) {
+  comprobar(`${nombre} · publicó`, await correr({ codigo, ...opts }), esperado);
 }
+
+comprobar('borrar: si se dice que no, no borra',
+  await borrar({ codigo, respuesta: false }), { quedan: 2, pregunta: 'preguntó' });
+comprobar('borrar: si se dice que sí, borra',
+  await borrar({ codigo, respuesta: true }), { quedan: 1, pregunta: 'preguntó' });
+comprobar('cerrar: con cambios sin publicar, avisa',
+  await alCerrar({ codigo, sucio: true }), { registrado: true, avisa: true });
+comprobar('cerrar: sin cambios, no molesta',
+  await alCerrar({ codigo, sucio: false }), { registrado: true, avisa: false });
+
 process.exit(fallos ? 1 : 0);
