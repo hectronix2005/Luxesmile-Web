@@ -29,7 +29,7 @@ document.addEventListener('alpine:init', () => {
     // ids arranca relleno, no en null: x-show oculta el bloque pero Alpine
     // sigue evaluando las expresiones de dentro, y `null.problems` lanzaba.
     pixel: {
-      running: false, ran: false, pages: [], error: '',
+      running: false, ran: false, pages: [], error: '', aviso: '',
       ids: { ga4: '', googleAds: '', metaPixel: '', whatsapp: '', agenda: '', llamada: '', problems: [] },
     },
     ga: {
@@ -84,53 +84,24 @@ document.addEventListener('alpine:init', () => {
 
     /* ------------------- 1. Etiquetado (sin credenciales) ------------------- */
 
-    get _publicPages() {
-      return [
-        { label: 'Home', url: '../index.html' },
-        { label: 'Landing diseño de sonrisa', url: '../diseno-de-sonrisa/index.html' },
-        { label: 'Pacientes internacionales', url: '../pacientes-internacionales/index.html' },
-        { label: 'Landing EN', url: '../en/smile-design/index.html' },
-        { label: 'Blog', url: '../blog/index.html' },
-      ];
-    },
+    // Esto era una lista escrita a mano de cinco páginas, y el sitio tiene quince:
+    // fuera quedaban /privacidad/ y los nueve artículos del blog, todos con su
+    // enlace a WhatsApp. El diagnóstico salía en verde sin haber mirado dos tercios
+    // del sitio. Ahora sale del sitemap, que genera build-blog.mjs desde
+    // content.json: una página nueva entra sola.
+    //
 
+
+    // La lógica vive en content.js: la tenían admin.js y marketing.js por
+    // duplicado y divergieron en cuanto arreglé una sola. Aquí sólo se guarda.
     async runPixelCheck() {
       const p = this.pixel;
-      p.running = true; p.error = ''; p.pages = [];
+      p.running = true; p.error = ''; p.pages = []; p.aviso = '';
       try {
-        const src = await fetch('../assets/js/tracking.js?ts=' + Date.now()).then((r) => r.text());
-        const pick = (key) => {
-          const m = new RegExp(key + "\\s*:\\s*'([^']*)'").exec(src);
-          return m ? m[1] : '';
-        };
-        const isPlaceholder = (v) => !v || /XXX|TU_PIXEL_ID/i.test(v);
-        const ids = {
-          ga4: pick('ga4'),
-          googleAds: pick('googleAds'),
-          metaPixel: pick('metaPixel'),
-          whatsapp: pick('whatsapp'),
-          agenda: pick('agenda'),
-          llamada: pick('llamada'),
-        };
-        ids.problems = Object.entries(ids).filter(([, v]) => isPlaceholder(v)).map(([k]) => k);
-        p.ids = ids;   // una sola asignacion: nunca hay un estado intermedio sin `problems`
-
-        for (const page of this._publicPages) {
-          const row = { label: page.label, ok: false, tracking: false, wa: 0, agenda: 0, error: '' };
-          try {
-            const html = await fetch(page.url + '?ts=' + Date.now()).then((r) => {
-              if (!r.ok) throw new Error('HTTP ' + r.status);
-              return r.text();
-            });
-            row.tracking = /tracking\.js/.test(html);
-            row.wa = (html.match(/wa\.me|api\.whatsapp\.com|waLink\(/g) || []).length;
-            row.agenda = (html.match(/calendar\.app\.google|data-cta="agendar"|bookingLink\(|bookingOfficeLink\(/g) || []).length;
-            row.ok = row.tracking && row.wa > 0;
-          } catch (e) {
-            row.error = e.message || 'no se pudo leer';
-          }
-          p.pages.push(row);
-        }
+        const { ids, pages, aviso } = await window.LuxeContent.diagnosticoDePixel('../');
+        p.ids = ids;          // una sola asignación: nunca hay un estado sin `problems`
+        p.pages = pages;
+        p.aviso = aviso;
         p.ran = true;
       } catch (e) {
         p.error = e.message || 'Error inesperado';
@@ -298,6 +269,29 @@ document.addEventListener('alpine:init', () => {
           rate: s ? (100 * w) / s : null,
         };
       });
+    },
+
+    /* ---- El agujero que este panel NO puede ver por sí mismo ----
+       Del 14 al 17 de septiembre de 2026 el sitio dejó de registrar el clic a
+       WhatsApp: el listener que dispara la conversión buscaba enlaces con 'wa.me'
+       y el enrutado a Zeus los había convertido en enlaces al redirector. Los
+       clics ocurrieron y llegaron a Zeus; lo que no ocurrió fue el evento.
+
+       O sea que en esa ventana `whatsapp_click` vale cero por un fallo de
+       medición, no porque nadie escribiera. Un cero sin explicación al lado se
+       lee como un dato, y éste no lo es. Si el rango elegido la toca, se dice.
+
+       Cuando la ventana quede fuera del rango que se suele mirar, esto sobra y
+       se puede borrar entero. */
+    get ventanaCiega() {
+      const DESDE = new Date('2026-09-14T00:00:00-05:00');
+      const HASTA = new Date('2026-09-17T23:59:59-05:00');
+      const inicio = new Date(Date.now() - this.ga.days * 86400000);
+      if (inicio > HASTA) return null;
+      return 'Del 14 al 17 de septiembre el sitio no registró el clic a WhatsApp: '
+        + 'el evento no se disparaba porque el enlace ya apuntaba al redirector. '
+        + 'Los clics existieron y llegaron a Zeus. En esos días el cero de '
+        + '«Clic a WhatsApp» es un fallo de medición, no una caída de interés.';
     },
 
     /* ------------------- 3. Embudo, derivado de lo anterior ------------------- */

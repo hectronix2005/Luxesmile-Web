@@ -141,5 +141,61 @@ console.log('\n4. el JavaScript inline parsea y el JSON-LD es JSON');
   ok(ldOk > 0, `${ldOk} bloques de JSON-LD son JSON válido`);
 }
 
+// ── 5. el diagnostico de etiquetado ─────────────────────────────────────────
+// Es el detector del que salen las respuestas a «¿esta el sitio bien etiquetado?».
+// Vivia copiado en admin.js y marketing.js; el 17-sep arregle la lista de paginas
+// en uno de los dos y el otro se quedo mirando 5 paginas de 15, en verde. Ahora es
+// uno solo, en content.js, y se puede ejecutar de verdad con un fetch de mentira.
+console.log('\n5. el diagnostico de etiquetado ve lo que debe');
+{
+  const codigo = readFileSync('assets/js/content.js', 'utf8');
+  const SITEMAP = ['/', '/blog/', '/privacidad/'].map((u) => `<loc>https://luxesmilee.com${u}</loc>`).join('');
+  // La home lleva tracking y WhatsApp; el blog lleva tracking pero NINGUN enlace;
+  // privacidad no lleva tracking. Cada una falla de una forma distinta.
+  const PAGS = {
+    '../': '<script src="/assets/js/tracking.js"></script><a href="https://wa.me/57300">x</a>',
+    '../blog/': '<script src="/assets/js/tracking.js"></script><p>sin enlaces</p>',
+    '../privacidad/': '<a href="https://wa.me/57300">x</a>',
+  };
+  const TRACKING = "ga4: 'G-REAL', googleAds: 'AW-XXX', metaPixel: 'TU_PIXEL_ID', whatsapp: 'a', agenda: 'b', llamada: 'c'";
+
+  const ctx = {
+    console: { warn() {}, log() {} }, JSON, Date, Promise, RegExp, Object, Array, String, Number, Error,
+    URL, URLSearchParams, structuredClone, setTimeout, clearTimeout,
+    localStorage: { getItem: () => null, setItem() {}, removeItem() {} },
+    document: { addEventListener() {}, createElement: () => ({ style: {}, setAttribute() {} }), head: { appendChild() {} }, querySelectorAll: () => [] },
+    location: { hostname: 'luxesmilee.com', search: '' },
+    fetch: (u) => {
+      const limpia = String(u).split('?')[0];
+      if (limpia.endsWith('sitemap.xml')) return Promise.resolve({ ok: true, text: () => Promise.resolve(`<urlset>${SITEMAP}</urlset>`) });
+      if (limpia.endsWith('tracking.js')) return Promise.resolve({ ok: true, text: () => Promise.resolve(TRACKING) });
+      if (limpia in PAGS) return Promise.resolve({ ok: true, text: () => Promise.resolve(PAGS[limpia]) });
+      return Promise.resolve({ ok: false, status: 404, text: () => Promise.resolve('') });
+    },
+  };
+  ctx.window = ctx; ctx.globalThis = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(codigo, ctx);
+
+  const r = await ctx.window.LuxeContent.diagnosticoDePixel('../');
+  const fila = (l) => r.pages.find((x) => x.label === l);
+
+  ok(r.pages.length === 3, `mira las ${r.pages.length} paginas del sitemap, no una lista a mano`);
+  ok(!r.aviso, 'sin aviso cuando el sitemap se lee bien');
+  ok(fila('Home') && fila('Home').ok, 'Home: con tracking y con enlace -> ok');
+  ok(fila('/blog/') && !fila('/blog/').ok && fila('/blog/').tracking, '/blog/: tracking pero sin enlaces -> NO ok');
+  ok(fila('/privacidad/') && !fila('/privacidad/').ok && !fila('/privacidad/').tracking, '/privacidad/: sin tracking -> NO ok');
+  ok(r.ids.ga4 === 'G-REAL', 'lee el ID real de GA4 de tracking.js');
+  ok(r.ids.problems.includes('googleAds') && r.ids.problems.includes('metaPixel'),
+     `senala los IDs sin configurar (${r.ids.problems.join(', ')})`);
+  ok(!r.ids.problems.includes('ga4'), 'y no senala el que si esta puesto');
+
+  // Y si el sitemap no se puede leer, que lo DIGA en vez de mirar cinco y callarse.
+  ctx.fetch = (u) => (String(u).includes('sitemap') ? Promise.resolve({ ok: false, status: 500 })
+    : Promise.resolve({ ok: true, text: () => Promise.resolve(TRACKING) }));
+  const caido = await ctx.window.LuxeContent.diagnosticoDePixel('../');
+  ok(!!caido.aviso, `sitemap caido -> lo dice ("${(caido.aviso || 'NADA').slice(0, 40)}...")`);
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);

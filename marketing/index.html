@@ -38,8 +38,8 @@
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260917c" />
-  <script src="../assets/js/content.js?v=20260917h"></script>
-  <script defer src="../assets/js/marketing.js?v=20260909b"></script>
+  <script src="../assets/js/content.js?v=20260917i"></script>
+  <script defer src="../assets/js/marketing.js?v=20260917a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
@@ -107,6 +107,15 @@
 
     <!-- ============ TRÁFICO ============ -->
     <div x-show="tab === 'traffic'" class="space-y-6">
+        <!-- Un cero sin explicación al lado se lee como un dato. Ver `ventanaCiega`
+             en marketing.js: cuando la ventana salga del rango habitual, sobra. -->
+        <p
+          x-show="ventanaCiega"
+          x-text="ventanaCiega"
+          class="text-sm leading-relaxed bg-rosegoldDark text-ivory rounded-lg px-4 py-3"
+          style="display:none"
+        ></p>
+
 
       <div class="admin-card space-y-5">
         <div>
@@ -258,6 +267,15 @@
           Conecta Google Analytics en la pestaña «Tráfico» para ver el embudo.
         </p>
 
+        <!-- Un cero sin explicación al lado se lee como un dato. Ver `ventanaCiega`
+             en marketing.js: cuando la ventana salga del rango habitual, sobra. -->
+        <p
+          x-show="ventanaCiega"
+          x-text="ventanaCiega"
+          class="text-sm leading-relaxed bg-rosegoldDark text-ivory rounded-lg px-4 py-3"
+          style="display:none"
+        ></p>
+
         <template x-if="funnel">
           <div class="space-y-3">
             <template x-for="p in funnel.pasos" :key="p.label">
@@ -309,6 +327,7 @@
         </div>
 
         <p x-show="pixel.error" x-text="pixel.error" class="text-sm text-rosegold" style="display:none"></p>
+        <p x-show="pixel.aviso" x-text="pixel.aviso" class="text-sm text-rosegoldDark" style="display:none"></p>
 
         <div x-show="pixel.ran" style="display:none" class="space-y-6">
           <div>

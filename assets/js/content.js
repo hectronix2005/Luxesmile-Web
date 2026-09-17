@@ -223,6 +223,82 @@ function deepMerge(base, override) {
   return override !== undefined ? override : base;
 }
 
+/* --------------------- Diagnóstico de etiquetado --------------------- */
+/* Vivía copiado en admin.js y en marketing.js, y las dos copias sólo se
+   diferenciaban en dónde guardan el resultado. El 17-sep-2026 arreglé la lista de
+   páginas en una de las dos y la otra se quedó con cinco páginas de quince: el
+   fallo exacto que produce siempre tener la misma lógica en dos sitios. Aquí hay
+   una sola, devuelve datos y cada panel los guarda donde le convenga.
+
+   `base` es el prefijo para llegar a la raíz del sitio desde la página que llama
+   ('../' desde /admin/ y desde /marketing/). */
+async function paginasPublicas(base) {
+  try {
+    const xml = await fetch(base + 'sitemap.xml?ts=' + Date.now()).then((r) => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    });
+    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    if (!locs.length) throw new Error('sitemap sin URLs');
+    return {
+      paginas: locs.map((u) => {
+        const ruta = u.replace(/^https?:\/\/[^/]+/, '') || '/';
+        return { label: ruta === '/' ? 'Home' : ruta, url: base + ruta.replace(/^\//, '') };
+      }),
+      aviso: '',
+    };
+  } catch (e) {
+    // Que falle el sitemap no puede dejar el diagnóstico mudo, pero tampoco puede
+    // fingir que miró el sitio entero: se dice que mira menos.
+    return {
+      paginas: [
+        { label: 'Home', url: base + 'index.html' },
+        { label: '/diseno-de-sonrisa/', url: base + 'diseno-de-sonrisa/index.html' },
+        { label: '/pacientes-internacionales/', url: base + 'pacientes-internacionales/index.html' },
+        { label: '/en/smile-design/', url: base + 'en/smile-design/index.html' },
+        { label: '/blog/', url: base + 'blog/index.html' },
+      ],
+      aviso: `No se pudo leer el sitemap (${e.message}); se revisan solo las páginas principales.`,
+    };
+  }
+}
+
+async function diagnosticoDePixel(base) {
+  const src = await fetch(base + 'assets/js/tracking.js?ts=' + Date.now()).then((r) => r.text());
+  const pick = (key) => {
+    const m = new RegExp(key + "\\s*:\\s*'([^']*)'").exec(src);
+    return m ? m[1] : '';
+  };
+  const esPlantilla = (v) => !v || /XXX|TU_PIXEL_ID/i.test(v);
+  const ids = {
+    ga4: pick('ga4'), googleAds: pick('googleAds'), metaPixel: pick('metaPixel'),
+    whatsapp: pick('whatsapp'), agenda: pick('agenda'), llamada: pick('llamada'),
+  };
+  ids.problems = Object.entries(ids).filter(([, v]) => esPlantilla(v)).map(([k]) => k);
+
+  const { paginas, aviso } = await paginasPublicas(base);
+  const pages = [];
+  for (const page of paginas) {
+    const row = { label: page.label, ok: false, tracking: false, wa: 0, agenda: 0, error: '' };
+    try {
+      const html = await fetch(page.url + '?ts=' + Date.now()).then((r) => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      });
+      row.tracking = /tracking\.js/.test(html);
+      // El sitio monta los CTA con Alpine (:href="waLink()"), así que la URL
+      // resuelta no está en el HTML estático: se acepta cualquiera de las formas.
+      row.wa = (html.match(/wa\.me|api\.whatsapp\.com|waLink\(/g) || []).length;
+      row.agenda = (html.match(/calendar\.app\.google|data-cta="agendar"|bookingLink\(|bookingOfficeLink\(/g) || []).length;
+      row.ok = row.tracking && row.wa > 0;
+    } catch (e) {
+      row.error = e.message || 'no se pudo leer';
+    }
+    pages.push(row);
+  }
+  return { ids, pages, aviso };
+}
+
 /* --------------------- Fade-in de secciones --------------------- */
 /* Vivía copiada cuatro veces —app.js y las tres páginas autocontenidas— byte a
    byte idéntica. Cuatro copias de la misma lógica son cuatro sitios donde
@@ -552,6 +628,8 @@ window.LuxeContent = {
   importContentJSON,
   deepMerge,
   revelarAlEntrar,
+  paginasPublicas,
+  diagnosticoDePixel,
 };
 
 /* Aplica tema desde cache local al instante, antes de que Alpine inicialice,

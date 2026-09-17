@@ -1020,79 +1020,18 @@ document.addEventListener('alpine:init', () => {
 
     // Páginas públicas que deben llevar el tracking.
     //
-    // Esto era una lista escrita a mano de cinco páginas, y el sitio tiene quince:
-    // se dejaban fuera /privacidad/ y los nueve artículos del blog, todos con su
-    // enlace a WhatsApp. O sea que el diagnóstico salía en verde sin haber mirado
-    // dos tercios del sitio. Ahora sale del sitemap, que lo genera build-blog.mjs
-    // desde content.json: una página nueva entra sola.
-    async _paginasPublicas() {
-      try {
-        const xml = await fetch('../sitemap.xml?ts=' + Date.now()).then((r) => {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.text();
-        });
-        const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-        if (!locs.length) throw new Error('sitemap sin URLs');
-        return locs.map((u) => {
-          const ruta = u.replace(/^https?:\/\/[^/]+/, '') || '/';
-          return { label: ruta === '/' ? 'Home' : ruta, url: '..' + ruta };
-        });
-      } catch (e) {
-        // Que falle el sitemap no puede dejar el diagnóstico mudo, pero tampoco
-        // puede fingir que miró el sitio entero: se dice cuántas mira.
-        this.metrics.pixel.aviso = `No se pudo leer el sitemap (${e.message}); se revisan solo las páginas principales.`;
-        return [
-          { label: 'Home', url: '../index.html' },
-          { label: '/diseno-de-sonrisa/', url: '../diseno-de-sonrisa/index.html' },
-          { label: '/pacientes-internacionales/', url: '../pacientes-internacionales/index.html' },
-          { label: '/en/smile-design/', url: '../en/smile-design/index.html' },
-          { label: '/blog/', url: '../blog/index.html' },
-        ];
-      }
-    },
 
+
+    // La lógica vive en content.js: la tenían admin.js y marketing.js por
+    // duplicado y divergieron en cuanto arreglé una sola. Aquí sólo se guarda.
     async runPixelCheck() {
       const p = this.metrics.pixel;
       p.running = true; p.error = ''; p.pages = []; p.aviso = '';
       try {
-        // --- IDs configurados, leídos del propio tracking.js ---
-        const src = await fetch('../assets/js/tracking.js?ts=' + Date.now()).then((r) => r.text());
-        const pick = (key) => {
-          const m = new RegExp(key + "\\s*:\\s*'([^']*)'").exec(src);
-          return m ? m[1] : '';
-        };
-        const isPlaceholder = (v) => !v || /XXX|TU_PIXEL_ID/i.test(v);
-        const ids = {
-          ga4: pick('ga4'),
-          googleAds: pick('googleAds'),
-          metaPixel: pick('metaPixel'),
-          whatsapp: pick('whatsapp'),
-          agenda: pick('agenda'),
-          llamada: pick('llamada'),
-        };
-        ids.problems = Object.entries(ids).filter(([, v]) => isPlaceholder(v)).map(([k]) => k);
-        p.ids = ids;   // una sola asignacion: nunca hay un estado intermedio sin `problems`
-
-        // --- Cobertura por página ---
-        for (const page of await this._paginasPublicas()) {
-          const row = { label: page.label, ok: false, tracking: false, wa: 0, agenda: 0, error: '' };
-          try {
-            const html = await fetch(page.url + '?ts=' + Date.now()).then((r) => {
-              if (!r.ok) throw new Error('HTTP ' + r.status);
-              return r.text();
-            });
-            row.tracking = /tracking\.js/.test(html);
-            // El sitio monta los CTA con Alpine (:href="waLink()"), así que la
-            // URL resuelta no está en el HTML estático: se acepta cualquiera
-            // de las dos formas.
-            row.wa = (html.match(/wa\.me|api\.whatsapp\.com|waLink\(/g) || []).length;
-            row.agenda = (html.match(/calendar\.app\.google|data-cta="agendar"|bookingLink\(|bookingOfficeLink\(/g) || []).length;
-            row.ok = row.tracking && row.wa > 0;
-          } catch (e) {
-            row.error = e.message || 'no se pudo leer';
-          }
-          p.pages.push(row);
-        }
+        const { ids, pages, aviso } = await window.LuxeContent.diagnosticoDePixel('../');
+        p.ids = ids;          // una sola asignación: nunca hay un estado sin `problems`
+        p.pages = pages;
+        p.aviso = aviso;
         p.ran = true;
       } catch (e) {
         p.error = e.message || 'Error inesperado';
