@@ -88,7 +88,7 @@ ${MARCA}
        /dra.angela_barbosa daria 404 (GitHub Pages distingue mayusculas) y
        Google lee «Angela_Barbosa» como un termino unico, no como dos.
        No repite el sitio: lleva a la direccion que va en la ficha. -->
-  <link rel="canonical" href="https://luxesmilee.com/" />
+  <link rel="canonical" href="https://luxesmilee.com${destino}" />
   <meta http-equiv="refresh" content="0; url=${destino}" />
 ${FAVICON}
   <style>

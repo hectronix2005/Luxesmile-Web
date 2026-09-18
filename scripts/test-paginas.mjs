@@ -480,5 +480,63 @@ console.log('\n11. la direccion de la ficha sirve el sitio y no rebota');
   }
 }
 
+// ── 12. una sola direccion de inicio, dicha en ocho sitios ────────────────
+// El 18-sep-2026 el sitio dejo de canonizar en la raiz y paso a canonizar en
+// /Dra.Angela_Barbosa/, la direccion que se reparte junto a la ficha de Google.
+// Eso se declara en OCHO sitios distintos —canonical, og:url, el JSON-LD del
+// negocio, el x-default de las tres landings, el sitemap y la miga de pan del
+// blog— y cambiar uno solo no rompe nada visible: la pagina sigue abriendo.
+// Lo unico que pasa es que Google recibe dos respuestas a la misma pregunta y
+// se queda con la que quiere. Por eso esto se comprueba: no para que funcione,
+// sino para que no haya DOS verdades.
+console.log('\n12. la direccion del inicio: una sola, en todos los sitios');
+{
+  const BASE = 'https://luxesmilee.com/Dra.Angela_Barbosa/';
+  const dicho = [];
+  const mira = (p, re, etiqueta) => {
+    if (!existsSync(p)) { ok(false, `${p}: no existe`); return; }
+    const m = re.exec(readFileSync(p, 'utf8'));
+    if (!m) { ok(false, `${p}: no declara ${etiqueta}`); return; }
+    dicho.push([`${p} · ${etiqueta}`, m[1]]);
+  };
+
+  mira('index.html', /<link rel="canonical" href="([^"]+)"/, 'canonical');
+  mira('index.html', /<meta property="og:url" content="([^"]+)"/, 'og:url');
+  mira('index.html', /"url": "(https:\/\/luxesmilee\.com[^"]*)"/, 'url del JSON-LD');
+  mira('Dra.Angela_Barbosa/index.html', /<link rel="canonical" href="([^"]+)"/, 'canonical');
+  mira('dra-angela-barbosa/index.html', /<link rel="canonical" href="([^"]+)"/, 'canonical del alias');
+  mira('sitemap.xml', /<loc>([^<]+)<\/loc>/, 'primera entrada');
+  for (const l of ['diseno-de-sonrisa', 'pacientes-internacionales', 'en/smile-design']) {
+    mira(`${l}/index.html`, /hreflang="x-default" href="([^"]+)"/, 'x-default');
+  }
+  // El indice del blog no lleva BreadcrumbList (solo los articulos), asi que la
+  // miga de pan se mira en uno de ellos.
+  mira('blog/carillas-porcelana/index.html', /"position":1,"name":"Inicio","item":"([^"]+)"/, 'miga de pan');
+  // El enlace visible es relativo, asi que no entra en la comparacion de arriba:
+  // lo cubre el barrido de «nada enlaza a la raiz» que viene despues.
+  ok(/<a href="\/Dra\.Angela_Barbosa\/">Inicio<\/a>/.test(readFileSync('blog/carillas-porcelana/index.html', 'utf8')),
+     'el «Inicio» visible del blog lleva al inicio canonico');
+
+  for (const [donde, valor] of dicho) {
+    ok(valor === BASE, `${donde}: ${valor}${valor === BASE ? '' : `  — deberia ser ${BASE}`}`);
+  }
+  ok(dicho.length >= 10, `${dicho.length} declaraciones comprobadas`);
+
+  // Y que nada enlace a la raiz: enlazar a una direccion que luego canoniza en
+  // otra es la contradiccion que hace que Google se salte el canonical.
+  const publicas = [];
+  (function andar(dir) {
+    for (const e of readdirSync(dir)) {
+      if (['node_modules', '.git', '.github', 'scripts', 'admin', 'marketing'].includes(e)) continue;
+      const q = join(dir, e);
+      if (statSync(q).isDirectory()) { andar(q); continue; }
+      if (e.endsWith('.html') && e !== 'googleaf18a76309de9be5.html' && e !== 'admin.html') publicas.push(q.replace(/^\.\//, ''));
+    }
+  })('.');
+  const culpables = publicas.filter((f) => /href="\/(?:#|")/.test(readFileSync(f, 'utf8')));
+  ok(culpables.length === 0,
+     culpables.length ? `enlazan a la raiz: ${culpables.join(', ')}` : `las ${publicas.length} paginas publicas enlazan al inicio canonico`);
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);

@@ -14,9 +14,17 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+/* La ruta que el sitio canoniza como inicio. Se importa en vez de repetirse:
+   si un dia cambia, el sitemap y la miga de pan la siguen solas. */
+import { RUTA_FICHA } from './build-ficha.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://luxesmilee.com';
+/* El inicio, tal y como el sitio lo canoniza desde el 18-sep-2026. Los enlaces
+   internos apuntan aqui y no a la raiz a proposito: enlazar a una direccion que
+   luego canoniza en otra es la contradiccion que hace que Google ignore el
+   canonical. La raiz sigue sirviendo lo mismo, no se rompe ningun enlace viejo. */
+const INICIO = `/${RUTA_FICHA}/`;
 const V = '20260917d'; // cache-bust de CSS
 const VJS = '20260917a'; // cache-bust de tracking.js (mantener en sync con index/landings)
 
@@ -148,10 +156,10 @@ ${FAVICON}
 function topbar() {
   return `<body class="blog-body">
   <header class="blog-topbar">
-    <a href="/" class="blog-topbar-logo" aria-label="Luxe-Smile inicio">
+    <a href="${INICIO}" class="blog-topbar-logo" aria-label="Luxe-Smile inicio">
       <img src="${escAttr(brand.logo)}" alt="Luxe-Smile" />
     </a>
-    <a href="/#contacto" class="btn-primary">Agenda tu cita</a>
+    <a href="${INICIO}#contacto" class="btn-primary">Agenda tu cita</a>
   </header>`;
 }
 
@@ -161,7 +169,7 @@ function footer() {
     <div class="blog-container">
       <p class="font-serif blog-footer-brand">Luxe-Smile</p>
       <p class="blog-footer-meta">${escText(brand.doctor || '')} · ${escText(contact.address || '')}</p>
-      <p class="blog-footer-links"><a href="/">Inicio</a> · <a href="/blog/">Blog</a> · <a href="/#servicios">Servicios</a> · <a href="/#contacto">Contacto</a></p>
+      <p class="blog-footer-links"><a href="${INICIO}">Inicio</a> · <a href="/blog/">Blog</a> · <a href="${INICIO}#servicios">Servicios</a> · <a href="${INICIO}#contacto">Contacto</a></p>
       <p class="blog-footer-copy">© ${year} Luxe-Smile. Todos los derechos reservados.</p>
     </div>
   </footer>
@@ -224,7 +232,7 @@ function articlePage(a) {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Inicio', item: SITE + '/' },
+        { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE}/${RUTA_FICHA}/` },
         { '@type': 'ListItem', position: 2, name: 'Blog', item: SITE + '/blog/' },
         { '@type': 'ListItem', position: 3, name: a.title, item: url },
       ],
@@ -235,7 +243,7 @@ function articlePage(a) {
 ${topbar()}
   <main class="blog-container">
     <nav class="blog-breadcrumb" aria-label="Ruta de navegación">
-      <a href="/">Inicio</a> <span>›</span> <a href="/blog/">Blog</a> <span>›</span> <span class="current">${escText(a.title)}</span>
+      <a href="${INICIO}">Inicio</a> <span>›</span> <a href="/blog/">Blog</a> <span>›</span> <span class="current">${escText(a.title)}</span>
     </nav>
     <article>
       <p class="blog-eyebrow">${escText(a.category || '')}${a.readTime ? ' · ' + escText(a.readTime) : ''}</p>
@@ -248,7 +256,7 @@ ${topbar()}
         <p>Agenda una valoración con la ${escText(brand.doctor || 'Dra. Angela Barbosa')} en nuestro consultorio de Chico, Bogotá.</p>
         <div class="blog-cta-actions">
           <a href="${escAttr(waLink)}" target="_blank" rel="noopener" class="btn-primary">Agenda por WhatsApp</a>
-          <a href="/#contacto" class="btn-ghost">Ver contacto</a>
+          <a href="${INICIO}#contacto" class="btn-ghost">Ver contacto</a>
         </div>
       </div>
     </article>${relatedList(a)}
@@ -292,7 +300,7 @@ function indexPage() {
 ${topbar()}
   <main class="blog-container">
     <nav class="blog-breadcrumb" aria-label="Ruta de navegación">
-      <a href="/">Inicio</a> <span>›</span> <span class="current">Blog</span>
+      <a href="${INICIO}">Inicio</a> <span>›</span> <span class="current">Blog</span>
     </nav>
     <header class="blog-index-head">
       <p class="blog-eyebrow">Blog</p>
@@ -309,7 +317,10 @@ ${footer()}`;
 function sitemap() {
   const today = new Date().toISOString().slice(0, 10);
   const urls = [
-    { loc: `${SITE}/`, priority: '1.0', changefreq: 'monthly' },
+    // El inicio se declara en la direccion que va en la ficha de Google, que
+    // es la que el sitio canoniza desde el 18-sep-2026. La raiz sigue sirviendo
+    // lo mismo, pero solo una de las dos puede ser la indexada.
+    { loc: `${SITE}/${RUTA_FICHA}/`, priority: '1.0', changefreq: 'monthly' },
     { loc: `${SITE}/diseno-de-sonrisa/`, priority: '0.9', changefreq: 'monthly' },
     { loc: `${SITE}/pacientes-internacionales/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/en/smile-design/`, priority: '0.8', changefreq: 'monthly' },
