@@ -21,7 +21,8 @@
  * Control positivo: quita la red de una página, o cambia `if (!dentro) return`
  * por `if (false) return`, y vuelve a correrlo.
  */
-import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, existsSync, writeFileSync, unlinkSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import vm from 'node:vm';
 import { execFileSync } from 'node:child_process';
@@ -591,6 +592,79 @@ console.log('\n13. preconnect: cubre a quien mide, y apunta a donde llama');
     }
   }
   ok(miden >= 16, `${miden} paginas miden y precalientan, ${sinMedir} no hacen ninguna de las dos`);
+}
+
+// ── 14. un articulo incompleto no puede pasar en silencio ────────────────
+// El 17-sep se hizo que faltar `title`, `image`, `date` o `content` parase el
+// build con un mensaje limpio y sin escribir nada. Faltaba el peor: `slug`.
+// Sin el, el build TERMINABA CON EXITO y el articulo desaparecia del disco, del
+// sitemap y del indice — medido el 18-sep: 14 entradas en el sitemap en vez de
+// 15 y 8 enlaces en el indice en vez de 9, con exit 0.
+//
+// Esto corre el CLI DE VERDAD contra un content.json roto (via LX_CONTENT), no
+// la funcion de validacion por su cuenta. La diferencia importa y ya costo una
+// vez en este repo: un detector que llama a la funcion comprueba que la funcion
+// va, no que el build la llame.
+console.log('\n14. articulos incompletos: el build para y lo dice');
+{
+  const base = JSON.parse(readFileSync('assets/data/content.json', 'utf8'));
+  const tmp = join(tmpdir(), `lx-blog-${process.pid}.json`);
+  /* La salida tambien va fuera del repo. Sin esto, el unico caso que NO para el
+     build —el de `excerpt`— escribia de verdad en blog/ y en sitemap.xml: un
+     detector que ensucia lo que vigila. */
+  const fuera = mkdtempSync(join(tmpdir(), 'lx-out-'));
+  mkdirSync(join(fuera, 'blog'), { recursive: true });
+
+  const correr = (mutar) => {
+    const d = JSON.parse(JSON.stringify(base));
+    mutar(d.blog.articles);
+    writeFileSync(tmp, JSON.stringify(d));
+    try {
+      execFileSync('node', ['scripts/build-blog.mjs'], {
+        env: { ...process.env, LX_CONTENT: tmp, LX_OUT: fuera }, stdio: 'pipe',
+      });
+      return { code: 0, salida: '' };
+    } catch (e) {
+      return { code: e.status, salida: String(e.stderr || '') + String(e.stdout || '') };
+    }
+  };
+
+  for (const campo of ['slug', 'title', 'content', 'image', 'date']) {
+    const r = correr((arts) => { delete arts[0][campo]; });
+    ok(r.code === 1, `falta «${campo}»${r.code === 1 ? ' -> para el build' : `  — exit ${r.code}, NO para`}`);
+    if (r.code === 1) ok(r.salida.includes(`falta «${campo}»`), `falta «${campo}» -> lo dice por su nombre`);
+  }
+
+  // El mensaje de un campo ausente no puede construirse CON ese campo.
+  {
+    const r = correr((arts) => { delete arts[0].slug; });
+    ok(!/undefined/.test(r.salida), `sin slug, el aviso no dice «undefined»${/undefined/.test(r.salida) ? `: ${r.salida.split('\n').find((l) => l.includes('undefined'))}` : ''}`);
+  }
+
+  // Un slug es un nombre de carpeta: `../x` escribiria fuera de /blog/.
+  for (const malo of ['../fuera', 'con/barra', 'Con Mayusculas']) {
+    const r = correr((arts) => { arts[0].slug = malo; });
+    ok(r.code === 1, `slug «${malo}» -> para el build${r.code === 1 ? '' : `  — exit ${r.code}`}`);
+  }
+
+  // Dos articulos con el mismo slug: el segundo pisa al primero y los dos «van bien».
+  {
+    const r = correr((arts) => { arts[1].slug = arts[0].slug; });
+    ok(r.code === 1, `dos articulos con el mismo slug -> para el build${r.code === 1 ? '' : `  — exit ${r.code}`}`);
+  }
+
+  // `excerpt` NO es obligatorio a proposito: cae a blog.subtitle. Se fija aqui
+  // para que quede dicho que la ausencia es una decision, no un olvido.
+  {
+    const r = correr((arts) => { delete arts[0].excerpt; });
+    ok(r.code === 0, `sin «excerpt» -> el build sigue (cae a blog.subtitle)${r.code === 0 ? '' : `  — exit ${r.code}`}`);
+  }
+
+  try { unlinkSync(tmp); rmSync(fuera, { recursive: true, force: true }); } catch { /* da igual */ }
+
+  // Y nada de lo anterior puede haber tocado el repo.
+  const sucio = execFileSync('git', ['status', '--porcelain', '--', 'blog', 'sitemap.xml'], { encoding: 'utf8' }).trim();
+  ok(sucio === '', sucio ? `el banco de pruebas dejo el repo tocado:\n${sucio}` : 'el repo quedo intacto');
 }
 
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');

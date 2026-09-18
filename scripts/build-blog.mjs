@@ -19,6 +19,9 @@ import { dirname, join } from 'node:path';
 import { RUTA_FICHA } from './build-ficha.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+/* `LX_OUT`, como `LX_CONTENT`, existe solo para el detector: le deja correr este
+   build entero contra datos rotos y mirar lo que sale, sin escribir en el repo. */
+const SALIDA = process.env.LX_OUT || ROOT;
 const SITE = 'https://luxesmilee.com';
 /* El inicio, tal y como el sitio lo canoniza desde el 18-sep-2026. Los enlaces
    internos apuntan aqui y no a la raiz a proposito: enlazar a una direccion que
@@ -28,11 +31,23 @@ const INICIO = `/${RUTA_FICHA}/`;
 const V = '20260917d'; // cache-bust de CSS
 const VJS = '20260918a'; // cache-bust de tracking.js (mantener en sync con index/landings)
 
-const content = JSON.parse(readFileSync(join(ROOT, 'assets/data/content.json'), 'utf8'));
+/* `LX_CONTENT` existe SOLO para que el detector pueda correr este build de verdad
+   —el CLI entero, no una funcion suelta— contra un content.json roto sin tocar el
+   repo. Sin la variable, la ruta es la de siempre. La alternativa era que el test
+   llamara a la validacion a mano, y eso ya fallo antes en este repo: comprobaba
+   que la funcion funciona, no que el build la llame. */
+const content = JSON.parse(readFileSync(process.env.LX_CONTENT || join(ROOT, 'assets/data/content.json'), 'utf8'));
 const brand = content.brand || {};
 const contact = content.contact || {};
 const blog = content.blog || {};
-const articles = (blog.articles || []).filter((a) => a && a.slug);
+/* AQUI SE PERDIAN. Esta linea era `.filter((a) => a && a.slug)`, y ese filtro
+   corria ANTES de la validacion: un articulo sin `slug` desaparecia sin que
+   nadie lo mirase, y el build terminaba diciendo que todo fue bien. Anadirlo a
+   OBLIGATORIOS no bastaba —la validacion no llegaba a verlo nunca—, que es por
+   lo que el detector siguio en rojo despues de «arreglarlo».
+   Ahora NO se filtra nada: se valida la lista cruda y quien no cumpla para el
+   build. Descartar en silencio y avisar son cosas distintas. */
+const articles = blog.articles || [];
 
 /* QUE PERDER EL BLOG ENTERO NO REPORTE EXITO.
 
@@ -58,17 +73,49 @@ if (!articles.length) {
 
    Se revisan TODOS antes de escribir y se listan todos los problemas de una
    vez: quien lo arregle quiere verlos juntos, no descubrirlos de uno en uno
-   en tres despliegues fallidos. `excerpt` no entra: cae a blog.subtitle a
-   proposito. */
-const OBLIGATORIOS = ['title', 'content', 'image', 'date'];
+   en tres despliegues fallidos.
+
+   `slug` SI entra, desde el 18-sep-2026. No estaba, y era el peor de todos: sin
+   el, el build terminaba con exito y el articulo desaparecia del disco, del
+   sitemap y del indice. Medido: 14 entradas en el sitemap en vez de 15 y 8
+   enlaces en el indice en vez de 9, con exit 0.
+
+   `excerpt` NO entra, y ahora es verdad: cae a `blog.subtitle`. Hasta hoy caia
+   solo en la meta descripcion, y la tarjeta del indice se quedaba en blanco —un
+   mismo campo ausente con dos comportamientos, que es la incoherencia de la que
+   iba todo esto. Hacerlo obligatorio habria parado un despliegue por un campo
+   decorativo que ya tenia caida disenada. */
+const OBLIGATORIOS = ['slug', 'title', 'content', 'image', 'date'];
+/* Un slug con forma valida: es un NOMBRE DE CARPETA. Sin esta comprobacion, un
+   `../algo` escribiria fuera de /blog/ y un slug con barra crearia un nivel que
+   nadie espera. */
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const problemas = [];
-for (const a of articles) {
+/* El articulo se nombra SIN usar el campo que puede faltar. La version anterior
+   componia `/blog/${a.slug}/ · falta «slug»` y escribia «/blog/undefined/»: el
+   mensaje de un campo ausente no puede construirse con ese campo. */
+const nombrar = (a, i) => (a && a.slug) || (a && a.title) || `articulo ${i + 1} (sin slug ni title)`;
+articles.forEach((a, i) => {
+  if (!a || typeof a !== 'object') { problemas.push(`entrada ${i + 1} de blog.articles no es un articulo`); return; }
   for (const campo of OBLIGATORIOS) {
     const v = a[campo];
     if (typeof v !== 'string' || !v.trim()) {
-      problemas.push(`/blog/${a.slug}/ · falta «${campo}»`);
+      problemas.push(`${nombrar(a, i)} · falta «${campo}»`);
     }
   }
+  if (typeof a.slug === 'string' && a.slug.trim() && !SLUG_RE.test(a.slug)) {
+    problemas.push(`${nombrar(a, i)} · el «slug» no es un nombre de carpeta valido`);
+  }
+});
+/* Y dos articulos no pueden compartir slug: el segundo pisaria al primero y el
+   build diria que fueron bien los dos. */
+{
+  const vistos = new Map();
+  articles.forEach((a, i) => {
+    if (!a || typeof a.slug !== 'string' || !a.slug.trim()) return;
+    if (vistos.has(a.slug)) problemas.push(`${nombrar(a, i)} · repite el «slug» de ${vistos.get(a.slug)}`);
+    else vistos.set(a.slug, nombrar(a, i));
+  });
 }
 if (problemas.length) {
   console.error('✗ Articulos incompletos en content.json. No se escribe nada:');
@@ -296,7 +343,7 @@ function indexPage() {
           <div class="blog-index-thumb"><img src="${escAttr(a.image)}" alt="${escAttr(a.title)}" loading="lazy" /></div>
           <p class="blog-eyebrow">${escText(a.category || '')}${a.readTime ? ' · ' + escText(a.readTime) : ''}</p>
           <h2 class="font-serif">${escText(a.title)}</h2>
-          <p class="blog-index-excerpt">${escText(a.excerpt || '')}</p>
+          <p class="blog-index-excerpt">${escText(a.excerpt || blog.subtitle || '')}</p>
         </a>`,
     )
     .join('\n');
@@ -350,13 +397,13 @@ function sitemap() {
 
 // --- escribir archivos ---
 for (const a of articles) {
-  const dir = join(ROOT, 'blog', a.slug);
+  const dir = join(SALIDA, 'blog', a.slug);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'index.html'), articlePage(a));
 }
-mkdirSync(join(ROOT, 'blog'), { recursive: true });
-writeFileSync(join(ROOT, 'blog', 'index.html'), indexPage());
-writeFileSync(join(ROOT, 'sitemap.xml'), sitemap());
+mkdirSync(join(SALIDA, 'blog'), { recursive: true });
+writeFileSync(join(SALIDA, 'blog', 'index.html'), indexPage());
+writeFileSync(join(SALIDA, 'sitemap.xml'), sitemap());
 
 /* CARPETAS HUERFANAS.
 
@@ -370,9 +417,9 @@ writeFileSync(join(ROOT, 'sitemap.xml'), sitemap());
    un index.html. Si alguien puso algo mas ahi dentro, se avisa y no se toca. */
 const vivos = new Set(articles.map((a) => a.slug));
 const huerfanas = [];
-for (const d of readdirSync(join(ROOT, 'blog'), { withFileTypes: true })) {
+for (const d of readdirSync(join(SALIDA, 'blog'), { withFileTypes: true })) {
   if (!d.isDirectory() || vivos.has(d.name)) continue;
-  const dir = join(ROOT, 'blog', d.name);
+  const dir = join(SALIDA, 'blog', d.name);
   if (!existsSync(join(dir, 'index.html'))) continue;
   const dentro = readdirSync(dir);
   if (dentro.length === 1 && dentro[0] === 'index.html') {
