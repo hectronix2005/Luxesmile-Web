@@ -87,7 +87,7 @@ function cargarTracking(clic, opciones) {
 /** Deja correr las microtareas de la sonda antes de mirar el resultado. */
 const asentar = () => new Promise((r) => setTimeout(r, 0));
 
-function cargarApp({ conRuta }) {
+function cargarApp({ conRuta, mensaje }) {
   let comp = null, init = null;
   const ctx = {
     console, structuredClone, URLSearchParams, Date, JSON, Math, Promise, setTimeout, clearTimeout,
@@ -103,7 +103,7 @@ function cargarApp({ conRuta }) {
   vm.runInContext(readFileSync('assets/js/app.js', 'utf8'), ctx);
   init();
   comp.content = { contact: { whatsapp: '573163903511',
-    whatsappMessage: 'Hola Dra. Angela, me gustaría agendar una cita con usted en Luxe-Smile.' } };
+    whatsappMessage: mensaje || 'Hola Dra. Angela, me gustaría agendar una cita con usted en Luxe-Smile.' } };
   return comp;
 }
 
@@ -140,6 +140,20 @@ console.log('\n2. waLink del home (app.js)');
   ok(decodeURIComponent(sin.waLink('virtual').split('text=')[1])
     === 'Hola Dra. Angela, me gustaría agendar una cita de forma virtual con usted en Luxe-Smile.',
     'y con el texto de reserva intacto');
+
+  // LA DOCTORA EDITA EL MENSAJE Y DEJA DE DECIR «una cita».
+  // `whatsappMessage` es un <input> del panel, y los mensajes de virtual y
+  // presencial se construían con un `.replace('una cita', …)`. Si el texto deja
+  // de contener esa frase, el replace no muerde y los dos salen IDÉNTICOS al
+  // genérico: ella deja de saber si el paciente pedía virtual o presencial, el
+  // botón sigue abriendo WhatsApp y nada falla en voz alta.
+  const texto = (c, comp) => decodeURIComponent(comp.waLink(c).split('text=')[1]);
+  const otro = cargarApp({ conRuta: false, mensaje: 'Hola, quiero agendar mi valoración.' });
+  const v = texto('virtual', otro), o = texto('consultorio', otro), g = texto(undefined, otro);
+  ok(v !== g && o !== g, 'mensaje editado sin «una cita»: virtual y presencial NO caen en el genérico');
+  ok(v !== o, 'y siguen siendo distintos entre sí');
+  ok(v.includes('de forma virtual'), `virtual lo dice igual ("${v}")`);
+  ok(o.includes('presencial en el consultorio'), `presencial lo dice igual ("${o}")`);
 }
 
 // ── 3. NINGUNA PÁGINA SE QUEDA SIN MECANISMO ───────────────────────────────

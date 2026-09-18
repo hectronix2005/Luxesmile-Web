@@ -19,9 +19,16 @@ function registerAndInitialize() {
   async init() {
     this.content = await window.LuxeContent.loadContent();
     window.LuxeContent.applyTheme(this.content.theme);
-    // Título optimizado para SEO (keyword + ciudad). Se mantiene fijo aquí
-    // para que coincida con el <title> del HTML y no lo pise con uno genérico.
-    document.title = 'Diseño de Sonrisa en Bogotá | Dra. Angela Barbosa — Luxe-Smile';
+    // Aquí había un `document.title = '…'` con un título fijo. Nació en 12b0d01
+    // como EL título de SEO del home, y el comentario decía que se mantenía
+    // «para que coincida con el <title> del HTML». El 17-sep-2026 ya no coincidía:
+    // el HTML declara «Luxe-Smile · Diseño de Sonrisa y Carillas en el Chico» (53)
+    // y esta línea lo pisaba con uno de 62 — por encima del corte de 60 que la
+    // rama de títulos acababa de arreglar en las otras 15 páginas.
+    //
+    // Nadie más escribe `document.title` en todo el repo, así que el miedo del
+    // comentario («que no lo pise uno genérico») no tenía a quién temer. El
+    // título del HTML es la única fuente.
     this.$nextTick(() => {
       window.LuxeContent.revelarAlEntrar();
       this.loadElfsightIfNeeded();
@@ -91,10 +98,17 @@ function registerAndInitialize() {
         msg = 'Hola, vi los casos en su página y quiero agendar una valoración.';
       } else if (context === 'contacto') {
         msg = 'Hola, quiero agendar mi valoración con la Dra. Angela.';
-      } else if (context === 'virtual') {
-        msg = base.replace('una cita', 'una cita de forma virtual');
-      } else if (context === 'consultorio') {
-        msg = base.replace('una cita', 'una cita presencial en el consultorio');
+      } else if (context === 'virtual' || context === 'consultorio') {
+        const como = context === 'virtual' ? 'de forma virtual' : 'presencial en el consultorio';
+        msg = base.replace('una cita', `una cita ${como}`);
+        // `base` sale de `whatsappMessage`, que es un <input> del panel. Si la
+        // doctora lo reescribe y deja de contener «una cita», el replace no hace
+        // nada y los dos mensajes salen IDÉNTICOS al genérico: deja de saber si
+        // el paciente pedía virtual o presencial, y nada falla en voz alta. Es
+        // exactamente el fallo que este mismo fichero documenta doce líneas más
+        // arriba, emparejar por texto un campo editable, sobrevivido en el sitio
+        // donde no se miró. Si el replace no mordió, se dice aparte.
+        if (msg === base) msg = `${base} Me gustaría que fuera ${como}.`;
       } else {
         msg = base;
       }
@@ -129,9 +143,12 @@ function registerAndInitialize() {
     },
 
     stars(n) {
-      const full = '★'.repeat(n);
-      const empty = '☆'.repeat(Math.max(0, 5 - n));
-      return full + empty;
+      // `n` viene de content.json, o sea de un campo del panel. Un valor
+      // negativo hace que `repeat` lance RangeError, y lanzar aquí revienta el
+      // render del componente entero de Alpine: la página se queda con los 58
+      // bloques en opacity:0. Una estrella mal puesta no puede tumbar la página.
+      const v = Math.min(5, Math.max(0, Math.round(Number(n) || 0)));
+      return '★'.repeat(v) + '☆'.repeat(5 - v);
     },
 
   }));

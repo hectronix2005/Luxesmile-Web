@@ -197,5 +197,56 @@ console.log('\n5. el diagnostico de etiquetado ve lo que debe');
   ok(!!caido.aviso, `sitemap caido -> lo dice ("${(caido.aviso || 'NADA').slice(0, 40)}...")`);
 }
 
+// ── 6. el titulo que se ve es el que declara el HTML ───────────────────────
+// `app.js` llevaba un `document.title = '…'` fijo, nacido en 12b0d01 como EL
+// titulo de SEO del home. El 17-sep la rama de titulos reescribio los 15 <title>
+// del sitio para que ninguno pasara de 60 caracteres, y esa linea siguio pisando
+// el del home con uno de 62 en cuanto arrancaba Alpine. Comprobado en produccion:
+// el HTML servia 53 caracteres y el navegador acababa mostrando 62 distintos.
+//
+// El fallo no se ve en ningun sitio: la pagina carga, el titulo es razonable, y
+// solo comparando las dos fuentes aparece. Un `<title>` corregido en el HTML y
+// reescrito por JS se ve exactamente igual que uno corregido de verdad.
+console.log('\n6. ningun JS reescribe el <title> declarado en el HTML');
+{
+  const jsDir = 'assets/js';
+  const sospechosos = [];
+  for (const f of readdirSync(jsDir)) {
+    if (!f.endsWith('.js') || f === 'alpine.min.js') continue;
+    const bruto = readFileSync(join(jsDir, f), 'utf8');
+    // Los comentarios fuera ANTES de buscar, pero sustituidos por el mismo
+    // numero de saltos de linea para que el numero de linea siga siendo el de
+    // verdad. La primera version de este detector se puso roja por el comentario
+    // que explica el fallo, escrito tres lineas mas arriba de donde estaba el
+    // codigo que se acababa de borrar: un detector que se dispara con la prosa
+    // que lo documenta no distingue nada.
+    const src = bruto
+      .replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, ' '))
+      .replace(/\/\/[^\n]*/g, (c) => ' '.repeat(c.length));
+    // Solo las asignaciones; leer document.title es inofensivo.
+    for (const m of src.matchAll(/document\s*\.\s*title\s*=(?!=)/g)) {
+      const linea = src.slice(0, m.index).split('\n').length;
+      sospechosos.push(`${f}:${linea}`);
+    }
+  }
+  ok(sospechosos.length === 0,
+     sospechosos.length ? `hay JS escribiendo document.title: ${sospechosos.join(', ')}`
+                        : 'ninguno de los 4 ficheros de assets/js escribe document.title');
+
+  // Y de paso, que los titulos que SI se sirven sigan cabiendo. Solo paginas
+  // de verdad: `googleaf…html` es el fichero de verificacion de Search Console
+  // —NO borrar, ver la ficha de Search Console— y `red-fade.html` es el
+  // fragmento fuente de la red del fade. Ninguno de los dos es una pagina ni
+  // lleva <head>.
+  for (const f of htmls) {
+    const bruto = readFileSync(f, 'utf8');
+    if (!/<head[\s>]/i.test(bruto)) continue;
+    const m = /<title>([\s\S]*?)<\/title>/.exec(bruto);
+    if (!m) { ok(false, `${f}: sin <title>`); continue; }
+    const t = m[1].trim();
+    ok(t.length <= 60, `${f}: titulo de ${t.length} caracteres (<=60)`);
+  }
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);
