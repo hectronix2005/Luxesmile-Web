@@ -17,7 +17,7 @@
    ===================================================================== */
 import sharp from 'sharp';
 import {
-  readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, unlinkSync,
+  readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, unlinkSync, statSync,
 } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
@@ -85,13 +85,50 @@ for (let i = 0; i < (content.blog?.articles || []).length; i++) {
   await field(content.blog.articles[i], 'image', `blog-${i}`);
 }
 
-// Limpia .webp huérfanos (ya no referenciados por content.json).
-for (const f of readdirSync(IMG_DIR)) {
-  if (f.endsWith('.webp') && !referenced.has(f)) {
-    unlinkSync(join(IMG_DIR, f));
-    changed = true;
-    console.log('  · huérfano eliminado:', f);
+/* HUÉRFANO NO ES «NO ESTÁ EN content.json».
+
+   Esta limpieza borraba todo .webp que content.json no nombrara. Pero hay DIEZ
+   ficheros con el nombre escrito a mano fuera de content.json:
+
+     diseno-de-sonrisa/index.html   las 8 figuras de la galería y la foto de la
+                                    doctora, que son el respaldo estático que ve
+                                    un crawler o alguien sin JS (Alpine pinta la
+                                    versión viva encima con x-for / :src)
+     privacidad/index.html          el logo, y esa página NO carga Alpine, así
+                                    que su <img> estático es el único que hay
+
+   Y el nombre lleva un hash del contenido dentro. O sea que la doctora cambia
+   una foto en el panel, el fichero pasa a llamarse distinto, el viejo deja de
+   estar en content.json y ESTO LO BORRABA — dejando a la landing de los anuncios
+   pidiendo una imagen que ya no existe. Comprobado el 17-sep ejecutando este
+   mismo script sobre una copia: al sustituir gallery[3] imprimió
+   «huérfano eliminado: gallery-3-29840d47e206.webp», que es justo el que
+   diseno-de-sonrisa/index.html tiene escrito. El build habría salido en verde.
+
+   Ahora se mira TODO el repo antes de borrar. Perder un .webp de más pesa unos
+   KB; perderlo de menos rompe la página que recibe el 100% del dinero de Ads. */
+function referenciasEnElRepo(dir, acc = new Set()) {
+  for (const e of readdirSync(dir)) {
+    if (e === 'node_modules' || e === '.git' || e === '.github') continue;
+    const p = join(dir, e);
+    if (statSync(p).isDirectory()) { referenciasEnElRepo(p, acc); continue; }
+    if (!/\.(html|css|js|mjs|json|xml|md)$/.test(e)) continue;
+    for (const m of readFileSync(p, 'utf8').matchAll(/assets\/img\/content\/([A-Za-z0-9._-]+\.webp)/g)) {
+      acc.add(m[1]);
+    }
   }
+  return acc;
+}
+const enElRepo = referenciasEnElRepo(ROOT);
+for (const f of readdirSync(IMG_DIR)) {
+  if (!f.endsWith('.webp') || referenced.has(f)) continue;
+  if (enElRepo.has(f)) {
+    console.log('  · NO borro', f, '— content.json ya no lo usa, pero hay una página con ese nombre escrito a mano');
+    continue;
+  }
+  unlinkSync(join(IMG_DIR, f));
+  changed = true;
+  console.log('  · huérfano eliminado:', f);
 }
 
 if (changed) {

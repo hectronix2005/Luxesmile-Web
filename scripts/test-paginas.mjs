@@ -21,7 +21,7 @@
  * Control positivo: quita la red de una página, o cambia `if (!dentro) return`
  * por `if (false) return`, y vuelve a correrlo.
  */
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import vm from 'node:vm';
 
@@ -245,6 +245,48 @@ console.log('\n6. ningun JS reescribe el <title> declarado en el HTML');
     if (!m) { ok(false, `${f}: sin <title>`); continue; }
     const t = m[1].trim();
     ok(t.length <= 60, `${f}: titulo de ${t.length} caracteres (<=60)`);
+  }
+}
+
+// ── 7. las imagenes que pide una pagina existen Y son las actuales ─────────
+// El nombre de cada .webp lleva un hash del contenido, asi que cambiar una foto
+// en el panel la renombra. Diez de esos nombres estan escritos A MANO fuera de
+// content.json: las 8 figuras de la galeria y la foto de la doctora en
+// diseno-de-sonrisa (el respaldo que ve un crawler o alguien sin JS), y el logo
+// de /privacidad/, que ni siquiera carga Alpine.
+//
+// Hasta el 17-sep extract-images borraba como huerfano todo lo que content.json
+// no nombrara, asi que un cambio de foto dejaba a la landing de los anuncios
+// pidiendo un fichero inexistente. Comprobado ejecutando el script real sobre
+// una copia. Ya no borra, pero queda la otra mitad: la pagina seguiria enseñando
+// la foto VIEJA mientras content.json tiene la nueva, y eso no lo ve nadie.
+console.log('\n7. imagenes: las que se piden existen y son las de content.json');
+{
+  const contenido = JSON.parse(readFileSync('assets/data/content.json', 'utf8'));
+  const actuales = new Set(
+    [...readFileSync('assets/data/content.json', 'utf8')
+      .matchAll(/assets\/img\/content\/([A-Za-z0-9._-]+\.webp)/g)].map((m) => m[1]),
+  );
+  ok(actuales.size > 0, `content.json referencia ${actuales.size} imagenes`);
+
+  const pedidas = new Map();   // fichero -> paginas que lo piden
+  (function andar(dir) {
+    for (const e of readdirSync(dir)) {
+      if (e === 'node_modules' || e === '.git' || e === '.github') continue;
+      const p = join(dir, e);
+      if (statSync(p).isDirectory()) { andar(p); continue; }
+      if (!e.endsWith('.html')) continue;
+      for (const m of readFileSync(p, 'utf8').matchAll(/assets\/img\/content\/([A-Za-z0-9._-]+\.webp)/g)) {
+        if (!pedidas.has(m[1])) pedidas.set(m[1], new Set());
+        pedidas.get(m[1]).add(p);
+      }
+    }
+  })('.');
+
+  for (const [f, donde] of [...pedidas].sort()) {
+    const quien = [...donde].sort().join(', ');
+    ok(existsSync(join('assets/img/content', f)), `${f} existe en disco (lo pide ${quien})`);
+    ok(actuales.has(f), `${f} sigue siendo la de content.json (si no, ${quien} enseña la foto vieja)`);
   }
 }
 
