@@ -667,5 +667,62 @@ console.log('\n14. articulos incompletos: el build para y lo dice');
   ok(sucio === '', sucio ? `el banco de pruebas dejo el repo tocado:\n${sucio}` : 'el repo quedo intacto');
 }
 
+// ── 15. el build esta escrito DOS veces y nadie compara las copias ───────
+// `npm run build` encadena los pasos; el Action los corre sueltos, uno por uno.
+// Hacian falta los dos —el Action no llama a `npm run build`— y por eso la misma
+// lista vive en dos sitios. Esa es la forma de fallo que mas veces ha aparecido
+// en este repo: quien hace el trabajo y quien lo guarda no comparten la lista.
+//
+// Ha costado ya cuatro veces: los filtros de ruta del CI, el `git add` con lista
+// fija, un `--autotest` que no estaba enganchado, y un `document.title` escrito
+// fuera del HTML. Las cuatro se arreglaron a mano. Esto es lo que impide la
+// quinta.
+//
+// Se comprueban tres cosas, y ninguna necesita que nadie declare nada: la lista
+// se deduce de los dos ficheros y se comparan entre si.
+console.log('\n15. `npm run build` y el Action corren lo mismo, en el mismo orden');
+{
+  const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+  const yml = readFileSync('.github/workflows/prerender.yml', 'utf8');
+
+  // a) la cadena de `npm run build`, resuelta y en orden
+  const enBuild = [];
+  for (const m of (pkg.scripts.build || '').matchAll(/npm run ([a-z:@-]+)/g)) {
+    const cuerpo = pkg.scripts[m[1]] || '';
+    for (const s2 of cuerpo.matchAll(/scripts\/([a-z-]+\.mjs)/g)) enBuild.push(s2[1]);
+  }
+
+  // b) los pasos del Action, en orden
+  const enAction = [...yml.matchAll(/run: node scripts\/([a-z-]+\.mjs)/g)].map((m) => m[1]);
+
+  const soloBuild = enBuild.filter((x) => !enAction.includes(x));
+  const soloAction = enAction.filter((x) => !enBuild.includes(x));
+  ok(soloBuild.length === 0, soloBuild.length ? `en npm run build y NO en el Action: ${soloBuild.join(', ')}` : 'todo lo del build esta en el Action');
+  ok(soloAction.length === 0, soloAction.length ? `en el Action y NO en npm run build: ${soloAction.join(', ')}` : 'todo lo del Action esta en el build');
+
+  // c) y en el MISMO ORDEN. El orden no es cosmetico: extract-images tiene que ir
+  //    antes que sync-fuentes —hasta que no hay fichero no hay nombre que
+  //    propagar— y prerender antes que build-ficha, que copia el index ya
+  //    rellenado. Una lista correcta en mal orden produce paginas mudas.
+  ok(enBuild.join('>') === enAction.join('>'),
+     enBuild.join('>') === enAction.join('>')
+       ? `mismo orden en los dos (${enBuild.length} pasos)`
+       : `el orden difiere:\n     build : ${enBuild.join(' > ')}\n     action: ${enAction.join(' > ')}`);
+
+  // d) y cada uno tiene que disparar el Action. Sin esto, editar un script no
+  //    lanzaba el build que lo ejecuta: pasado el 17-sep-2026 con dos de ellos.
+  const filtros = (/paths:\n([\s\S]*?)\n  workflow_dispatch/.exec(yml) || [, ''])[1];
+  const sinFiltro = [...new Set(enBuild)].filter((x) => !filtros.includes(x));
+  ok(sinFiltro.length === 0, sinFiltro.length ? `no disparan el Action al editarse: ${sinFiltro.join(', ')}` : `los ${new Set(enBuild).size} scripts disparan el Action al editarse`);
+
+  // e) los detectores existen y corren en los dos flujos
+  const enTest = [...new Set([...(pkg.scripts.test || '').matchAll(/scripts\/([a-z-]+\.mjs)/g)].map((m) => m[1]))];
+  for (const t of enTest) ok(existsSync(join('scripts', t)), `npm test cita ${t}${existsSync(join('scripts', t)) ? '' : ' — y no existe'}`);
+  ok(/run: npm test/.test(yml), 'el Action del build corre `npm test`');
+  const otro = readFileSync('.github/workflows/test.yml', 'utf8');
+  ok(/run: npm test/.test(otro), '`test.yml` corre `npm test`');
+  ok(!/paths:/.test(otro), '`test.yml` NO lleva filtros de ruta: corre en cada push');
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);
