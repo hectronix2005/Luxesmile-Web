@@ -26,7 +26,7 @@ const SITE = 'https://luxesmilee.com';
    canonical. La raiz sigue sirviendo lo mismo, no se rompe ningun enlace viejo. */
 const INICIO = `/${RUTA_FICHA}/`;
 const V = '20260917d'; // cache-bust de CSS
-const VJS = '20260917a'; // cache-bust de tracking.js (mantener en sync con index/landings)
+const VJS = '20260918a'; // cache-bust de tracking.js (mantener en sync con index/landings)
 
 const content = JSON.parse(readFileSync(join(ROOT, 'assets/data/content.json'), 'utf8'));
 const brand = content.brand || {};

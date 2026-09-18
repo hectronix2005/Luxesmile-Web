@@ -28,7 +28,7 @@
   <meta name="theme-color" content="#FAF7F2" />
 
   <!-- Seguimiento de conversiones (mismo tracking que el sitio principal) -->
-  <script src="../assets/js/tracking.js?v=20260917a"></script>
+  <script src="../assets/js/tracking.js?v=20260918a"></script>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -189,10 +189,21 @@
           const p = new URLSearchParams(location.search);
           const utm = (p.get('utm_source') || '').toLowerCase();
 
-          // Con identificador de clic no se añade nada: tracking.js adjunta la
-          // referencia Ref: y esa línea ya identifica el anuncio. Decirlo además
-          // en palabras duplica el dato y ensucia el mensaje que el paciente ve
+          // Con identificador de clic no se añade nada, y conviene saber POR QUÉ,
+          // porque el motivo cambió el 14-sep-2026 y esta línea se quedó
+          // apuntando a un mecanismo que había dejado de existir.
+          //
+          // Hoy: el identificador viaja en `g=` por la ruta de Zeus, y si esa
+          // ruta cae, tracking.js le pone `Ref:<tipo>.<id>` al `wa.me` de
+          // reserva. Va por uno de los dos caminos, siempre. Decirlo ADEMÁS en
+          // palabras duplica el dato y ensucia el mensaje que el paciente ve
           // antes de enviarlo, que puede borrarlo si le parece raro.
+          //
+          // Entre el 14 y el 18 de septiembre no fue así: se había quitado el
+          // `Ref:` sin reponerlo en la reserva, y este `return` dejaba al
+          // visitante de Google sin NADA cuando la sonda no había contestado
+          // —que es el estado por defecto de cada carga—. Lo fija
+          // test-enrutado §8; si alguien vuelve a quitarlo, el build para.
           if (p.get('gclid') || p.get('wbraid') || p.get('gbraid')) return;
 
           if (utm === 'google' || utm === 'adwords') {

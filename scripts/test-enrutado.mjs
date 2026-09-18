@@ -546,5 +546,98 @@ console.log('\n7. la junta con la MEDICIÓN: un enlace ya enrutado sigue contand
   }
 }
 
+// ── 8. EL CAMINO DEGRADADO NO PUEDE PERDER EL IDENTIFICADOR ───────────────
+// Esto se rompio el 14-sep y nadie lo vio hasta el 18. Al quitar el `Ref:` del
+// mensaje, el camino BUENO siguio llevando el identificador en `g=` — y el
+// degradado se quedo sin nada. Sin `Ref:`, porque lo retiramos; y sin linea de
+// origen, porque `detectSource()` hace `return` en cuanto ve el `gclid`,
+// justificandose en ese mismo `Ref:` que ya no existia.
+//
+// Y el degradado NO es el caso raro: `lxRuta` devuelve la reserva en CADA carga
+// hasta que la sonda contesta. Quien pulsa rapido va por ahi.
+//
+// La invariante: el identificador viaja SIEMPRE, por uno de los dos caminos.
+// Nunca por los dos a la vez —eso se lo enseñaria al paciente para nada— y
+// nunca por ninguno.
+console.log('\n8. el camino degradado conserva el identificador');
+{
+  const SANA = { ok: true, numbers: 'ok', messages: 'ok' };
+  const WAME = 'https://wa.me/573163903511?text=Hola';
+  const CLIC = { id: 'Cj0KCQ_ABC', tipo: 'g' };
+
+  const t0 = cargarTracking(CLIC, { sonda: 'red', callado: true });
+
+  const conSonda = async (sonda, clic) => {
+    const t = cargarTracking(clic, { sonda, callado: true, enlaces: [WAME] });
+    await asentar();
+    return t.ctx.lxRuta('home_info', WAME);
+  };
+
+  // a) sonda caida + clic de anuncio -> wa.me CON la marca
+  {
+    const dado = await conSonda('red', CLIC);
+    const texto = decodeURIComponent((/[?&]text=([^&]*)/.exec(dado) || [, ''])[1].replace(/\+/g, ' '));
+    ok(dado.includes('wa.me'), 'sonda caida + clic     -> sigue siendo wa.me');
+    ok(texto.includes('Ref:g.Cj0KCQ_ABC'), `sonda caida + clic     -> lleva la marca (${texto.split('\n').pop()})`);
+  }
+
+  // b) el tipo viaja: iOS manda wbraid, y la marca tiene que decirlo
+  {
+    const dado = await conSonda('red', { id: 'W123', tipo: 'w' });
+    ok(decodeURIComponent(dado).includes('Ref:w.W123'), 'sonda caida + wbraid   -> Ref:w., no Ref:g.');
+  }
+
+  // c) sonda sana -> enruta, y el texto NO lleva marca: ahi viaja en `g=`
+  {
+    const dado = await conSonda(SANA, CLIC);
+    ok(!dado.includes('wa.me'), 'sonda sana + clic      -> enruta');
+    ok(dado.includes('g=Cj0KCQ_ABC') && !decodeURIComponent(dado).includes('Ref:'),
+       'sonda sana + clic      -> el id va en g=, NO repetido en el texto');
+    // Y por que no puede repetirse aunque alguien lo intente: la ruta de Zeus no
+    // tiene `text=`, y `conMarca` solo sabe escribir ahi. Se deja dicho porque
+    // sin esta linea la comprobacion de arriba es una que no puede fallar — se
+    // midio: marcar tambien el camino bueno la dejaba en verde.
+    ok(t0.ctx.lxConMarca('https://zeus.codi.com.co/x/wa?m=home_info&g=ABC', CLIC)
+         === 'https://zeus.codi.com.co/x/wa?m=home_info&g=ABC',
+       'una URL sin text=      -> conMarca la deja intacta');
+  }
+
+  // d) sin clic no se inventa nada
+  {
+    const dado = await conSonda('red', null);
+    ok(dado === WAME, 'sonda caida sin clic   -> el wa.me intacto');
+  }
+
+  // e) y la marca no puede salir dos veces: mismo motivo que la coletilla.
+  {
+    const YA = 'https://wa.me/573163903511?text=' + encodeURIComponent('Hola\n\nRef:g.VIEJO');
+    const t = cargarTracking(CLIC, { sonda: 'red', callado: true, enlaces: [YA] });
+    await asentar();
+    const dado = t.ctx.lxRuta('home_info', YA);
+    const veces = (decodeURIComponent(dado).match(/Ref:/g) || []).length;
+    ok(veces === 1, `texto que ya traia marca -> ${veces} marca(s), no dos`);
+  }
+
+  // f) LA JUNTA CON LA PROMOCION. `promover()` empareja por href literal, asi
+  //    que si la reserva que se pinta no es la misma cadena que se anoto, el
+  //    enlace se queda en wa.me para siempre aunque la sonda se recupere. Es el
+  //    fallo silencioso que introduce cualquier cambio en esta funcion.
+  {
+    const t = cargarTracking(CLIC, { sonda: SANA, callado: true, enlaces: [WAME] });
+    const pintado = t.ctx.lxRuta('home_info', WAME);   // sonda aun sin contestar
+    // Alpine pinta en el href LO QUE DEVOLVIO `lxRuta`, no el wa.me original.
+    // Si no se reproduce ese paso, el enlace del banco de pruebas conserva una
+    // cadena que en el navegador no existe y `promover()` no tendria con que
+    // emparejar. El emparejamiento es por href literal: ese es el punto.
+    const a = t.enlaces[0];
+    a.href = pintado;
+    await asentar();
+    t.ctx.lxPromover();                    // lo que hace el observador
+    ok(decodeURIComponent(pintado).includes('Ref:g.'), 'antes de la sonda      -> se pinta la reserva marcada');
+    ok(a.href.includes('/wa?m=home_info') || a.href.includes('m=home_info'),
+       `tras recuperarse       -> promovido a la ruta (${a.href.slice(0, 48)}…)`);
+  }
+}
+
 console.log(`\n${fallos ? `FALLOS: ${fallos}` : 'todo en verde'}\n`);
 process.exit(fallos ? 1 : 0);

@@ -270,9 +270,43 @@
        cualquier llamada que no tenga a dónde caer. Con reserva se anota el par
        y se devuelve LA RESERVA hasta que la sonda diga que sí. */
     if (!reserva) return destino;
-    promocion.push([reserva, destino]);
-    return saludOk ? destino : reserva;
+
+    /* LA RESERVA VUELVE A LLEVAR LA MARCA, y sólo ella. Detectado el 18-sep-2026.
+
+       Al quitar el `Ref:` del mensaje (14-sep) se perdió sin querer el único
+       identificador que viajaba por el camino degradado. Con la sonda caída
+       —que es el estado por defecto de CADA carga hasta que responde, no un
+       caso raro— el enlace de un visitante de Google Ads se iba a `wa.me` sin
+       nada: sin `Ref:`, porque lo retiramos, y sin línea de origen, porque
+       `detectSource()` hace `return` en cuanto ve el `gclid` justificándose
+       en ese mismo `Ref:` que ya no existía. Atribución perdida entera, en
+       silencio, y sólo en el momento en que el mecanismo bueno no está.
+
+       Por el camino bueno NO se añade: ahí el identificador viaja en `g=`, y
+       repetirlo en el texto se lo enseñaría al paciente para nada.
+
+       Zeus sigue aceptando `Ref:` — se le pidió expresamente el 18-sep que no
+       retire el lector, porque /wa/ también lo emite. */
+    var caida = conMarca(reserva, clic);
+    promocion.push([caida, destino]);
+    return saludOk ? destino : caida;
   }
+
+  /* Añade `Ref:<tipo>.<id>` al texto de un `wa.me`. Devuelve la URL intacta si
+     no hay identificador, si no encuentra el parámetro o si la marca ya está:
+     una marca duplicada es peor que ninguna, porque el lector se queda con una
+     de las dos y no se sabe con cuál. */
+  function conMarca(url, clic) {
+    if (!clic || !clic.id) return url;
+    if (url.indexOf('Ref%3A') !== -1 || url.indexOf('Ref:') !== -1) return url;
+    var m = /([?&]text=)([^&]*)/.exec(url);
+    if (!m) return url;
+    var texto = decodeURIComponent(m[2].replace(/\+/g, ' '));
+    texto += '\n\nRef:' + (clic.tipo || 'g') + '.' + clic.id;
+    return url.slice(0, m.index) + m[1] + encodeURIComponent(texto)
+         + url.slice(m.index + m[0].length);
+  }
+  window.lxConMarca = conMarca;
   window.lxRuta = lxRuta;
 
   /* Promueve los href que ya estén pintados. Se vuelve a llamar desde el
