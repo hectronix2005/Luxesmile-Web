@@ -97,6 +97,12 @@ const fmtDate = (iso) => {
 
 const logoAbs = abs(brand.logo);
 
+/* El favicon sale del MISMO fragmento que sync-fuentes propaga a las paginas
+   escritas a mano. Si se copiara aqui, las 10 paginas del blog divergirian del
+   resto del sitio en cuanto alguien tocara uno de los dos sitios, y nadie lo
+   veria: un favicon viejo se ve igual de bien que uno nuevo. */
+const FAVICON = readFileSync(join(ROOT, 'scripts/fragmentos/favicon.html'), 'utf8').replace(/\n$/, '');
+
 // <head> común
 function head({ title, desc, url, image, jsonld }) {
   return `<!DOCTYPE html>
@@ -119,6 +125,7 @@ function head({ title, desc, url, image, jsonld }) {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+${FAVICON}
   <link rel="stylesheet" href="/assets/css/tailwind.css?v=${V}" />
   <link rel="stylesheet" href="/assets/css/styles.css?v=${V}" />
   <!-- Seguimiento de conversiones (GA4 + Google Ads + Meta Pixel). Editar los IDs en assets/js/tracking.js -->

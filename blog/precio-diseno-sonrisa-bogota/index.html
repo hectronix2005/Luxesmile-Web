@@ -18,6 +18,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <!-- FAVICON. Fuente única: la propaga scripts/sync-fuentes.mjs a las páginas
+       escritas a mano y la emite scripts/build-blog.mjs en las generadas. Los
+       ficheros los deriva del logo scripts/build-favicon.mjs — no editar a mano.
+       Rutas absolutas a propósito: las mismas líneas valen desde /, desde
+       /blog/x/ y desde /en/smile-design/.
+       Aquí NO va theme-color: cuatro páginas ya declaran el suyo, más claro, y
+       el navy de estos iconos pintaría la barra del móvil de otro color. El del
+       manifiesto es otra cosa: es el de la pantalla de inicio de Android. -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" type="image/png" href="/assets/img/favicon/icon-96.png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="/assets/css/tailwind.css?v=20260917d" />
   <link rel="stylesheet" href="/assets/css/styles.css?v=20260917d" />
   <!-- Seguimiento de conversiones (GA4 + Google Ads + Meta Pixel). Editar los IDs en assets/js/tracking.js -->

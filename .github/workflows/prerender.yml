@@ -18,6 +18,7 @@ on:
       # que `npm test` resulto no ejecutarse nunca por esta misma razon.
       - 'scripts/sync-fuentes.mjs'
       - 'scripts/fragmentos/**'
+      - 'scripts/build-favicon.mjs'
       - 'package.json'
   workflow_dispatch: {}
 
@@ -53,6 +54,11 @@ jobs:
 
       - name: Extraer imágenes base64 → WebP
         run: node scripts/extract-images.mjs
+
+      # El favicon sale del logo, asi que tambien va despues de extraerlo. Si la
+      # doctora cambia el logo en el panel, el icono de la pestaña la sigue solo.
+      - name: Generar el favicon desde el logo
+        run: node scripts/build-favicon.mjs
 
       # VA DESPUES de extraer las imagenes, y el orden importa: hasta que
       # extract-images no convierte el base64 en un .webp con nombre, no hay

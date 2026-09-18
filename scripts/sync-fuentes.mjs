@@ -36,6 +36,22 @@ const PAGINAS_CON_RED = ['index.html', 'diseno-de-sonrisa/index.html',
   'pacientes-internacionales/index.html', 'en/smile-design/index.html'];
 const RED_RE = /  <!-- RED DE SEGURIDAD DEL FADE-IN[\s\S]*?<\/script>/;
 
+/* El favicon: mismas lineas en todas las paginas escritas a mano. Las del blog
+   las emite build-blog.mjs desde este mismo fragmento. El marcador `<!-- FAVICON`
+   hace de ancla: si esta, se reemplaza; si no, se inserta detras del <title>, asi
+   que una pagina nueva se cubre sola la primera vez que corre esto. */
+const PAGINAS_CON_FAVICON = ['index.html', 'diseno-de-sonrisa/index.html',
+  'pacientes-internacionales/index.html', 'en/smile-design/index.html',
+  'privacidad/index.html', 'wa/index.html', 'Dra.Angela_Barbosa/index.html',
+  'admin/index.html', 'marketing/index.html', 'admin.html'];
+/* El ancla TIENE que llegar hasta la ultima linea del fragmento. La primera
+   version ofrecia `-->` como alternativa y, siendo perezoso el cuantificador,
+   paraba en el `-->` del propio comentario: reemplazaba solo el comentario y
+   dejaba los <link> viejos debajo de los nuevos. Duplicados en las 9 paginas, y
+   el sincronizador nunca convergia — la segunda pasada volvia a decir que habia
+   cambios. Lo destapo comprobar la idempotencia, no leer el codigo. */
+const FAVICON_RE = /  <!-- FAVICON(?:[\s\S]*?<link rel="manifest"[^>]*>|\s*-->)\n/;
+
 const VARS = { ivory: 'ivory', porcelain: 'porcelain', rosegold: 'rosegold',
   rosegoldDark: 'rosegold-dark', gold: 'gold', charcoal: 'charcoal', softblack: 'softblack' };
 
@@ -200,6 +216,26 @@ function sincronizar(leer) {
       if (tocados) cambios.push(`diseno-de-sonrisa/index.html  ${tocados} imagen(es) de la galeria`);
       return nuevo;
     });
+  }
+
+  /* 6) Favicon -> todas las paginas escritas a mano */
+  {
+    const frag = leer('scripts/fragmentos/favicon.html').replace(/\n$/, '') + '\n';
+    for (const ruta of PAGINAS_CON_FAVICON) {
+      editar(ruta, (s2) => {
+        let nuevo;
+        if (FAVICON_RE.test(s2)) {
+          nuevo = s2.replace(FAVICON_RE, frag);
+        } else {
+          const t = s2.indexOf('</title>');
+          if (t < 0) { fallos.push(`${ruta} no tiene <title>: no se donde meter el favicon`); return s2; }
+          const fin = s2.indexOf('\n', t) + 1;
+          nuevo = s2.slice(0, fin) + '\n' + frag + s2.slice(fin);
+        }
+        if (nuevo !== s2) cambios.push(`${ruta}  favicon`);
+        return nuevo;
+      });
+    }
   }
 
   for (const [ruta, re, rep, etiqueta] of PATRONES) {

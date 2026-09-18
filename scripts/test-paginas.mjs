@@ -324,5 +324,53 @@ console.log('\n8. el Action commitea lo que el sincronizador escribe');
   }
 }
 
+// ── 9. el favicon: en TODAS las paginas y con la MISMA copia ───────────────
+// Hasta el 18-sep-2026 el sitio no tenia favicon: ninguna de las 21 paginas
+// declaraba uno y /favicon.ico daba 404, asi que cada pestaña salia con el icono
+// generico. Ahora hay 21 copias del mismo bloque —9 propagadas por sync-fuentes
+// y 10 emitidas por build-blog—, y una copia que alguien edite en un solo sitio
+// no se ve: un favicon viejo se ve igual de bien que uno nuevo.
+//
+// Se comprueba tambien que los FICHEROS existan. Un <link> a un icono que no
+// esta no da error en ningun sitio: el navegador se calla y enseña el generico,
+// que es exactamente el estado del que veniamos.
+console.log('\n9. favicon: cobertura, copias identicas y ficheros presentes');
+{
+  // El fichero de verificacion de Search Console no es una pagina y NO se toca.
+  // Ver la ficha de Search Console: borrarlo o editarlo tumba la verificacion.
+  const FUERA = new Set(['googleaf18a76309de9be5.html']);
+  const frag = readFileSync('scripts/fragmentos/favicon.html', 'utf8').replace(/\n$/, '');
+  const enlaces = [...frag.matchAll(/(?:href)="([^"?]+)"/g)].map((m) => m[1]);
+  ok(enlaces.length >= 4, `el fragmento declara ${enlaces.length} enlaces`);
+
+  for (const f of enlaces) {
+    ok(existsSync(f.replace(/^\//, '')), `existe el fichero ${f}`);
+  }
+
+  const paginas = [];
+  (function andar(dir) {
+    for (const e of readdirSync(dir)) {
+      if (['node_modules', '.git', '.github', 'scripts'].includes(e)) continue;
+      const p = join(dir, e);
+      if (statSync(p).isDirectory()) { andar(p); continue; }
+      if (e.endsWith('.html') && !FUERA.has(e)) paginas.push(p.replace(/^\.\//, ''));
+    }
+  })('.');
+
+  let copias = 0;
+  for (const p of paginas.sort()) {
+    const html = readFileSync(p, 'utf8');
+    const m = /  <!-- FAVICON[\s\S]*?<link rel="manifest"[^>]*>/.exec(html);
+    if (!m) { ok(false, `${p}: sin el bloque del favicon`); continue; }
+    ok(m[0] === frag.replace(/\n$/, ''), `${p}: copia identica al fragmento`);
+    // Y una sola: la primera version del propagador dejaba los enlaces viejos
+    // debajo de los nuevos, y el navegador se queda con el ultimo que lee.
+    const veces = (html.match(/<link rel="manifest"/g) || []).length;
+    ok(veces === 1, `${p}: ${veces} bloque(s), no ${veces === 1 ? '' : 'mas de uno'}`.trim());
+    copias++;
+  }
+  ok(copias >= 20, `${copias} paginas con favicon`);
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);
