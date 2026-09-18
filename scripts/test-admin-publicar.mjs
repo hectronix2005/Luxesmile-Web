@@ -127,6 +127,61 @@ async function alCerrar({ codigo, sucio }) {
 }
 
 const codigo = fs.readFileSync(RUTA, 'utf8');
+// ── Sellar la fecha de edición ──────────────────────────────────────────────
+// `date` es cuándo se PUBLICÓ. Si al reescribir un artículo nadie mueve
+// `updated`, el sitemap y el `dateModified` siguen anunciando la fecha de
+// estreno y Google no tiene motivo para volver a rastrear la página. Pasó con
+// los 9 artículos del 17-sep-2026, que declaraban mayo-julio recién reescritos.
+// Aquí se ejecuta el sellado de verdad sobre un artículo editado y otro intacto.
+async function sellar({ codigo, cambio }) {
+  const { fabrica, ctx } = cargarComponente(codigo);
+  ctx.window.LuxeContent = { DEFAULT_CONTENT: {}, hasAdminPassword: () => true, deepMerge: (b, o) => ({ ...b, ...o }) };
+  const app = fabrica();
+  const previos = [
+    { slug: 'tocado',  title: 'T', excerpt: 'e', content: '<p>a</p>', image: 'x.webp', date: '2026-05-01', updated: '2026-05-01' },
+    { slug: 'intacto', title: 'U', excerpt: 'f', content: '<p>b</p>', image: 'y.webp', date: '2026-05-02', updated: '2026-05-02' },
+  ];
+  app.content = { blog: { articles: structuredClone(previos) } };
+  app.snapshot = JSON.stringify({ blog: { articles: previos } });
+  Object.assign(app.content.blog.articles[0], cambio);
+  app.sellarArticulosEditados();
+  const hoy = new Date().toISOString().slice(0, 10);
+  const [t, i] = app.content.blog.articles;
+  return { tocado: t.updated === hoy ? 'hoy' : t.updated, intacto: i.updated };
+}
+
+// Y por el camino de verdad: que `publish()` LLAME al sellado. Comprobar la
+// función suelta no vale — la primera versión de este test la llamaba a mano y
+// quitar la llamada de publish() seguía dando verde. El detector medía la pieza,
+// no el circuito.
+async function sellarAlPublicar({ codigo }) {
+  const { fabrica, ctx } = cargarComponente(codigo);
+  let enviado = null;
+  ctx.window.LuxeContent = {
+    DEFAULT_CONTENT: {}, deepMerge: (b, o) => ({ ...b, ...o }), hasAdminPassword: () => true,
+    fetchContentViaAPI: async () => ({ data: {}, sha: 's' }),
+    setGithubConfig() {}, applyTheme() {}, waitForPublished: async () => ({ ok: true }),
+    publishContent: async (c) => { enviado = structuredClone(c); return { newSha: 'n', publishedAt: 1 }; },
+  };
+  const app = fabrica();
+  const previos = [
+    { id: 1, slug: 'tocado',  title: 'T', excerpt: 'e', content: '<p>a</p>', image: 'x.webp', date: '2026-05-01', updated: '2026-05-01' },
+    { id: 2, slug: 'intacto', title: 'U', excerpt: 'f', content: '<p>b</p>', image: 'y.webp', date: '2026-05-02', updated: '2026-05-02' },
+  ];
+  app.gh = { owner: 'o', repo: 'r', token: 't', branch: 'main', path: 'p' };
+  app.content = { blog: { articles: structuredClone(previos) } };
+  app.snapshot = JSON.stringify({ blog: { articles: previos } });
+  app.loadedSha = 'sha-cargado';
+  app.content.blog.articles[0].content = '<p>reescrito entero</p>';
+  app.verifyPublishedOnSite = async () => {};
+  app.flash = () => {};
+  await app.publish();
+  if (!enviado) return { publico: false };
+  const hoy = new Date().toISOString().slice(0, 10);
+  const [t, i] = enviado.blog.articles;
+  return { publico: true, tocado: t.updated === hoy ? 'hoy' : t.updated, intacto: i.updated };
+}
+
 const ok = (extra) => ({ id: 1, title: 'T', slug: 'uno', image: 'x.webp', date: '2026-09-17', content: '<p>a</p>', ...extra });
 
 const casos = [
@@ -167,5 +222,20 @@ comprobar('cerrar: con cambios sin publicar, avisa',
   await alCerrar({ codigo, sucio: true }), { registrado: true, avisa: true });
 comprobar('cerrar: sin cambios, no molesta',
   await alCerrar({ codigo, sucio: false }), { registrado: true, avisa: false });
+
+// El artículo intacto NO se sella: mover su fecha sin haberlo tocado le miente a
+// Google igual que no moverla nunca, y de paso tira el sitemap entero a hoy.
+comprobar('sellar: cambia el contenido → sella sólo ese',
+  await sellar({ codigo, cambio: { content: '<p>reescrito entero</p>' } }), { tocado: 'hoy', intacto: '2026-05-02' });
+comprobar('sellar: cambia el título → sella sólo ese',
+  await sellar({ codigo, cambio: { title: 'Otro titular' } }), { tocado: 'hoy', intacto: '2026-05-02' });
+comprobar('sellar: cambia la descripción → sella sólo ese',
+  await sellar({ codigo, cambio: { excerpt: 'otra descripción' } }), { tocado: 'hoy', intacto: '2026-05-02' });
+comprobar('sellar: sólo se marca destacado → NO sella',
+  await sellar({ codigo, cambio: { featured: true } }), { tocado: '2026-05-01', intacto: '2026-05-02' });
+comprobar('sellar: no se toca nada → NO sella',
+  await sellar({ codigo, cambio: {} }), { tocado: '2026-05-01', intacto: '2026-05-02' });
+comprobar('sellar: publish() sella lo que ENVÍA al repo',
+  await sellarAlPublicar({ codigo }), { publico: true, tocado: 'hoy', intacto: '2026-05-02' });
 
 process.exit(fallos ? 1 : 0);

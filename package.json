@@ -11,7 +11,7 @@
     "build:css": "tailwindcss -c tailwind.config.js -i assets/css/tailwind.src.css -o assets/css/tailwind.css --minify",
     "build": "npm run build:fuentes && npm run build:images && npm run build:prerender && npm run build:blog && npm run build:css",
     "build:fuentes": "node scripts/sync-fuentes.mjs",
-    "test": "node scripts/test-enrutado.mjs && node scripts/test-admin-publicar.mjs && node scripts/test-paginas.mjs"
+    "test": "node scripts/test-enrutado.mjs && node scripts/test-admin-publicar.mjs && node scripts/test-paginas.mjs && node scripts/test-fechas.mjs"
   },
   "devDependencies": {
     "sharp": "^0.33.5",
