@@ -7,6 +7,30 @@
 // registrado a tiempo.
 document.addEventListener('alpine:init', registerAndInitialize);
 
+/* El enlace del logo y el de «Inicio» apuntan a #inicio. Funcionan, pero dejan
+   `luxesmilee.com/#inicio` escrito en la barra — y esa es justo la direccion que
+   la gente copia y reparte, en vez de la del sitio. Asi que se sube igual y se
+   borra el ancla de la URL.
+   `replaceState` en vez de `pushState`: no anade entrada al historial, o «atras»
+   dejaria de salir del sitio a la primera.
+   Va delegado en `document` y registrado aqui arriba (app.js corre sin defer),
+   no dentro de Alpine: si Alpine falla el enlace sigue funcionando como ancla
+   de toda la vida, que es el comportamiento correcto sin JS. */
+document.addEventListener('click', (ev) => {
+  if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey) return;
+  const destino = ev.target instanceof Element && ev.target.closest('a[href="#inicio"]');
+  if (!destino) return;
+  ev.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  history.replaceState(null, '', location.pathname + location.search);
+});
+
+// Y si alguien llega con el ancla ya puesta —un enlace viejo repartido por ahi—
+// se limpia al cargar. Es el inicio de la pagina: no se pierde ningun destino.
+if (location.hash === '#inicio') {
+  history.replaceState(null, '', location.pathname + location.search);
+}
+
 function registerAndInitialize() {
   Alpine.data('site', () => ({
   content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
