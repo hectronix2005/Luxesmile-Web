@@ -141,6 +141,67 @@ function sincronizar(leer) {
     }
   }
 
+  /* 5) Los nombres de imagen escritos a mano -> desde content.json.
+
+     El .webp se llama `<nombre>-<hash del contenido>.webp`, asi que cambiar una
+     foto en el panel la renombra. Y hay diez de esos nombres escritos a mano
+     fuera de content.json: las 8 figuras de la galeria y la foto de la doctora
+     en diseno-de-sonrisa (el respaldo estatico que ve un crawler o alguien sin
+     JS, porque Alpine pinta la version viva encima), y el logo de /privacidad/,
+     que ni siquiera carga Alpine.
+
+     Hasta el 17-sep nada los ataba: extract-images borraba el fichero viejo como
+     huerfano y la pagina se quedaba pidiendo algo inexistente. Se dejo de borrar
+     y se puso un detector, pero eso solo AVISA de la divergencia. Esto la cierra.
+
+     OJO AL ORDEN: esto tiene que correr DESPUES de extract-images. Antes de que
+     convierta el base64 en fichero no hay nombre que propagar — por eso el valor
+     que no sea una ruta /assets/img/content/*.webp para el build en vez de
+     colarse: una pagina con un data URL de 2 MB dentro no la quiere nadie. */
+  {
+    const RUTA_IMG = /^\/assets\/img\/content\/[A-Za-z0-9._-]+\.webp$/;
+    const fuente = (valor, etiqueta) => {
+      if (RUTA_IMG.test(valor || '')) return valor;
+      fallos.push(`${etiqueta} no es una ruta a un .webp extraido: ${JSON.stringify(String(valor).slice(0, 40))}`
+        + ' — ¿se ejecuto extract-images antes que esto?');
+      return null;
+    };
+    const IMAGENES = [
+      ['privacidad/index.html', /\/assets\/img\/content\/logo-[A-Za-z0-9._-]+\.webp/g,
+        () => fuente(datos?.brand?.logo, 'brand.logo'), 'logo'],
+      ['diseno-de-sonrisa/index.html', /\/assets\/img\/content\/about-[A-Za-z0-9._-]+\.webp/g,
+        () => fuente(datos?.about?.image, 'about.image'), 'foto de la doctora'],
+    ];
+    for (const [ruta, re, dame, etiqueta] of IMAGENES) {
+      editar(ruta, (s2) => {
+        re.lastIndex = 0;
+        if (!re.test(s2)) { fallos.push(`no encuentro ${etiqueta} en ${ruta}`); return s2; }
+        const valor = dame();
+        if (!valor) return s2;
+        re.lastIndex = 0;
+        const nuevo = s2.replace(re, valor);
+        if (nuevo !== s2) cambios.push(`${ruta}  ${etiqueta} -> ${valor.split('/').pop()}`);
+        return nuevo;
+      });
+    }
+    // La galeria va por indice: `gallery-3-…` se resuelve con content.gallery[3],
+    // no por el orden en que aparezcan en el fichero.
+    editar('diseno-de-sonrisa/index.html', (s2) => {
+      const galeria = datos?.gallery || [];
+      let tocados = 0;
+      const nuevo = s2.replace(/\/assets\/img\/content\/gallery-(\d+)-[A-Za-z0-9._-]+\.webp/g, (todo, i) => {
+        const item = galeria[Number(i)];
+        if (!item) { fallos.push(`la pagina pide gallery-${i} y content.gallery solo tiene ${galeria.length}`); return todo; }
+        const valor = fuente(item.image, `gallery[${i}].image`);
+        if (!valor) return todo;
+        if (valor !== todo) tocados++;
+        return valor;
+      });
+      if (tocados) cambios.push(`diseno-de-sonrisa/index.html  ${tocados} imagen(es) de la galeria`);
+      return nuevo;
+    });
+  }
+
   for (const [ruta, re, rep, etiqueta] of PATRONES) {
     editar(ruta, (s) => {
       re.lastIndex = 0;
@@ -165,6 +226,9 @@ function autotest() {
     ['telephone del JSON-LD',  'index.html',            (s) => s.replace(/("telephone":\s*")\+?57\d{10}(")/, '$1+573009999999$2')],
     ['red del fade en la landing EN', 'en/smile-design/index.html', (s) => s.replace('setTimeout(parar, 30000)', 'setTimeout(parar, 99999)')],
     ['teléfono visible en /privacidad/', 'privacidad/index.html', (s) => s.replace(/(>)\+57 3\d{2} \d{3} \d{4}(<)/, '$1+57 300 999 9999$2')],
+    ['logo de /privacidad/', 'privacidad/index.html', (s) => s.replace(/logo-[A-Za-z0-9]+\.webp/, 'logo-000000000000.webp')],
+    ['galería de la landing', 'diseno-de-sonrisa/index.html', (s) => s.replace(/gallery-3-[A-Za-z0-9]+\.webp/, 'gallery-3-000000000000.webp')],
+    ['foto de la doctora', 'diseno-de-sonrisa/index.html', (s) => s.replace(/about-[A-Za-z0-9]+\.webp/, 'about-000000000000.webp')],
   ];
   // Antes de nada: en limpio NO puede haber cambios. Si los hay, el resto no prueba nada.
   const limpio = sincronizar(leerDisco);
@@ -193,6 +257,12 @@ function autotest() {
     ['phone vacío',                 (d) => { d.contact.phone = ''; }],
     ['phone con una cifra de menos', (d) => { d.contact.phone = '+57 316 390 351'; }],
     ['whatsapp con letras',   (d) => { d.contact.whatsapp = 'escríbeme'; }],
+    // Si esto corre antes que extract-images, el valor sigue siendo base64 y no
+    // hay nombre que propagar. Tiene que PARAR, no meter 2 MB en el HTML.
+    ['una foto todavía en base64', (d) => { d.gallery[3].image = 'data:image/png;base64,iVBORw0KGg'; }],
+    ['el logo todavía en base64',  (d) => { d.brand.logo = 'data:image/png;base64,iVBORw0KGg'; }],
+    ['la galería con menos fotos que figuras tiene la página',
+      (d) => { d.gallery = d.gallery.slice(0, 5); }],
   ];
   for (const [nombre, romper] of malos) {
     const datos = JSON.parse(leerDisco(CONTENT));

@@ -51,11 +51,14 @@ jobs:
       - name: Comprobaciones (enrutado a WhatsApp + guardas del admin)
         run: npm test
 
-      - name: Sincronizar fuentes duplicadas con content.json
-        run: node scripts/sync-fuentes.mjs
-
       - name: Extraer imágenes base64 → WebP
         run: node scripts/extract-images.mjs
+
+      # VA DESPUES de extraer las imagenes, y el orden importa: hasta que
+      # extract-images no convierte el base64 en un .webp con nombre, no hay
+      # nombre de fichero que propagar a las paginas que lo llevan escrito.
+      - name: Sincronizar fuentes duplicadas con content.json
+        run: node scripts/sync-fuentes.mjs
 
       - name: Regenerar HTML pre-renderizado
         run: node scripts/prerender.mjs
