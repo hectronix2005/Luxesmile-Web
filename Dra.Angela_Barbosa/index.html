@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dra. Angela Barbosa — Luxe-Smile</title>
+
+  <!-- =====================================================================
+       Luxe-Smile · Puente hacia el inicio
+       ---------------------------------------------------------------------
+       Existe para que la dirección que aparece en la ficha de Google funcione
+       si alguien la teclea o la pulsa. No lleva contenido propio a propósito:
+       una página delgada que repitiera el inicio competiría con él por las
+       mismas consultas, que es justo lo que no interesa.
+
+       El canonical apunta al inicio para que Google consolide ahí cualquier
+       señal que llegue por esta dirección. Sin `noindex`: eso bloquearía esa
+       consolidación, y el objetivo es lo contrario.
+
+       OJO con la grafía. En GitHub Pages las mayúsculas distinguen, así que
+       /dra.angela_barbosa daría 404. Y Google trata el guion bajo como parte
+       de la palabra, no como separador: lee «Angela_Barbosa» como un término
+       único. Se mantiene así porque es la dirección que va en la ficha; si
+       algún día se busca posicionar por el nombre, la grafía buena es
+       /dra-angela-barbosa, en minúsculas y con guion.
+       ===================================================================== -->
+  <link rel="canonical" href="https://luxesmilee.com/" />
+  <meta http-equiv="refresh" content="0; url=/" />
+
+
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      margin: 0; min-height: 100vh;
+      display: grid; place-items: center;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #F7F8FA; color: #202630;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #161C26; color: #E7ECF2; }
+    }
+    .caja { text-align: center; padding: 2rem 1.5rem; max-width: 24rem; }
+    p { margin: 0 0 1.25rem; font-size: 1rem; line-height: 1.5; }
+    a {
+      display: inline-block; padding: .7rem 1.35rem;
+      background: #1F3A57; color: #fff; text-decoration: none;
+      border-radius: 999px; font-weight: 600; font-size: .95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="caja">
+    <p>Dra. Angela Barbosa — Luxe-Smile, Chicó, Bogotá.</p>
+    <a href="/">Ir al sitio</a>
+  </div>
+  <script>location.replace('/');</script>
+</body>
+</html>
