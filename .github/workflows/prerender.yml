@@ -19,6 +19,10 @@ on:
       - 'scripts/sync-fuentes.mjs'
       - 'scripts/fragmentos/**'
       - 'scripts/build-favicon.mjs'
+      - 'scripts/build-ficha.mjs'
+      # El inicio, porque /Dra.Angela_Barbosa/ es una copia suya: si cambia y este
+      # build no corre, `npm test` para el despliegue en vez de arreglarlo solo.
+      - 'index.html'
       - 'package.json'
   workflow_dispatch: {}
 
@@ -68,6 +72,11 @@ jobs:
 
       - name: Regenerar HTML pre-renderizado
         run: node scripts/prerender.mjs
+
+      # VA DESPUES de prerender: /Dra.Angela_Barbosa/ sirve el inicio, y lo copia
+      # del index.html YA rellenado. Al reves copiaria los marcadores sin rellenar.
+      - name: Servir el inicio en la dirección de la ficha de Google
+        run: node scripts/build-ficha.mjs
 
       - name: Generar páginas estáticas del blog + sitemap
         run: node scripts/build-blog.mjs

@@ -1,31 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+<!-- GENERADO por scripts/build-ficha.mjs desde index.html — no editar a mano -->
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dra. Angela Barbosa — Luxe-Smile</title>
-
-  <!-- =====================================================================
-       Luxe-Smile · Puente hacia el inicio
-       ---------------------------------------------------------------------
-       Existe para que la dirección que aparece en la ficha de Google funcione
-       si alguien la teclea o la pulsa. No lleva contenido propio a propósito:
-       una página delgada que repitiera el inicio competiría con él por las
-       mismas consultas, que es justo lo que no interesa.
-
-       El canonical apunta al inicio para que Google consolide ahí cualquier
-       señal que llegue por esta dirección. Sin `noindex`: eso bloquearía esa
-       consolidación, y el objetivo es lo contrario.
-
-       OJO con la grafía. En GitHub Pages las mayúsculas distinguen, así que
-       /dra.angela_barbosa daría 404. Y Google trata el guion bajo como parte
-       de la palabra, no como separador: lee «Angela_Barbosa» como un término
-       único. Se mantiene así porque es la dirección que va en la ficha; si
-       algún día se busca posicionar por el nombre, la grafía buena es
-       /dra-angela-barbosa, en minúsculas y con guion.
-       ===================================================================== -->
-  <link rel="canonical" href="https://luxesmilee.com/" />
-  <meta http-equiv="refresh" content="0; url=/" />
+  <title>Luxe-Smile · Diseño de Sonrisa y Carillas en el Chico</title>
 
   <!-- FAVICON. Fuente única: la propaga scripts/sync-fuentes.mjs a las páginas
        escritas a mano y la emite scripts/build-blog.mjs en las generadas. Los
@@ -39,32 +18,763 @@
   <link rel="icon" type="image/png" href="/assets/img/favicon/icon-96.png" sizes="96x96" />
   <link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
+  <meta
+    name="description"
+    content="Diseño de sonrisa, carillas de porcelana e implantes con la Dra. Angela Barbosa, prostodoncista. Consultorio en el Chico, Bogotá. Valoración sin costo."
+  />
+  <link rel="canonical" href="https://luxesmilee.com/" />
+  <meta name="theme-color" content="#FAF7F2" />
 
-  <style>
-    :root { color-scheme: light dark; }
-    body {
-      margin: 0; min-height: 100vh;
-      display: grid; place-items: center;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: #F7F8FA; color: #202630;
+  <!-- Open Graph (Facebook / WhatsApp / LinkedIn) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Luxe-Smile" />
+  <meta property="og:locale" content="es_CO" />
+  <meta property="og:url" content="https://luxesmilee.com/" />
+  <meta property="og:title" content="Luxe-Smile · Diseño de Sonrisa y Carillas en el Chico" />
+  <meta property="og:description" content="Odontología estética de alta gama en el Chico, Bogotá. Diseño de sonrisa, carillas, blanqueamiento e implantes. Primera valoración sin costo." />
+  <meta property="og:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="817" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Luxe-Smile · Diseño de Sonrisa y Carillas en el Chico" />
+  <meta name="twitter:description" content="Odontología estética de alta gama en el Chico, Bogotá. Primera valoración sin costo." />
+  <meta name="twitter:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
+
+  <!-- Datos estructurados: negocio local odontológico (para Google / Maps) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Dentist",
+    "name": "Luxe-Smile — Dra. Angela Barbosa",
+    "alternateName": ["Luxe Smile", "Luxe Smiles", "LuxeSmile", "Dra Angela Barbosa Rehabilitación oral y Estética"],
+    "image": "https://luxesmilee.com/assets/img/og-cover.jpg",
+    "url": "https://luxesmilee.com/",
+    "telephone": "+573163903511",
+    "priceRange": "$$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Cl. 90 #14-16, Consultorio 508, Chico, Chapinero",
+      "addressLocality": "Bogotá",
+      "addressRegion": "Bogotá D.C.",
+      "addressCountry": "CO"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 4.6742261,
+      "longitude": -74.0524029
+    },
+    "areaServed": ["Chico", "Chapinero", "Usaquén", "Bogotá Norte"],
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "08:00",
+        "closes": "18:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Saturday",
+        "opens": "09:00",
+        "closes": "13:00"
+      }
+    ],
+    "sameAs": ["https://www.instagram.com/luxesmilee_", "https://maps.google.com/?cid=2846959231365109133"],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "reviewCount": "8"
     }
-    @media (prefers-color-scheme: dark) {
-      body { background: #161C26; color: #E7ECF2; }
-    }
-    .caja { text-align: center; padding: 2rem 1.5rem; max-width: 24rem; }
-    p { margin: 0 0 1.25rem; font-size: 1rem; line-height: 1.5; }
-    a {
-      display: inline-block; padding: .7rem 1.35rem;
-      background: #1F3A57; color: #fff; text-decoration: none;
-      border-radius: 999px; font-weight: 600; font-size: .95rem;
-    }
-  </style>
+  }
+  </script>
+
+  <!-- Seguimiento de conversiones (GA4 + Google Ads + Meta Pixel). Editar los IDs en assets/js/tracking.js -->
+  <script src="/assets/js/tracking.js?v=20260917a"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Fonts no bloqueantes: preload + swap on load. Sin JS → noscript fallback. -->
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap">
+  </noscript>
+
+  <!-- Tailwind compilado (reemplaza el CDN, no apto para producción). Se genera en build. -->
+  <link rel="stylesheet" href="/assets/css/tailwind.css?v=20260917d" />
+
+  <link rel="stylesheet" href="/assets/css/styles.css?v=20260917c" />
+  <script src="/assets/js/content.js?v=20260917i"></script>
+  <script src="/assets/js/app.js?v=20260918a"></script>
+  <script defer src="/assets/js/alpine.min.js?v=3.14.9"></script>
 </head>
-<body>
-  <div class="caja">
-    <p>Dra. Angela Barbosa — Luxe-Smile, Chicó, Bogotá.</p>
-    <a href="/">Ir al sitio</a>
+
+<body class="bg-ivory text-charcoal">
+  <!-- ============================ NAV ============================ -->
+  <header
+    class="fixed top-0 inset-x-0 z-40 bg-white"
+  >
+    <!-- Barra superior móvil (visible < lg): logo + botón de menú -->
+    <div class="flex lg:hidden items-center justify-between px-6 h-14 border-b border-charcoal/5 bg-white">
+      <a href="#inicio" class="flex items-center flex-shrink-0">
+        <template x-if="content.brand.logo">
+          <img :src="content.brand.logo" alt="Luxe-Smile" class="object-contain" style="height: 40px; width: auto; max-width: 210px;" />
+        </template>
+      </a>
+      <button
+        class="p-2 -mr-2"
+        @click="mobileOpen = !mobileOpen"
+        aria-label="Menú"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6">
+          <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" x-show="!mobileOpen" />
+          <path stroke-linecap="round" d="M6 6l12 12M6 18L18 6" x-show="mobileOpen" style="display:none" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Line 1: Logo (desktop) -->
+    <div class="hidden lg:flex w-full items-center justify-center bg-white" style="height: 140px;">
+      <a href="#inicio" class="flex items-center justify-center flex-shrink-0">
+        <template x-if="content.brand.logo">
+          <img :src="content.brand.logo" alt="" style="height: 140px; width: auto; max-width: 450px;" class="object-contain" />
+        </template>
+      </a>
+    </div>
+
+    <!-- Line 2: Navigation links -->
+    <div class="hidden lg:flex w-full items-center justify-center h-14 border-b border-charcoal/5">
+      <nav class="flex items-center gap-10 text-sm">
+        <template x-for="link in content.nav" :key="link.href">
+          <a :href="link.href" class="nav-link whitespace-nowrap" x-text="link.label"></a>
+        </template>
+      </nav>
+    </div>
+
+    <!-- Line 3: Agenda buttons -->
+    <div class="hidden lg:flex w-full items-center justify-center gap-6 h-14 border-t border-charcoal/5 bg-white">
+      <button data-cta="agendar" @click="showDiagnosticReminder('virtual')" class="btn-ghost inline-flex items-center gap-2 text-sm whitespace-nowrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 flex-shrink-0">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        Agenda Virtual
+      </button>
+      <button data-cta="agendar" @click="showDiagnosticReminder('office')" class="btn-primary inline-flex items-center gap-2 text-sm whitespace-nowrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4 flex-shrink-0">
+          <path d="M12 21s-7-7.5-7-12a7 7 0 1 1 14 0c0 4.5-7 12-7 12Z"></path>
+          <circle cx="12" cy="9" r="2.5"></circle>
+        </svg>
+        Agenda en Consultorio
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div
+      x-show="mobileOpen"
+      x-transition
+      class="lg:hidden border-t border-charcoal/5 backdrop-blur"
+      style="display:none; background: rgba(255, 255, 255, 0.95);"
+    >
+      <div class="px-6 py-6 flex flex-col gap-4">
+        <template x-for="link in content.nav" :key="link.href">
+          <a
+            :href="link.href"
+            class="text-base nav-link"
+            x-text="link.label"
+            @click="mobileOpen = false"
+          ></a>
+        </template>
+        <button data-cta="agendar" @click="mobileOpen = false; showDiagnosticReminder('office')" class="btn-primary justify-center">
+          Agenda en Consultorio
+        </button>
+        <button data-cta="agendar" @click="mobileOpen = false; showDiagnosticReminder('virtual')" class="btn-ghost justify-center">
+          Agenda Virtual
+        </button>
+        <a :href="waLink('hero')" target="_blank" rel="noopener" class="btn-ghost justify-center">
+          Contáctanos
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================ HERO ============================ -->
+  <section id="inicio" class="relative pt-32 pb-24 hero-aura overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-12 items-center">
+      <div class="lg:col-span-7 reveal">
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-6" x-text="content.hero.eyebrow"><!--PR:eyebrow-->Odontología estética · Diseño de sonrisa<!--/PR:eyebrow--></p>
+        <h1
+          class="hero-title text-6xl md:text-7xl lg:text-[5.5rem]"
+        >
+          <!--PR:h1--><span class="block" data-prerendered>La sonrisa que imaginas, </span><span class="block" data-prerendered><em>comienza aqui. </em></span><!--/PR:h1-->
+          <template x-for="(line, i) in content.hero.title.split('\n')" :key="i">
+            <span class="block">
+              <template x-if="i === 1"><em x-text="line"></em></template>
+              <template x-if="i !== 1"><span x-text="line"></span></template>
+            </span>
+          </template>
+        </h1>
+        <p class="mt-8 text-lg text-softblack/75 max-w-xl leading-relaxed" x-text="content.hero.subtitle"><!--PR:subtitle-->Creamos sonrisas naturales y armónicas con tecnología de vanguardia y un trato íntimo, cálido y personalizado.<!--/PR:subtitle--></p>
+
+        <div class="mt-10 flex flex-wrap gap-3">
+          <button @click="officeModalOpen = true" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="w-4 h-4">
+              <path d="M12 21s-7-7.5-7-12a7 7 0 1 1 14 0c0 4.5-7 12-7 12Z" />
+              <circle cx="12" cy="9" r="2.5" />
+            </svg>
+            <span x-text="content.hero.ctaPrimary"><!--PR:ctaPrimary-->Agenda tu cita<!--/PR:ctaPrimary--></span>
+          </button>
+          <button @click="bookingModalOpen = true" class="btn-ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="w-4 h-4">
+              <rect x="3" y="5" width="18" height="16" rx="2" />
+              <path d="M16 3v4M8 3v4M3 10h18" />
+            </svg>
+            Agenda Virtual
+          </button>
+          <a :href="waLink('hero')" target="_blank" rel="noopener" class="btn-ghost">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+              <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.49 0 .16 5.33.16 11.9c0 2.1.55 4.14 1.6 5.94L0 24l6.34-1.66a11.84 11.84 0 0 0 5.72 1.46c6.56 0 11.9-5.33 11.9-11.9 0-3.18-1.24-6.17-3.45-8.42Z" />
+            </svg>
+            <span x-text="content.hero.ctaSecondary"></span>
+          </a>
+        </div>
+
+        <p class="mt-5 text-xs text-softblack/50 tracking-wide" x-show="content.hero.supportLine" x-text="content.hero.supportLine"><!--PR:supportLine-->Primera valoración sin costo · Cupos limitados<!--/PR:supportLine--></p>
+
+        <div class="mt-10 flex items-center gap-6 text-sm text-softblack/70">
+          <span class="gold-divider"></span>
+          <div>
+            <span class="font-serif italic text-lg" x-text="content.brand.doctor"><!--PR:doctor-->Dra. Angela Barbosa Gómez<!--/PR:doctor--></span>
+            <p class="text-xs text-softblack/55 mt-1 tracking-wide" x-text="content.about.subtitle">Prostodoncista · Especialista en Rehabilitación Oral y Estética · +10 años</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 relative reveal">
+        <div class="relative aspect-[4/5] rounded-sm overflow-hidden shadow-2xl shadow-rosegold/20">
+          <img
+            :src="content.hero.image"
+            alt="Sonrisa Luxe-Smile"
+            class="w-full h-full object-cover"
+          />
+          <div
+            class="absolute inset-0 ring-1 ring-inset ring-white/20 pointer-events-none"
+          ></div>
+        </div>
+        <div
+          class="hidden md:block absolute -bottom-8 -left-8 bg-white px-6 py-5 rounded-sm shadow-xl border border-charcoal/5 w-60"
+        >
+          <p class="font-serif text-3xl text-rosegoldDark leading-none">5.0</p>
+          <p class="text-gold text-sm mt-1">★ ★ ★ ★ ★</p>
+          <p class="text-xs text-softblack/70 mt-2 leading-snug">
+            Basado en cientos de pacientes que ya confían su sonrisa en Luxe-Smile.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ STATS ============================ -->
+  <section class="border-y border-charcoal/5 bg-porcelain/60">
+    <div
+      class="max-w-7xl mx-auto px-6 lg:px-10 py-12 grid grid-cols-2 md:grid-cols-4 gap-8"
+    >
+      <template x-for="stat in content.stats" :key="stat.label">
+        <div class="text-center reveal">
+          <p class="font-serif text-4xl md:text-5xl text-rosegoldDark" x-text="stat.value"></p>
+          <p class="mt-2 text-xs uppercase tracking-[0.2em] text-softblack/70" x-text="stat.label"></p>
+        </div>
+      </template>
+    </div>
+  </section>
+
+  <!-- ============================ ABOUT ============================ -->
+  <!-- Alias de ancla para sitelinks de Google Ads, que apuntan a #doctora.
+       Se añade en vez de renombrar #sobre para no romper el nav (content.json). -->
+  <span id="doctora" aria-hidden="true" style="display:block;height:0"></span>
+  <section id="sobre" class="py-24 lg:py-32">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-16 items-center">
+      <div class="lg:col-span-5 order-2 lg:order-1 reveal">
+        <div class="relative aspect-[4/5] rounded-sm overflow-hidden">
+          <img
+            :src="content.about.image"
+            :alt="content.about.title"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 order-1 lg:order-2 reveal">
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Sobre mí</p>
+        <h2 class="font-serif text-5xl md:text-6xl leading-[1] mb-3" x-text="content.about.title"><!--PR:aboutTitle-->Dra. Angela Barbosa Gómez<!--/PR:aboutTitle--></h2>
+        <p class="font-serif italic text-xl text-softblack/70 mb-8" x-text="content.about.subtitle"><!--PR:aboutSubtitle-->Prostodoncista · Especialista en Rehabilitación Oral y Estética · +10 años<!--/PR:aboutSubtitle--></p>
+        <p class="text-softblack/80 leading-relaxed text-lg" x-text="content.about.text"><!--PR:aboutText-->Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.<!--/PR:aboutText--></p>
+
+        <ul class="mt-8 space-y-3">
+          <template x-for="cred in content.about.credentials" :key="cred">
+            <li class="flex items-start gap-3">
+              <span class="text-gold mt-1">◆</span>
+              <span class="text-softblack/80" x-text="cred"></span>
+            </li>
+          </template>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ SERVICES ============================ -->
+  <section id="servicios" class="py-24 lg:py-32 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Servicios</p>
+        <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]">
+          Tratamientos pensados <em class="text-rosegold">para ti</em>
+        </h2>
+        <p class="mt-6 text-softblack/70 leading-relaxed">
+          Cada servicio en Luxe-Smile está diseñado desde la estética, la salud oral y la experiencia
+          del paciente. Materiales premium, tecnología digital y acompañamiento humano.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!--PR:services--><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Diseño de Sonrisa</h3><p class="text-softblack/70 leading-relaxed text-sm">Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Carillas de Porcelana</h3><p class="text-softblack/70 leading-relaxed text-sm">Carillas ultrafinas que corrigen forma, color y alineación en pocas sesiones, con resultados del más alto nivel estético.</p><p class="mt-3 text-xs font-semibold tracking-wide text-rosegoldDark uppercase">desde $6.000.000</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Blanqueamiento Premium</h3><p class="text-softblack/70 leading-relaxed text-sm">Tratamiento en consultorio con geles de última generación. Hasta 3 tonos más blanco sin sensibilidad.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Rehabilitación de Alta Complejidad </h3><p class="text-softblack/70 leading-relaxed text-sm">Tratamiento para reconstruir la dentadura completa o parcial cuando existe un deterioro Severo, pérdida de piezas, enfermedades periodontales avanzadas o traumas. </p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Implantes Dentales</h3><p class="text-softblack/70 leading-relaxed text-sm">Reemplaza dientes perdidos con implantes de titanio de grado médico. Función y estética para toda la vida.</p></div><div class="service-card" data-prerendered><h3 class="font-serif text-2xl mb-3">Odontología Preventiva</h3><p class="text-softblack/70 leading-relaxed text-sm">Profilaxis, detartraje y control periódico para mantener tu sonrisa saludable y prevenir tratamientos mayores.</p></div><!--/PR:services-->
+        <template x-for="(service, i) in content.services" :key="i">
+          <div class="service-card reveal">
+            <div class="service-icon" x-text="service.icon"></div>
+            <h3 class="font-serif text-2xl mb-3" x-text="service.title"></h3>
+            <p class="text-softblack/70 leading-relaxed text-sm" x-text="service.desc"></p>
+            <p x-show="service.price" class="mt-3 text-xs font-semibold tracking-wide text-rosegoldDark uppercase" x-text="service.price"></p>
+          </div>
+        </template>
+      </div>
+
+      <div class="text-center mt-14 reveal flex flex-wrap gap-3 justify-center">
+        <!-- data-cta="agendar" es imprescindible en el virtual: apunta a
+             Calendly, y el selector a[href*="calendar"] de tracking.js no
+             casa con «calendly», así que sin esto no se cuenta la conversión. -->
+        <a :href="bookingOfficeLink()" data-cta="agendar" target="_blank" rel="noopener" class="btn-primary">
+          Agenda en Consultorio
+        </a>
+        <a :href="bookingLink()" data-cta="agendar" target="_blank" rel="noopener" class="btn-ghost">
+          Agenda Virtual
+        </a>
+        <a :href="waLink('hero')" target="_blank" rel="noopener" class="btn-ghost">
+          Contáctanos
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ GALLERY ============================ -->
+  <!-- Alias de ancla para sitelinks de Google Ads, que apuntan a #casos. -->
+  <span id="casos" aria-hidden="true" style="display:block;height:0"></span>
+  <section id="galeria" class="py-24 lg:py-32">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="flex items-end justify-between flex-wrap gap-6 mb-12 reveal">
+        <div>
+          <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Galería</p>
+          <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]">
+            Sonrisas <em class="text-rosegold">reales</em>
+          </h2>
+        </div>
+        <div class="max-w-md">
+          <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-3">Antes / Después</p>
+          <p class="text-softblack/70 leading-relaxed">
+            Cada caso es único. Así lucen algunos de nuestros resultados recientes, siempre con el
+            permiso y la felicidad de nuestros pacientes.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+        <template x-for="(item, i) in content.gallery" :key="i">
+          <figure class="gallery-item reveal">
+            <img :src="item.image" :alt="item.caption || 'Caso Luxe-Smile'" loading="lazy" decoding="async" />
+            <figcaption class="gallery-overlay" x-text="item.caption"></figcaption>
+          </figure>
+        </template>
+      </div>
+      <div class="text-center mt-12 reveal" x-show="content.gallery && content.gallery.length">
+        <a :href="waLink('casos')" target="_blank" rel="noopener" class="btn-primary">
+          Quiero un resultado como estos
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TESTIMONIALS ============================ -->
+  <section
+    id="testimonios"
+    class="py-24 lg:py-32 bg-porcelain/50 border-y border-charcoal/5"
+    x-show="content.reviews?.elfsightWidgetId || content.reviews?.googleReviewUrl || content.testimonials?.length"
+  >
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="text-center max-w-2xl mx-auto mb-12 reveal">
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Testimonios</p>
+        <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]">
+          Lo que dicen <em class="text-rosegold">de nosotros</em>
+        </h2>
+      </div>
+
+      <!-- Testimonios manuales -->
+      <template x-if="content.testimonials?.length && !content.reviews?.elfsightWidgetId">
+        <div class="grid md:grid-cols-3 gap-8 mb-12">
+          <template x-for="t in content.testimonials" :key="t.name">
+            <div class="testimonial-card reveal">
+              <div class="flex items-center gap-1 mb-4">
+                <span x-text="stars(t.rating)" class="text-sm text-gold"></span>
+              </div>
+              <p class="text-softblack/80 leading-relaxed mb-6" x-text="t.text"></p>
+              <div>
+                <p class="font-medium text-charcoal" x-text="t.name"></p>
+                <p class="text-xs text-softblack/60 uppercase tracking-wide" x-text="t.role"></p>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <!-- Widget de Elfsight con reseñas vivas de Google.
+           El script platform.js detecta el div por su clase elfsight-app-XXX y lo monta. -->
+      <template x-if="content.reviews?.elfsightWidgetId">
+        <div class="reveal">
+          <div :class="'elfsight-app-' + content.reviews.elfsightWidgetId" data-elfsight-app-lazy></div>
+        </div>
+      </template>
+
+      <div class="text-center" x-show="content.reviews?.googleReviewUrl" :class="{'mt-12': content.reviews?.elfsightWidgetId || content.testimonials?.length}">
+        <a
+          :href="content.reviews?.googleReviewUrl"
+          target="_blank"
+          rel="noopener"
+          class="btn-primary inline-flex items-center gap-2"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.5l2.59 5.24 5.78.84-4.18 4.07.99 5.75-5.18-2.72-5.18 2.72.99-5.75-4.18-4.07 5.78-.84z"/>
+          </svg>
+          Deja tu reseña en Google
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ BLOG ============================ -->
+  <section
+    id="blog"
+    class="py-24 lg:py-32 border-t border-charcoal/5"
+    x-show="content.blog?.articles?.length"
+  >
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Blog</p>
+        <h2 class="font-serif text-5xl md:text-6xl leading-[1.05]" x-text="content.blog?.title"></h2>
+        <p class="text-softblack/70 text-lg mt-4" x-text="content.blog?.subtitle"></p>
+      </div>
+
+      <!-- Featured articles grid -->
+      <div class="grid md:grid-cols-3 gap-8">
+        <template x-for="article in (content.blog?.articles || []).slice(0, 3)" :key="article.id">
+          <a :href="'/blog/' + article.slug + '/'" class="reveal group cursor-pointer" style="display:block;">
+            <!-- Image -->
+            <div class="relative mb-6 overflow-hidden rounded-lg aspect-video bg-porcelain/50">
+              <img
+                :src="article.image"
+                :alt="article.title"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-softblack/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+
+            <!-- Content -->
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <span class="inline-block px-3 py-1 bg-rosegold/10 text-rosegoldDark text-xs font-medium rounded-full" x-text="article.category"></span>
+                <span class="text-xs text-softblack/60" x-text="article.readTime"></span>
+              </div>
+
+              <h3 class="font-serif text-xl md:text-2xl mb-3 text-charcoal line-clamp-2 group-hover:text-rosegold transition-colors" x-text="article.title"></h3>
+              <p class="text-softblack/70 text-sm leading-relaxed line-clamp-2 mb-4" x-text="article.excerpt"></p>
+
+              <div class="flex items-center justify-between pt-4 border-t border-charcoal/5">
+                <span class="text-xs text-softblack/60" x-text="article.author"></span>
+                <span class="text-xs text-softblack/60" x-text="article.date"></span>
+              </div>
+            </div>
+          </a>
+        </template>
+      </div>
+
+      <div class="text-center mt-12 reveal">
+        <a href="/blog/" class="btn-ghost">Ver todos los artículos</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CONTACT ============================ -->
+  <section id="contacto" class="py-24 lg:py-32">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-12">
+      <div class="lg:col-span-5 reveal">
+        <p class="uppercase tracking-[0.3em] text-xs text-rosegoldDark mb-4">Contacto</p>
+        <h2 class="font-serif text-5xl md:text-6xl leading-[1.05] mb-6">
+          Agenda tu <em class="text-rosegold">cita</em>
+        </h2>
+        <p class="text-softblack/70 leading-relaxed mb-8">
+          Reserva tu valoración: <strong>presencial</strong> en nuestro consultorio del Chico, o
+          <strong>virtual</strong> por Google Meet desde donde estés. Si prefieres resolver dudas primero,
+          escríbenos por WhatsApp.
+        </p>
+
+        <div class="flex flex-wrap gap-3 mb-10">
+          <button data-cta="agendar" @click="showDiagnosticReminder('office')" class="btn-primary">Agenda en Consultorio</button>
+          <button data-cta="agendar" @click="showDiagnosticReminder('virtual')" class="btn-ghost">Agenda Virtual</button>
+          <a :href="waLink('contacto')" target="_blank" rel="noopener" class="btn-ghost">Contáctanos</a>
+        </div>
+
+        <ul class="space-y-5 text-softblack/85">
+          <li class="flex gap-4 items-start">
+            <span class="text-gold text-xl leading-none mt-1">◆</span>
+            <div>
+              <p class="admin-label text-[11px]">WhatsApp</p>
+              <a :href="waLink()" target="_blank" rel="noopener" class="hover:text-rosegold" x-text="content.contact.phone"></a>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="text-gold text-xl leading-none mt-1">◆</span>
+            <div>
+              <p class="admin-label text-[11px]">Email</p>
+              <a :href="'mailto:'+content.contact.email" class="hover:text-rosegold" x-text="content.contact.email"></a>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="text-gold text-xl leading-none mt-1">◆</span>
+            <div>
+              <p class="admin-label text-[11px]">Dirección</p>
+              <p x-text="content.contact.address"></p>
+            </div>
+          </li>
+          <li class="flex gap-4 items-start">
+            <span class="text-gold text-xl leading-none mt-1">◆</span>
+            <div>
+              <p class="admin-label text-[11px]">Horario</p>
+              <p x-html="nl2br(content.contact.hours)"></p>
+            </div>
+          </li>
+        </ul>
+
+        <div class="mt-10 flex gap-3">
+          <template x-if="content.contact.instagram">
+            <a :href="content.contact.instagram" target="_blank" rel="noopener" class="btn-ghost">Instagram</a>
+          </template>
+          <template x-if="content.contact.facebook">
+            <a :href="content.contact.facebook" target="_blank" rel="noopener" class="btn-ghost">Facebook</a>
+          </template>
+          <template x-if="content.contact.tiktok">
+            <a :href="content.contact.tiktok" target="_blank" rel="noopener" class="btn-ghost">TikTok</a>
+          </template>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 reveal">
+        <div class="aspect-[4/3] rounded-sm overflow-hidden border border-charcoal/10">
+          <template x-if="content.contact.mapsEmbed">
+            <iframe
+              :src="content.contact.mapsEmbed"
+              class="w-full h-full"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </template>
+          <template x-if="!content.contact.mapsEmbed">
+            <div class="w-full h-full flex items-center justify-center text-softblack/50 bg-porcelain">
+              Mapa no configurado
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="bg-charcoal text-ivory/85 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="grid md:grid-cols-3 gap-10 pb-12 border-b border-ivory/10">
+        <div>
+          <p class="font-serif text-3xl text-ivory" x-text="content.brand.name"></p>
+          <p class="mt-3 text-sm text-ivory/60 leading-relaxed max-w-xs" x-text="content.footer.tagline"></p>
+        </div>
+        <div>
+          <p class="tracking-widest uppercase font-medium text-[11px] text-ivory/50 mb-4">Explora</p>
+          <ul class="space-y-2 text-sm">
+            <template x-for="link in content.nav" :key="link.href">
+              <li>
+                <a :href="link.href" class="hover:text-rosegold transition" x-text="link.label"></a>
+              </li>
+            </template>
+          </ul>
+        </div>
+        <div>
+          <p class="tracking-widest uppercase font-medium text-[11px] text-ivory/50 mb-4">Contacto directo</p>
+          <ul class="space-y-2 text-sm text-ivory/80">
+            <li x-text="content.contact.phone"></li>
+            <li x-text="content.contact.email"></li>
+            <li x-text="content.contact.address"></li>
+          </ul>
+          <a
+            x-show="content.reviews?.googleReviewUrl"
+            :href="content.reviews?.googleReviewUrl"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 mt-5 text-sm text-ivory/85 hover:text-rosegold transition"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.5l2.59 5.24 5.78.84-4.18 4.07.99 5.75-5.18-2.72-5.18 2.72.99-5.75-4.18-4.07 5.78-.84z"/>
+            </svg>
+            Deja tu reseña en Google
+          </a>
+        </div>
+      </div>
+      <div class="pt-6 flex flex-wrap items-center justify-between gap-3 text-xs text-ivory/50">
+        <p x-text="content.footer.copyright"></p>
+        <p class="max-w-2xl">Luxe-Smile —también escrito <strong>Luxe Smile</strong>— es el consultorio de la <strong>Dra. Angela Barbosa</strong>, especialista en <strong>Rehabilitación Oral y Estética</strong>, en el Chico, Bogotá.</p>
+        <a href="/admin/" class="hover:text-rosegold">Panel admin</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================ FLOATING ACTIONS ============================ -->
+  <!-- Botón flotante "Deja tu reseña en Google", justo encima del de WhatsApp. -->
+  <a
+    x-show="content.reviews?.googleReviewUrl"
+    :href="content.reviews?.googleReviewUrl"
+    target="_blank"
+    rel="noopener"
+    class="google-float"
+    aria-label="Deja tu reseña en Google"
+    title="Deja tu reseña en Google"
+  >
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M11.48 3.5l2.59 5.24 5.78.84-4.18 4.07.99 5.75-5.18-2.72-5.18 2.72.99-5.75-4.18-4.07 5.78-.84z"/>
+    </svg>
+  </a>
+
+  <a :href="waLink()" target="_blank" rel="noopener" class="wa-float" aria-label="Chatear por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path
+        d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.49 0 .16 5.33.16 11.9c0 2.1.55 4.14 1.6 5.94L0 24l6.34-1.66a11.84 11.84 0 0 0 5.72 1.46h.01c6.56 0 11.9-5.33 11.9-11.9 0-3.18-1.24-6.17-3.45-8.42ZM12.07 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.77.99 1-3.67-.23-.38a9.85 9.85 0 0 1-1.51-5.25c0-5.46 4.44-9.9 9.91-9.9 2.64 0 5.13 1.03 7 2.9a9.84 9.84 0 0 1 2.9 7c0 5.47-4.44 9.9-9.9 9.9Zm5.43-7.41c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.41-1.48a9.1 9.1 0 0 1-1.68-2.09c-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.22 5.1 4.51.71.31 1.27.5 1.7.64.72.23 1.37.2 1.88.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z"
+      />
+    </svg>
+  </a>
+
+  <!-- ===================== MODALES ===================== -->
+  <!-- Modal Recordatorio de Diagnóstico -->
+  <div x-show="diagnosticReminderOpen" x-transition style="display:none" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div @click.away="diagnosticReminderOpen = false" class="bg-ivory rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-6 border-b border-charcoal/10">
+        <h2 class="text-2xl font-serif text-charcoal">Antes de agendar</h2>
+        <button @click="diagnosticReminderOpen = false" class="text-charcoal/60 hover:text-charcoal">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="p-6">
+        <p class="text-softblack/80 leading-relaxed mb-6">
+          Te recomendamos tengas a la mano imágenes de diagnóstico recientes, esto nos ayuda para brindar una orientación más precisa para el tratamiento y el presupuesto.
+        </p>
+        <p class="text-softblack/80 leading-relaxed mb-8">
+          Si no cuentas con ellos, agenda y la Dra. Angela te indicará cuáles necesitas.
+        </p>
+        <div class="flex gap-4 justify-end">
+          <button @click="diagnosticReminderOpen = false" class="btn-ghost">
+            Cancelar
+          </button>
+          <button @click="proceedToBooking()" class="btn-primary">
+            Continuar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-  <script>location.replace('/');</script>
+
+  <!-- Modal Agenda Virtual (Calendly) -->
+  <div x-show="bookingModalOpen" x-transition style="display:none" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div @click.away="bookingModalOpen = false" class="bg-ivory rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-6 border-b border-charcoal/10">
+        <h2 class="text-2xl font-serif text-charcoal">Agenda tu Consulta Virtual</h2>
+        <button @click="bookingModalOpen = false" class="text-charcoal/60 hover:text-charcoal">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="p-6">
+        <!-- Calendly Embed -->
+        <div class="calendly-inline-widget" data-url="https://calendly.com/consultoriosespecialistasinspi/1-hora" style="min-width:100%;height:700px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Agenda en Consultorio (Google Calendar) -->
+  <div x-show="officeModalOpen" x-transition style="display:none" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div @click.away="officeModalOpen = false" class="bg-ivory rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-6 border-b border-charcoal/10">
+        <h2 class="text-2xl font-serif text-charcoal">Agenda tu Cita en Consultorio</h2>
+        <button @click="officeModalOpen = false" class="text-charcoal/60 hover:text-charcoal">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="p-6">
+        <!-- Google Calendar Embed -->
+        <iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0fwcpigRyRRQG39-GzVAP5MLe-VAA2NtgsVVbwWXorIW_H7flQCzjyqdrFKAqmYIRRYTXHEyx-" style="border: 0" width="100%" height="600" frameborder="0"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Calendly (debe cargarse una sola vez en la página) -->
+  <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+  <!-- Pre-render: quita el contenido estático de las listas (H1, servicios) antes de que
+       Alpine hidrate, para no duplicarlo. Corre durante el parseo, antes de los scripts defer. -->
+  <script>document.querySelectorAll('[data-prerendered]').forEach(function(n){n.remove();});</script>
+  <!-- RED DE SEGURIDAD DEL FADE-IN. La vigila scripts/test-paginas.mjs, que además
+       comprueba que las cuatro páginas lleven exactamente esta misma copia. -->
+  <script data-lx="red-fade">
+  /* Las secciones nacen con opacity:0 y sólo las revela un IntersectionObserver que
+     monta Alpine. Si Alpine no arranca —la segunda causa del incidente del
+     7-jul-2026— el visitante ve una página en blanco y nada falla en voz alta.
+
+     Esto NO cambia la animación. Sólo actúa si no se ha revelado ni una sección
+     habiendo alguna dentro de la pantalla: ésa es la firma de que el mecanismo está
+     muerto, y no la de que el visitante aún no ha hecho scroll. Con la pestaña en
+     segundo plano no se toca nada, porque ahí el observador no dispara por diseño
+     del navegador y todo parecería roto. */
+  (function () {
+    var reloj = null;
+    function parar() { if (reloj) { clearInterval(reloj); reloj = null; } }
+    function mirar() {
+      if (document.visibilityState !== 'visible') return;
+      if (document.querySelector('.reveal.in-view')) return parar();
+      var e = document.querySelectorAll('.reveal');
+      if (!e.length) return parar();
+      var i, r, dentro = false;
+      for (i = 0; i < e.length; i++) {
+        r = e[i].getBoundingClientRect();
+        if (r.height > 0 && r.top < window.innerHeight && r.bottom > 0) { dentro = true; break; }
+      }
+      if (!dentro) return;
+      parar();
+      for (i = 0; i < e.length; i++) e[i].classList.add('in-view');
+      try { if (window.gtag) window.gtag('event', 'fade_red_de_seguridad'); } catch (err) {}
+    }
+    setTimeout(function () { mirar(); reloj = setInterval(mirar, 2000); setTimeout(parar, 30000); }, 4000);
+  })();
+  </script>
 </body>
 </html>

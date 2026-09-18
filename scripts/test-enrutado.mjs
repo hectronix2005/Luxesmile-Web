@@ -163,6 +163,11 @@ console.log('\n3. cobertura: toda página con enlaces a WhatsApp tiene mecanismo
 {
   const MECANISMO = {
     'index.html': 'contexto (app.js -> lxRuta)',
+    // Es el inicio servido en la direccion que va en la ficha de Google. No es
+    // una pagina aparte: la genera scripts/build-ficha.mjs copiando index.html,
+    // asi que su mecanismo es el mismo y no puede divergir sin que el build lo
+    // pare. Se declara igualmente porque este test comprueba que este DICHO.
+    'Dra.Angela_Barbosa/index.html': 'copia generada del inicio: mismo contexto (app.js -> lxRuta)',
     'diseno-de-sonrisa/index.html': 'texto literal -> web / web_virtual / web_consultorio',
     'pacientes-internacionales/index.html': 'texto literal -> internacional',
     'en/smile-design/index.html': 'texto literal -> smile_design_en',

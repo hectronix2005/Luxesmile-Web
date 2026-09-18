@@ -43,7 +43,11 @@ const RED_RE = /  <!-- RED DE SEGURIDAD DEL FADE-IN[\s\S]*?<\/script>/;
 const PAGINAS_CON_FAVICON = ['index.html', 'diseno-de-sonrisa/index.html',
   'pacientes-internacionales/index.html', 'en/smile-design/index.html',
   'privacidad/index.html', 'wa/index.html',
-  'Dra.Angela_Barbosa/index.html', 'dra-angela-barbosa/index.html',
+  /* Dra.Angela_Barbosa/ y dra-angela-barbosa/ NO van aqui: desde el 18-sep-2026
+     las genera scripts/build-ficha.mjs, que ya emite este mismo fragmento. Dos
+     propagadores sobre el mismo fichero se pisan el uno al otro y el build deja
+     de converger. Su cobertura la sigue comprobando test-paginas.mjs §9, que
+     recorre TODOS los .html del repo, no una lista. */
   'admin/index.html', 'marketing/index.html', 'admin.html'];
 /* El ancla TIENE que llegar hasta la ultima linea del fragmento. La primera
    version ofrecia `-->` como alternativa y, siendo perezoso el cuantificador,

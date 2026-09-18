@@ -425,5 +425,60 @@ console.log('\n10. vista previa al compartir: og:image');
   ok(conImagen >= 15, `${conImagen} paginas declaran og:image`);
 }
 
+// ── 11. la direccion de la ficha SIRVE el sitio, no rebota ────────────────
+// Hasta el 18-sep-2026 /Dra.Angela_Barbosa/ era un puente que rebotaba al
+// inicio. Funcionaba, pero quien entraba por ahi terminaba mirando
+// `luxesmilee.com/#inicio` en la barra: la direccion que se reparte junto a la
+// ficha de Google no aguantaba ni un segundo en pantalla.
+//
+// Ahora sirve el inicio entero. Eso abre una trampa que NO se ve en el repo:
+// el inicio pide sus ficheros en relativo, y desde una subcarpeta esas rutas
+// apuntan a sitios que no existen. Los cuatro <script> darian 404, Alpine no
+// arrancaria, y como los 58 bloques nacen con `opacity: 0` la pagina saldria
+// EN BLANCO — no rota a medias: blanca. Y un 404 de <script> no se queja.
+console.log('\n11. la direccion de la ficha sirve el sitio y no rebota');
+{
+  const P = 'Dra.Angela_Barbosa/index.html';
+  ok(existsSync(P), `${P} existe`);
+  if (existsSync(P)) {
+    const html = readFileSync(P, 'utf8');
+
+    ok(!/http-equiv="refresh"/i.test(html), 'no rebota: sin meta refresh');
+    ok(!/location\.replace\(/.test(html), 'no rebota: sin location.replace');
+
+    // Que sea el sitio de verdad, no una pagina delgada con el mismo nombre.
+    ok(/id="inicio"/.test(html) && html.length > 40000,
+       `lleva el inicio entero (${Math.round(html.length / 1024)} KB)`);
+
+    // Ninguna ruta relativa: la trampa de la pagina en blanco.
+    const sueltas = [];
+    const re = /(^|[\s])((?::|x-bind:)?)(href|src)="([^"]*)"/g;
+    let m;
+    while ((m = re.exec(html))) {
+      const [, , bind, attr, val] = m;
+      if (bind) continue;                                   // expresion de Alpine
+      if (/^(#|\/|https?:|mailto:|tel:|data:|javascript:)/.test(val)) continue;
+      sueltas.push(`${attr}="${val}"`);
+    }
+    ok(sueltas.length === 0,
+       sueltas.length ? `rutas relativas que darian 404: ${sueltas.join(', ')}` : 'todas las rutas son absolutas');
+
+    // Y que los ficheros que pide existan de verdad.
+    const pedidos = [...html.matchAll(/(?:href|src)="(\/assets\/[^"?]+)/g)].map((x) => x[1]);
+    const faltan = [...new Set(pedidos)].filter((f) => !existsSync(f.replace(/^\//, '')));
+    ok(faltan.length === 0,
+       faltan.length ? `pide ficheros que no existen: ${faltan.join(', ')}` : `los ${new Set(pedidos).size} ficheros que pide existen`);
+  }
+
+  // El alias en la grafia que teclearia una persona SI rebota, a proposito:
+  // es un alias, no una segunda portada.
+  const A = 'dra-angela-barbosa/index.html';
+  ok(existsSync(A), `${A} existe`);
+  if (existsSync(A)) {
+    const html = readFileSync(A, 'utf8');
+    ok(/url=\/Dra\.Angela_Barbosa\//.test(html), 'el alias lleva a la direccion de la ficha');
+  }
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);
