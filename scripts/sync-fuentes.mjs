@@ -57,6 +57,20 @@ const PAGINAS_CON_FAVICON = ['index.html', 'diseno-de-sonrisa/index.html',
    cambios. Lo destapo comprobar la idempotencia, no leer el codigo. */
 const FAVICON_RE = /  <!-- FAVICON(?:[\s\S]*?<link rel="manifest"[^>]*>|\s*-->)\n/;
 
+/* El preconnect al host de Zeus: va en las paginas que CARGAN tracking.js, que no
+   son las mismas que llevan favicon —el panel y /wa/ no miden nada—. El ancla es
+   el propio <script> de tracking.js: si una pagina empieza a cargarlo, se cubre
+   sola la primera vez que corre esto, y si deja de cargarlo el preconnect sobra
+   y hay que quitarlo. Por eso la lista NO esta escrita aqui: se deduce. */
+const PRECONNECT_RE = /  <!-- PRECONNECT ZEUS[\s\S]*?<link rel="preconnect"[^>]*>\n/;
+/* Para RETIRARLO hace falta una red mas ancha que la de sustituirlo: un <link>
+   suelto, sin el comentario, no lo puso este propagador pero calienta igual una
+   conexion que nadie va a usar. Medido: con la red estrecha, un preconnect
+   pegado a mano en una pagina que no mide sobrevivia a todas las pasadas y solo
+   lo veia el detector. Limpiar lo propio y dejar lo ajeno no es limpiar. */
+const PRECONNECT_SUELTO_RE = /( *<!-- PRECONNECT ZEUS[\s\S]*?-->\n)?  *<link rel="preconnect" href="https:\/\/zeus[^>]*>\n/g;
+const TRACKING_RE = / *<script src="[^"]*tracking\.js[^"]*"><\/script>\n/;
+
 const VARS = { ivory: 'ivory', porcelain: 'porcelain', rosegold: 'rosegold',
   rosegoldDark: 'rosegold-dark', gold: 'gold', charcoal: 'charcoal', softblack: 'softblack' };
 
@@ -238,6 +252,30 @@ function sincronizar(leer) {
           nuevo = s2.slice(0, fin) + '\n' + frag + s2.slice(fin);
         }
         if (nuevo !== s2) cambios.push(`${ruta}  favicon`);
+        return nuevo;
+      });
+    }
+  }
+
+  /* 7) Preconnect al host de Zeus -> las paginas que cargan tracking.js */
+  {
+    const frag = leer('scripts/fragmentos/preconnect-zeus.html').replace(/\n$/, '') + '\n';
+    for (const ruta of PAGINAS_CON_FAVICON) {
+      editar(ruta, (s2) => {
+        const cargaTracking = TRACKING_RE.test(s2);
+        /* Si la pagina NO mide, el preconnect sobra: precalentar una conexion que
+           nadie va a usar cuesta un socket y no da nada. Se retira. */
+        if (!cargaTracking) {
+          const limpio = s2.replace(PRECONNECT_SUELTO_RE, '');
+          if (limpio !== s2) cambios.push(`${ruta}  preconnect (retirado: ya no mide)`);
+          return limpio;
+        }
+        let nuevo = PRECONNECT_RE.test(s2) ? s2.replace(PRECONNECT_RE, frag) : s2;
+        if (!PRECONNECT_RE.test(s2)) {
+          const m = TRACKING_RE.exec(s2);
+          nuevo = s2.slice(0, m.index) + frag + s2.slice(m.index);
+        }
+        if (nuevo !== s2) cambios.push(`${ruta}  preconnect`);
         return nuevo;
       });
     }

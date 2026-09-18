@@ -110,6 +110,10 @@ const logoAbs = abs(brand.logo);
    resto del sitio en cuanto alguien tocara uno de los dos sitios, y nadie lo
    veria: un favicon viejo se ve igual de bien que uno nuevo. */
 const FAVICON = readFileSync(join(ROOT, 'scripts/fragmentos/favicon.html'), 'utf8').replace(/\n$/, '');
+/* Mismo fragmento que sync-fuentes.mjs propaga a las paginas escritas a mano.
+   Se lee, no se copia: dos copias del mismo <link> divergen en cuanto alguien
+   cambia el host del redirector en una sola de ellas. */
+const PRECONNECT = readFileSync(join(ROOT, 'scripts/fragmentos/preconnect-zeus.html'), 'utf8').replace(/\n$/, '');
 
 // <head> común
 function head({ title, desc, url, image, imgW, imgH, imgAlt, jsonld }) {
@@ -148,6 +152,7 @@ ${FAVICON}
   <link rel="stylesheet" href="/assets/css/tailwind.css?v=${V}" />
   <link rel="stylesheet" href="/assets/css/styles.css?v=${V}" />
   <!-- Seguimiento de conversiones (GA4 + Google Ads + Meta Pixel). Editar los IDs en assets/js/tracking.js -->
+${PRECONNECT}
   <script src="/assets/js/tracking.js?v=${VJS}"></script>
   <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
 </head>`;

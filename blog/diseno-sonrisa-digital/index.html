@@ -36,6 +36,20 @@
   <link rel="stylesheet" href="/assets/css/tailwind.css?v=20260917d" />
   <link rel="stylesheet" href="/assets/css/styles.css?v=20260917d" />
   <!-- Seguimiento de conversiones (GA4 + Google Ads + Meta Pixel). Editar los IDs en assets/js/tracking.js -->
+  <!-- PRECONNECT ZEUS. Fuente única: la propaga scripts/sync-fuentes.mjs y la
+       emite scripts/build-blog.mjs. No editar a mano.
+       Por qué: tracking.js pregunta a este host si el redirector responde, y
+       hasta que contesta los botones de WhatsApp son un wa.me directo — el
+       paciente llega, pero su clic no pasa por Zeus y no queda registrado.
+       Medido el 18-sep-2026: la sonda tarda 350-500 ms, y 240 de ellos son el
+       handshake TLS con un origen que el navegador aún no conoce. Esto lo
+       adelanta a la fase temprana de carga, en paralelo con todo lo demás.
+       En una conexión móvil lenta ese handshake son segundos, y ahí está el
+       corte de 2.500 ms que apaga el enrutado para toda la página.
+       `crossorigin` NO es decorativo: la sonda va con `credentials: 'omit'`,
+       o sea anónima, y sin este atributo el navegador abriría una conexión
+       distinta de la que precalentó. -->
+  <link rel="preconnect" href="https://zeus.codi.com.co" crossorigin />
   <script src="/assets/js/tracking.js?v=20260918a"></script>
   <script type="application/ld+json">[{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://luxesmilee.com/blog/diseno-sonrisa-digital/"},"headline":"Diseño de Sonrisa Digital: cómo funciona, paso a paso","description":"Cómo se planifica una sonrisa en digital: de las fotos al diseño que apruebas antes de empezar. Qué ves y qué puedes cambiar.","image":"https://luxesmilee.com/assets/img/content/blog-0-ad8fe220c1c8.webp","author":{"@type":"Person","name":"Dra. Angela Barbosa Gómez"},"publisher":{"@type":"Organization","name":"Luxe-Smile","logo":{"@type":"ImageObject","url":"https://luxesmilee.com/assets/img/content/logo-90f38edf4736.webp"}},"datePublished":"2026-07-01","dateModified":"2026-09-17","keywords":"diseño de sonrisa, digital smile design, odontología estética","inLanguage":"es-CO"},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://luxesmilee.com/Dra.Angela_Barbosa/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://luxesmilee.com/blog/"},{"@type":"ListItem","position":3,"name":"Diseño de Sonrisa Digital: cómo funciona, paso a paso","item":"https://luxesmilee.com/blog/diseno-sonrisa-digital/"}]}]</script>
 </head>

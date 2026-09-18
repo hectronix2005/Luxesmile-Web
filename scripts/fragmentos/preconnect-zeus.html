@@ -1,0 +1,14 @@
+  <!-- PRECONNECT ZEUS. Fuente única: la propaga scripts/sync-fuentes.mjs y la
+       emite scripts/build-blog.mjs. No editar a mano.
+       Por qué: tracking.js pregunta a este host si el redirector responde, y
+       hasta que contesta los botones de WhatsApp son un wa.me directo — el
+       paciente llega, pero su clic no pasa por Zeus y no queda registrado.
+       Medido el 18-sep-2026: la sonda tarda 350-500 ms, y 240 de ellos son el
+       handshake TLS con un origen que el navegador aún no conoce. Esto lo
+       adelanta a la fase temprana de carga, en paralelo con todo lo demás.
+       En una conexión móvil lenta ese handshake son segundos, y ahí está el
+       corte de 2.500 ms que apaga el enrutado para toda la página.
+       `crossorigin` NO es decorativo: la sonda va con `credentials: 'omit'`,
+       o sea anónima, y sin este atributo el navegador abriría una conexión
+       distinta de la que precalentó. -->
+  <link rel="preconnect" href="https://zeus.codi.com.co" crossorigin />

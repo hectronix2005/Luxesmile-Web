@@ -538,5 +538,60 @@ console.log('\n12. la direccion del inicio: una sola, en todos los sitios');
      culpables.length ? `enlazan a la raiz: ${culpables.join(', ')}` : `las ${publicas.length} paginas publicas enlazan al inicio canonico`);
 }
 
+// ── 13. el preconnect al host de Zeus ─────────────────────────────────────
+// tracking.js pregunta a ese host si el redirector responde, y hasta que
+// contesta los botones de WhatsApp son un `wa.me` directo: el paciente llega,
+// pero su clic no pasa por Zeus y no queda registrado. Medido el 18-sep-2026:
+// 350-500 ms, de los cuales 240 son el handshake TLS con un origen que el
+// navegador aun no conoce. En movil lento eso son segundos, y hay un corte a
+// los 2.500 ms que apaga el enrutado para toda la pagina.
+//
+// Lo que se comprueba no es que el <link> este —eso lo pone el propagador—
+// sino DOS cosas que el propagador no puede saber:
+//   · que lo lleva toda pagina que mide, y solo esas
+//   · que el host precalentado es el MISMO al que llama tracking.js. Cambiar el
+//     redirector y dejar el preconnect viejo no rompe nada visible: el sitio
+//     funciona, sólo que precalienta una conexion que nadie usa y paga entera
+//     la que si. Un fallo que no se ve es justo el que necesita detector.
+console.log('\n13. preconnect: cubre a quien mide, y apunta a donde llama');
+{
+  const frag = readFileSync('scripts/fragmentos/preconnect-zeus.html', 'utf8').replace(/\n$/, '');
+  const hostFrag = (/<link rel="preconnect" href="(https:\/\/[^"/]+)"/.exec(frag) || [])[1];
+  ok(!!hostFrag, `el fragmento declara un host (${hostFrag})`);
+  ok(/crossorigin/.test(frag), 'el fragmento lleva crossorigin (la sonda va anonima)');
+
+  const tracking = readFileSync('assets/js/tracking.js', 'utf8');
+  const redir = (/var REDIRECTOR = '(https:\/\/[^"'/]+)/.exec(tracking) || [])[1];
+  ok(!!redir, `tracking.js llama a (${redir})`);
+  ok(hostFrag === redir, `el preconnect apunta al host del redirector${hostFrag === redir ? '' : `  — ${hostFrag} != ${redir}`}`);
+
+  const publicas = [];
+  (function andar(dir) {
+    for (const e of readdirSync(dir)) {
+      if (['node_modules', '.git', '.github', 'scripts'].includes(e)) continue;
+      const q = join(dir, e);
+      if (statSync(q).isDirectory()) { andar(q); continue; }
+      if (e.endsWith('.html')) publicas.push(q.replace(/^\.\//, ''));
+    }
+  })('.');
+
+  let miden = 0, sinMedir = 0;
+  for (const f of publicas.sort()) {
+    const html = readFileSync(f, 'utf8');
+    const mide = /<script src="[^"]*tracking\.js/.test(html);
+    const veces = (html.match(/rel="preconnect" href="https:\/\/zeus/g) || []).length;
+    if (mide) {
+      miden++;
+      ok(veces === 1, `${f}: ${veces} preconnect${veces === 1 ? '' : ' — deberia ser exactamente 1'}`);
+      const m = /  <!-- PRECONNECT ZEUS[\s\S]*?<link rel="preconnect"[^>]*>/.exec(html);
+      ok(m && m[0] === frag, `${f}: copia identica al fragmento`);
+    } else {
+      sinMedir++;
+      ok(veces === 0, `${f}: no mide, y no precalienta${veces ? ' — sobra el preconnect' : ''}`);
+    }
+  }
+  ok(miden >= 16, `${miden} paginas miden y precalientan, ${sinMedir} no hacen ninguna de las dos`);
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);
