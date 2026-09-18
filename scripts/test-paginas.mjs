@@ -372,5 +372,58 @@ console.log('\n9. favicon: cobertura, copias identicas y ficheros presentes');
   ok(copias >= 20, `${copias} paginas con favicon`);
 }
 
+// ── 10. la tarjeta que se ve al compartir el enlace ────────────────────────
+// Todo lo del sitio entra por WhatsApp, asi que la vista previa del enlace es
+// la primera impresion. Tres cosas la rompen y ninguna se nota desde el repo:
+//   · una og:image RELATIVA — el rastreador no la resuelve y la tarjeta sale sin
+//     foto. Hoy las 15 son absolutas; nada lo sujetaba.
+//   · una og:image que no existe — mismo resultado, y un <link> roto no se queja.
+//   · sin og:image:width/height el rastreador no puede pintar la tarjeta hasta
+//     bajarse la imagen, asi que la PRIMERA vez que se comparte sale sin foto.
+//     Las diez del blog no las declaraban (18-sep-2026).
+// Y si las medidas declaradas MIENTEN, el recorte sale torcido: se comparan
+// contra el fichero de verdad, no contra content.json.
+console.log('\n10. vista previa al compartir: og:image');
+{
+  const sharp = (await import('sharp')).default;
+  const FUERA = new Set(['googleaf18a76309de9be5.html']);
+  const paginas = [];
+  (function andar(dir) {
+    for (const e of readdirSync(dir)) {
+      if (['node_modules', '.git', '.github', 'scripts'].includes(e)) continue;
+      const p = join(dir, e);
+      if (statSync(p).isDirectory()) { andar(p); continue; }
+      if (e.endsWith('.html') && !FUERA.has(e)) paginas.push(p.replace(/^\.\//, ''));
+    }
+  })('.');
+
+  const SITIO = 'https://luxesmilee.com';
+  let conImagen = 0;
+  for (const p of paginas.sort()) {
+    const html = readFileSync(p, 'utf8');
+    const m = /<meta property="og:image" content="([^"]+)"/.exec(html);
+    if (!m) continue;                       // no todas las paginas la declaran
+    conImagen++;
+    const src = m[1];
+    ok(src.startsWith('https://'), `${p}: og:image absoluta (${src.slice(0, 48)})`);
+    const disco = src.startsWith(SITIO) ? src.slice(SITIO.length).replace(/^\//, '') : null;
+    if (!disco) { ok(false, `${p}: og:image apunta fuera del sitio`); continue; }
+    if (!existsSync(disco)) { ok(false, `${p}: og:image no existe en disco (${disco})`); continue; }
+    ok(true, `${p}: el fichero existe`);
+
+    const w = /<meta property="og:image:width" content="(\d+)"/.exec(html);
+    const h = /<meta property="og:image:height" content="(\d+)"/.exec(html);
+    ok(!!(w && h), `${p}: declara width y height`);
+    if (w && h) {
+      const real = await sharp(disco).metadata();
+      ok(Number(w[1]) === real.width && Number(h[1]) === real.height,
+         `${p}: ${w[1]}x${h[1]} coincide con el fichero (${real.width}x${real.height})`);
+      // Facebook y WhatsApp piden 200x200 minimo y recomiendan 1200 de ancho.
+      ok(real.width >= 600, `${p}: ${real.width}px de ancho (>=600)`);
+    }
+  }
+  ok(conImagen >= 15, `${conImagen} paginas declaran og:image`);
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);

@@ -42,7 +42,8 @@ const RED_RE = /  <!-- RED DE SEGURIDAD DEL FADE-IN[\s\S]*?<\/script>/;
    que una pagina nueva se cubre sola la primera vez que corre esto. */
 const PAGINAS_CON_FAVICON = ['index.html', 'diseno-de-sonrisa/index.html',
   'pacientes-internacionales/index.html', 'en/smile-design/index.html',
-  'privacidad/index.html', 'wa/index.html', 'Dra.Angela_Barbosa/index.html',
+  'privacidad/index.html', 'wa/index.html',
+  'Dra.Angela_Barbosa/index.html', 'dra-angela-barbosa/index.html',
   'admin/index.html', 'marketing/index.html', 'admin.html'];
 /* El ancla TIENE que llegar hasta la ultima linea del fragmento. La primera
    version ofrecia `-->` como alternativa y, siendo perezoso el cuantificador,

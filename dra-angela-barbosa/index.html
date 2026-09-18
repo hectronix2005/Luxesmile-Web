@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dra. Angela Barbosa — Luxe-Smile</title>
+
+  <!-- =====================================================================
+       Luxe-Smile · Puente hacia el inicio
+       ---------------------------------------------------------------------
+       Existe para que la dirección que aparece en la ficha de Google funcione
+       si alguien la teclea o la pulsa. No lleva contenido propio a propósito:
+       una página delgada que repitiera el inicio competiría con él por las
+       mismas consultas, que es justo lo que no interesa.
+
+       El canonical apunta al inicio para que Google consolide ahí cualquier
+       señal que llegue por esta dirección. Sin `noindex`: eso bloquearía esa
+       consolidación, y el objetivo es lo contrario.
+
+       Esta es la GRAFÍA BUENA, y existe por dos motivos medidos el 18-sep:
+       en GitHub Pages las mayúsculas distinguen, así que quien teclee el
+       nombre en minúsculas se encontraba un 404 (comprobado en producción);
+       y Google trata el guion bajo como parte de la palabra, no como
+       separador, así que lee «Angela_Barbosa» como un término único.
+
+       La otra, /Dra.Angela_Barbosa/, se mantiene porque es la que va en la
+       ficha de Google. Las dos apuntan al mismo canonical, así que para
+       Google son la misma página y no compiten entre sí.
+       ===================================================================== -->
+  <link rel="canonical" href="https://luxesmilee.com/" />
+  <meta http-equiv="refresh" content="0; url=/" />
+
+  <!-- FAVICON. Fuente única: la propaga scripts/sync-fuentes.mjs a las páginas
+       escritas a mano y la emite scripts/build-blog.mjs en las generadas. Los
+       ficheros los deriva del logo scripts/build-favicon.mjs — no editar a mano.
+       Rutas absolutas a propósito: las mismas líneas valen desde /, desde
+       /blog/x/ y desde /en/smile-design/.
+       Aquí NO va theme-color: cuatro páginas ya declaran el suyo, más claro, y
+       el navy de estos iconos pintaría la barra del móvil de otro color. El del
+       manifiesto es otra cosa: es el de la pantalla de inicio de Android. -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" type="image/png" href="/assets/img/favicon/icon-96.png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      margin: 0; min-height: 100vh;
+      display: grid; place-items: center;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #F7F8FA; color: #202630;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #161C26; color: #E7ECF2; }
+    }
+    .caja { text-align: center; padding: 2rem 1.5rem; max-width: 24rem; }
+    p { margin: 0 0 1.25rem; font-size: 1rem; line-height: 1.5; }
+    a {
+      display: inline-block; padding: .7rem 1.35rem;
+      background: #1F3A57; color: #fff; text-decoration: none;
+      border-radius: 999px; font-weight: 600; font-size: .95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="caja">
+    <p>Dra. Angela Barbosa — Luxe-Smile, Chicó, Bogotá.</p>
+    <a href="/">Ir al sitio</a>
+  </div>
+  <script>location.replace('/');</script>
+</body>
+</html>

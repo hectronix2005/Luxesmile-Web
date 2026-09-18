@@ -104,7 +104,7 @@ const logoAbs = abs(brand.logo);
 const FAVICON = readFileSync(join(ROOT, 'scripts/fragmentos/favicon.html'), 'utf8').replace(/\n$/, '');
 
 // <head> común
-function head({ title, desc, url, image, jsonld }) {
+function head({ title, desc, url, image, imgW, imgH, imgAlt, jsonld }) {
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -121,6 +121,17 @@ function head({ title, desc, url, image, jsonld }) {
   <meta property="og:description" content="${escAttr(desc)}" />
   <meta property="og:url" content="${escAttr(url)}" />
   <meta property="og:image" content="${escAttr(abs(image))}" />
+${[
+    // Sin width/height el rastreador de Facebook y WhatsApp no puede pintar la
+    // tarjeta hasta bajarse la imagen, asi que la PRIMERA vez que se comparte un
+    // enlace sale sin foto. Las diez paginas del blog no las declaraban. Salen de
+    // content.json, donde las guarda extract-images: es el unico paso que ya abre
+    // los ficheros y sabe cuanto miden. Si faltan —un articulo recien creado en el
+    // panel, antes de que corra la extraccion— no se emiten en vez de mentir.
+    imgW && imgH ? `  <meta property="og:image:width" content="${imgW}" />` : null,
+    imgW && imgH ? `  <meta property="og:image:height" content="${imgH}" />` : null,
+    imgAlt ? `  <meta property="og:image:alt" content="${escAttr(imgAlt)}" />` : null,
+  ].filter(Boolean).join('\n')}
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -220,7 +231,7 @@ function articlePage(a) {
     },
   ];
 
-  return `${head({ title, desc, url, image: a.image, jsonld })}
+  return `${head({ title, desc, url, image: a.image, imgW: a.imageWidth, imgH: a.imageHeight, imgAlt: a.title, jsonld })}
 ${topbar()}
   <main class="blog-container">
     <nav class="blog-breadcrumb" aria-label="Ruta de navegación">
@@ -277,7 +288,7 @@ function indexPage() {
     )
     .join('\n');
 
-  return `${head({ title, desc, url, image: articles[0]?.image, jsonld })}
+  return `${head({ title, desc, url, image: articles[0]?.image, imgW: articles[0]?.imageWidth, imgH: articles[0]?.imageHeight, imgAlt: articles[0]?.title, jsonld })}
 ${topbar()}
   <main class="blog-container">
     <nav class="blog-breadcrumb" aria-label="Ruta de navegación">

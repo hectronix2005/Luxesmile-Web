@@ -73,6 +73,28 @@ async function field(obj, key, name, opts) {
   } else if (v.startsWith(URL_DIR + '/') || v.startsWith(FS_DIR + '/')) {
     referenced.add(v.split('/').pop());
   }
+  await medir(obj, key);
+}
+
+/* Las MEDIDAS, junto a la ruta.
+   `og:image:width` y `og:image:height` le dicen al rastreador de Facebook y
+   WhatsApp que puede pintar la vista previa sin bajarse antes la imagen. Sin
+   ellas, la PRIMERA vez que alguien comparte un enlace la tarjeta sale sin foto
+   —el rastreador la busca luego— y para esta clínica el enlace se comparte por
+   WhatsApp, que es el canal por el que entra todo.
+   Las diez páginas del blog no las declaraban. Aquí es donde se saben, porque
+   es el único paso que ya abre los ficheros. */
+async function medir(obj, key) {
+  const v = obj?.[key];
+  if (typeof v !== 'string' || !v.startsWith(URL_DIR + '/')) return;
+  const disco = join(ROOT, v.replace(/^\//, ''));
+  if (!existsSync(disco)) return;
+  const { width, height } = await sharp(disco).metadata();
+  if (!width || !height) return;
+  if (obj[key + 'Width'] === width && obj[key + 'Height'] === height) return;
+  obj[key + 'Width'] = width;
+  obj[key + 'Height'] = height;
+  changed = true;
 }
 
 await field(content.brand, 'logo', 'logo', { logo: true });
