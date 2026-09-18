@@ -24,6 +24,7 @@
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import vm from 'node:vm';
+import { execFileSync } from 'node:child_process';
 
 let fallos = 0;
 const ok = (cond, etq) => {
@@ -287,6 +288,39 @@ console.log('\n7. imagenes: las que se piden existen y son las de content.json')
     const quien = [...donde].sort().join(', ');
     ok(existsSync(join('assets/img/content', f)), `${f} existe en disco (lo pide ${quien})`);
     ok(actuales.has(f), `${f} sigue siendo la de content.json (si no, ${quien} enseña la foto vieja)`);
+  }
+}
+
+// ── 8. el Action commitea TODO lo que sus pasos escriben ───────────────────
+// El paso de commit tenia un `git add` con seis rutas a mano. `sync-fuentes`
+// escribe OCHO ficheros y solo `index.html` estaba en esa lista: el paso corria,
+// imprimia sus cambios en el log, y el commit se dejaba fuera la paleta de
+// styles.css, el bloque de contacto del fallback y el telefono de cinco paginas.
+// Comprobado en el historial: el bot NUNCA habia commiteado ninguno de los siete.
+// Cada build rehacia la misma sincronizacion y la tiraba, con el flujo en verde.
+//
+// La lista de ficheros NO se saca leyendo sync-fuentes: se le pregunta a el
+// (`--rutas`), que la produce ejecutando su logica de verdad.
+console.log('\n8. el Action commitea lo que el sincronizador escribe');
+{
+  const wf = '.github/workflows/prerender.yml';
+  const yml = readFileSync(wf, 'utf8');
+  const m = /^\s*git add (.+)$/m.exec(yml);
+  ok(m !== null, `${wf} tiene un paso que hace git add`);
+  if (m) {
+    const arg = m[1].trim();
+    const rutas = execFileSync('node', ['scripts/sync-fuentes.mjs', '--rutas'], { encoding: 'utf8' })
+      .split('\n').map((x) => x.trim()).filter(Boolean);
+    ok(rutas.length > 0, `sync-fuentes declara ${rutas.length} ficheros que escribe`);
+    if (/(^|\s)-A(\s|$)/.test(arg) || /(^|\s)--all(\s|$)/.test(arg)) {
+      ok(true, `git add ${arg} — los cubre todos por construccion`);
+    } else {
+      const specs = arg.split(/\s+/).filter((x) => !x.startsWith('-'));
+      for (const r of rutas) {
+        ok(specs.some((sp) => r === sp || r.startsWith(sp.replace(/\/$/, '') + '/')),
+           `${r} esta en el git add del Action`);
+      }
+    }
   }
 }
 

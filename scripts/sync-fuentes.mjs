@@ -226,6 +226,18 @@ function autotest() {
 }
 
 /* ---------------------------- main ---------------------------- */
+/* --rutas imprime los ficheros que este script PUEDE escribir, sacados de una
+   ejecucion real (las claves de `salida`), no de leerse a si mismo. Lo usa
+   scripts/test-paginas.mjs para comprobar que el Action los commitea todos:
+   hasta el 17-sep su `git add` era una lista fija de seis rutas y se dejaba
+   fuera SIETE de los ocho, asi que la sincronizacion se rehacia y se tiraba en
+   cada build. */
+if (process.argv.includes('--rutas')) {
+  const { salida } = sincronizar(leerDisco);
+  console.log([...salida.keys()].sort().join('\n'));
+  process.exit(0);
+}
+
 if (process.argv.includes('--autotest')) process.exit(autotest());
 
 const { cambios, fallos, salida } = sincronizar(leerDisco);
