@@ -239,6 +239,30 @@ document.addEventListener('alpine:init', () => {
       return true;
     },
 
+    // El sitemap y el `dateModified` del artículo salían de `date`, que es CUÁNDO
+    // SE PUBLICÓ. Reescribir un artículo entero no cambiaba ninguno de los dos, así
+    // que Google leía «sin cambios desde mayo» y no tenía motivo para volver a
+    // rastrearlo. Se vio el 17-sep-2026: los 9 artículos reescritos ese día seguían
+    // declarando fechas de mayo a julio. Aquí se sella `updated` en los que de
+    // verdad cambiaron, comparando contra el snapshot con el que se abrió el panel.
+    sellarArticulosEditados() {
+      const arts = (this.content.blog && this.content.blog.articles) || [];
+      if (!arts.length) return;
+      let previos = [];
+      try { previos = JSON.parse(this.snapshot).blog.articles || []; } catch (e) { return; }
+      const antes = new Map(previos.map((a) => [a && a.slug, a]));
+      const hoy = new Date().toISOString().slice(0, 10);
+      // Sólo el texto que se publica: cambiar `updated` por tocar `featured` o el
+      // orden sería mentirle a Google igual que no tocarlo nunca.
+      const MIRAR = ['title', 'excerpt', 'content', 'image', 'keywords', 'category', 'author'];
+      for (const a of arts) {
+        if (!a || !a.slug) continue;
+        const v = antes.get(a.slug);
+        if (!v) { a.updated = hoy; continue; }            // artículo nuevo
+        if (MIRAR.some((k) => (v[k] || '') !== (a[k] || ''))) a.updated = hoy;
+      }
+    },
+
     async publish() {
       if (!this.gh.owner || !this.gh.repo || !this.gh.token) {
         this.tab = 'publish';
@@ -261,6 +285,7 @@ document.addEventListener('alpine:init', () => {
         return;
       }
       if (!this.loadedSha && !(await this.recuperarSha())) return;
+      this.sellarArticulosEditados();
       this.publishing = true;
       try {
         window.LuxeContent.setGithubConfig(this.gh);

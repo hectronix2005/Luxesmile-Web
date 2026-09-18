@@ -195,7 +195,10 @@ function articlePage(a) {
         logo: { '@type': 'ImageObject', url: logoAbs },
       },
       datePublished: a.date,
-      dateModified: a.date,
+      // `a.date` es cuando se PUBLICO. Decir que tambien es cuando se modifico
+      // hace que Google no vea nunca una reescritura: el 17-sep se reescribieron
+      // los 9 articulos enteros y el sitemap seguia declarando mayo-julio.
+      dateModified: a.updated || a.date,
       keywords: a.keywords || '',
       inLanguage: 'es-CO',
     },
@@ -299,7 +302,7 @@ function sitemap() {
       loc: `${SITE}/blog/${a.slug}/`,
       priority: '0.7',
       changefreq: 'monthly',
-      lastmod: a.date,
+      lastmod: a.updated || a.date,
     })),
   ];
   const body = urls
