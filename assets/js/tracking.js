@@ -108,9 +108,23 @@
   /* DICCIONARIO CERRADO Y COINCIDENCIA EXACTA, A PROPÓSITO.
 
      La clave `m` no es el mensaje: es un índice al diccionario de Zeus. Si
-     mandamos una clave que no existe, Zeus NO falla — sirve su texto por
-     defecto. O sea que un error de mapeo no daría error: daría un mensaje
-     distinto del que la página prometió, sin avisar a nadie.
+     mandamos una clave que no existe, Zeus NO falla.
+
+     MEDIDO EL 18-SEP-2026, y no es lo que aquí ponía. Esto decía que servía
+     «su texto por defecto», o sea que un error de mapeo daría un mensaje
+     distinto del prometido. Lo que hace de verdad es peor:
+
+         ?m=valoracion    -> 302 a wa.me/573163903511?text=Hola%2C+quiero…
+         ?m=noexiste      -> 302 a wa.me/573163903511   SIN text= ninguno
+
+     El paciente aterriza en un WhatsApp EN BLANCO y tiene que escribir desde
+     cero lo que la página le había redactado. La conclusión no cambia —por eso
+     se compara el texto entero y literal— pero la razón sí: no es que diga otra
+     cosa, es que no dice nada. Y nadie se entera, porque el enlace funciona.
+
+     De ahí sale un riesgo que no estaba escrito: si Zeus renombra o pierde una
+     clave, le seguimos mandando la nuestra y el mensaje desaparece en silencio.
+     Lo único que lo detecta es preguntárselo a él clave por clave.
 
      Por eso aquí se compara el texto ENTERO y literal. Lo que no esté en esta
      tabla no se reescribe: el enlace sigue yendo a wa.me tal cual, sin
