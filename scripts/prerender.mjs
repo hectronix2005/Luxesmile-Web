@@ -33,11 +33,13 @@ const esc = (s) =>
 // Reemplaza el interior de una región <!--PR:key--> ... <!--/PR:key-->.
 const missing = [];
 const vacias = [];
+const rellenadas = new Set();
 /* Se mide el TEXTO VISIBLE, no la cadena: el H1 vacío sigue produciendo
    `<span class="block" data-prerendered></span>`, que no está vacío como
    cadena pero no dice nada a nadie. */
 const sinTexto = (s) => !String(s).replace(/<[^>]*>/g, '').replace(/&nbsp;|\s/g, '');
 function region(key, inner) {
+  rellenadas.add(key);
   const re = new RegExp(`(<!--PR:${key}-->)[\\s\\S]*?(<!--/PR:${key}-->)`);
   if (!re.test(html)) {
     missing.push(key);
@@ -82,6 +84,19 @@ region('services', services);
 
 if (missing.length) {
   console.error('✗ Marcadores PR no encontrados en index.html:', missing.join(', '));
+  process.exit(1);
+}
+
+/* Y LA DIRECCIÓN CONTRARIA, que no estaba cubierta.
+   Lo de arriba pilla un `region('x')` sin marcador. Pero un `<!--PR:x-->` en el
+   HTML sin su `region('x')` aquí no lo pillaba nadie: la región se queda con lo
+   que hubiera dentro —normalmente nada— y el crawler, que es el único que la
+   lee, encuentra un hueco. Se despliega en verde. */
+const enElHtml = [...html.matchAll(/<!--PR:([^-]+)-->/g)].map((m) => m[1]);
+const huerfanos = enElHtml.filter((k) => !rellenadas.has(k));
+if (huerfanos.length) {
+  console.error('✗ Hay marcadores PR en index.html que nadie rellena:', huerfanos.join(', '));
+  console.error('  Añade su region(...) en este script, o quita el marcador del HTML.');
   process.exit(1);
 }
 

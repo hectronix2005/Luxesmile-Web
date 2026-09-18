@@ -95,7 +95,25 @@ function sincronizar(leer) {
   });
 
   /* 3) El número escrito a mano */
-  const visible = (contacto.phone || '').replace(/^\+?57\s*/, '').replace(/(\d{3})(\d{3})(\d{4})/, '+57 $1 $2 $3');
+  /* El formato visible se calcula desde los DÍGITOS, no desde cómo esté escrito
+     el campo. Antes se quitaba el prefijo con una regex y se reagrupaban los
+     dígitos con otra, y bastaba con que la doctora escribiera su número EN EL
+     MISMO FORMATO EN QUE LA PÁGINA LO MUESTRA para romperlo — comprobado
+     ejecutando la lógica real, no razonándolo:
+
+       "+57 3163903511"    -> "+57 316 390 3511"   correcto
+       "+57 316 390 3511"  -> "316 390 3511"       PIERDE el indicativo
+       "316 390 3511"      -> "316 390 3511"       PIERDE el indicativo
+       "(316) 390-3511"    -> "(316) 390-3511"     se cuela tal cual
+       ""                  -> ""                   BORRA el teléfono de la página
+
+     Y `phone` no se validaba: sólo `whatsapp`. El indicativo es justo lo que
+     necesita quien llama desde fuera, que es el público de esa página. */
+  const digPhone = String(contacto.phone || '').replace(/\D/g, '');
+  if (!/^57\d{10}$/.test(digPhone)) fallos.push(`contact.phone no son 57 + 10 dígitos: ${JSON.stringify(contacto.phone)}`);
+  const visible = /^57\d{10}$/.test(digPhone)
+    ? `+57 ${digPhone.slice(2, 5)} ${digPhone.slice(5, 8)} ${digPhone.slice(8)}`
+    : '';
   const PATRONES = [
     ['index.html',                           /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['diseno-de-sonrisa/index.html',         /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
@@ -146,6 +164,7 @@ function autotest() {
     ['número en /wa/',         'wa/index.html',         (s) => s.replace(/(wa\.me\/)57\d{10}/, '$1573009999999')],
     ['telephone del JSON-LD',  'index.html',            (s) => s.replace(/("telephone":\s*")\+?57\d{10}(")/, '$1+573009999999$2')],
     ['red del fade en la landing EN', 'en/smile-design/index.html', (s) => s.replace('setTimeout(parar, 30000)', 'setTimeout(parar, 99999)')],
+    ['teléfono visible en /privacidad/', 'privacidad/index.html', (s) => s.replace(/(>)\+57 3\d{2} \d{3} \d{4}(<)/, '$1+57 300 999 9999$2')],
   ];
   // Antes de nada: en limpio NO puede haber cambios. Si los hay, el resto no prueba nada.
   const limpio = sincronizar(leerDisco);
@@ -163,8 +182,46 @@ function autotest() {
     if (visto) console.log(`  ✓ ${nombre}: se pone rojo`);
     else { console.error(`  ✗ ${nombre}: NO lo detecta`); mal++; }
   }
+  // Y los casos que NO son «un fichero se desvía», sino «content.json trae algo
+  // raro». Éstos tienen que salir por `fallos`, no por `cambios`: la diferencia
+  // importa, porque `fallos` PARA el build y `cambios` lo deja escribir.
+  const CONTENT = 'assets/data/content.json';
+  const malos = [
+    ['phone sin indicativo',        (d) => { d.contact.phone = '316 390 3511'; }],
+    ['phone local, sin el 57',      (d) => { d.contact.phone = '3163903511'; }],
+    ['phone con paréntesis y sin 57', (d) => { d.contact.phone = '(316) 390-3511'; }],
+    ['phone vacío',                 (d) => { d.contact.phone = ''; }],
+    ['phone con una cifra de menos', (d) => { d.contact.phone = '+57 316 390 351'; }],
+    ['whatsapp con letras',   (d) => { d.contact.whatsapp = 'escríbeme'; }],
+  ];
+  for (const [nombre, romper] of malos) {
+    const datos = JSON.parse(leerDisco(CONTENT));
+    romper(datos);
+    const { fallos } = sincronizar((p) => (p === CONTENT ? JSON.stringify(datos) : leerDisco(p)));
+    if (fallos.length) console.log(`  ✓ ${nombre}: para el build ("${fallos[0].slice(0, 46)}…")`);
+    else { console.error(`  ✗ ${nombre}: NO lo detecta, el build seguiría`); mal++; }
+  }
+
+  // Y al revés: el MISMO número escrito de seis maneras tiene que producir
+  // siempre el mismo texto visible. Ésta es la propiedad que se rompía —el
+  // formato de salida dependía de cómo estuviera tecleada la entrada— y la que
+  // ningún caso de «ponerse rojo» habría detectado, porque no hay nada roto que
+  // ver: sale un teléfono, sólo que sin el indicativo del país.
+  const ESPERADO = '>+57 316 390 3511<';
+  // Sólo grafías que LLEVAN el indicativo: un número de 10 dígitos suelto no es
+  // el mismo dato, es uno ambiguo, y va arriba entre los que paran el build.
+  for (const grafia of ['+57 3163903511', '+57 316 390 3511', '+573163903511',
+                        '+57-316-390-3511', '57 316 390 3511', '(+57) 316 3903511']) {
+    const datos = JSON.parse(leerDisco(CONTENT));
+    datos.contact.phone = grafia;
+    const { fallos, salida } = sincronizar((p) => (p === CONTENT ? JSON.stringify(datos) : leerDisco(p)));
+    const pag = salida.get('privacidad/index.html') || '';
+    if (!fallos.length && pag.includes(ESPERADO)) console.log(`  ✓ ${JSON.stringify(grafia).padEnd(22)} -> ${ESPERADO}`);
+    else { console.error(`  ✗ ${JSON.stringify(grafia)}: sale mal${fallos.length ? ` (${fallos[0]})` : ''}`); mal++; }
+  }
+
   if (mal) { console.error(`\n✗ ${mal} caso(s) que el comprobador no ve`); return 1; }
-  console.log(`\n✓ control positivo: los ${casos.length} casos se detectan`);
+  console.log('\n✓ control positivo: todos los casos se detectan');
   return 0;
 }
 
