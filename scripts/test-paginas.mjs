@@ -26,6 +26,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import vm from 'node:vm';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 
 let fallos = 0;
 const ok = (cond, etq) => {
@@ -615,6 +616,26 @@ console.log('\n14. articulos incompletos: el build para y lo dice');
   const fuera = mkdtempSync(join(tmpdir(), 'lx-out-'));
   mkdirSync(join(fuera, 'blog'), { recursive: true });
 
+  /* Huella de blog/ y sitemap.xml ANTES de correr nada. Antes se exigia que
+     `git status` saliera vacio, y eso no distingue «el banco toco el repo» de
+     «hay cambios sin commitear en el blog»: se ponia rojo justo en el flujo
+     normal —tocar el blog y pasar los tests antes del commit—. Medido el
+     25-sep-2026: rojo con el banco sin tocar nada (hashes identicos). */
+  const huella = () => {
+    const h = createHash('sha256');
+    const recorrer = (dir) => {
+      for (const n of readdirSync(dir).sort()) {
+        const p = join(dir, n);
+        if (statSync(p).isDirectory()) recorrer(p);
+        else { h.update(p); h.update(readFileSync(p)); }
+      }
+    };
+    recorrer('blog');
+    h.update('sitemap.xml'); h.update(readFileSync('sitemap.xml'));
+    return h.digest('hex');
+  };
+  const huellaAntes = huella();
+
   const correr = (mutar) => {
     const d = JSON.parse(JSON.stringify(base));
     mutar(d.blog.articles);
@@ -662,9 +683,10 @@ console.log('\n14. articulos incompletos: el build para y lo dice');
 
   try { unlinkSync(tmp); rmSync(fuera, { recursive: true, force: true }); } catch { /* da igual */ }
 
-  // Y nada de lo anterior puede haber tocado el repo.
-  const sucio = execFileSync('git', ['status', '--porcelain', '--', 'blog', 'sitemap.xml'], { encoding: 'utf8' }).trim();
-  ok(sucio === '', sucio ? `el banco de pruebas dejo el repo tocado:\n${sucio}` : 'el repo quedo intacto');
+  // Y nada de lo anterior puede haber tocado el repo: misma huella que al empezar.
+  const intacto = huella() === huellaAntes;
+  ok(intacto, intacto ? 'el repo quedo intacto'
+    : `el banco de pruebas dejo el repo tocado:\n${execFileSync('git', ['status', '--porcelain', '--', 'blog', 'sitemap.xml'], { encoding: 'utf8' }).trim()}`);
 }
 
 // ── 15. el build esta escrito DOS veces y nadie compara las copias ───────
