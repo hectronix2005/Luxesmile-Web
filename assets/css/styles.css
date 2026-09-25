@@ -418,6 +418,35 @@ body {
   transform: translateY(0px);
 }
 
+/* En el móvil los rótulos largos parten línea. Con `nowrap`, «Agenda tu
+   valoración con la Dra. Angela» medía 439 px en una pantalla de 390: la
+   página se deslizaba de lado, y el hero —que recorta con overflow-x:hidden—
+   cortaba su propio botón y el final de cada línea. Medido el 25-sep-2026 en
+   /diseno-de-sonrisa/, que recibe el 86 % de sus clics de Ads desde el móvil. */
+@media (max-width: 639px) {
+  .btn-primary,
+  .btn-ghost {
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* `.btn-primary { display: inline-flex }` pesa lo mismo que el `.hidden` de
+   Tailwind y, como este fichero carga después, lo anulaba: el botón de la
+   cabecera, marcado `hidden sm:inline-flex`, salía en el móvil cortado y
+   aplastando el logo. Con dos clases, estas reglas ganan a las dos. */
+.btn-primary.hidden,
+.btn-ghost.hidden {
+  display: none;
+}
+@media (min-width: 640px) {
+  .btn-primary.sm\:inline-flex,
+  .btn-ghost.sm\:inline-flex {
+    display: inline-flex;
+  }
+}
+
 /* -------- Tarjeta servicio ---------- */
 .service-card {
   background: #fff;

@@ -170,7 +170,7 @@
   <!-- Tailwind compilado (mismo build que el sitio principal) -->
   <link rel="stylesheet" href="../assets/css/tailwind.css?v=20260917d" />
 
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260917c" />
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260925a" />
 
   <!-- styles.css fija scroll-padding-top para el header del home (252px desktop
        / 64px móvil). El header de esta landing mide 80px en todos los anchos,
@@ -314,7 +314,9 @@
   <!-- ===================== HERO ===================== -->
   <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 hero-aura overflow-hidden">
     <div class="max-w-6xl mx-auto px-6 lg:px-10 grid lg:grid-cols-2 gap-14 items-center">
-      <div class="reveal">
+      <!-- El hero NO lleva .reveal: es lo primero que ve quien llega del anuncio, y la
+         animación de entrada lo dejaba casi invisible ~5 s (LCP medido 5,1 s, 25-sep-2026). -->
+      <div>
         <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-5">
           Diseño de Sonrisa · Chico, Chapinero · Bogotá
         </p>
@@ -344,7 +346,7 @@
         </div>
       </div>
 
-      <div class="reveal">
+      <div>
         <div class="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/5]">
           <img :src="content.hero.image" alt="Diseño de sonrisa Luxe-Smile en Bogotá"
                class="w-full h-full object-cover" width="1280" height="817" />
