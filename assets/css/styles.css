@@ -447,6 +447,15 @@ body {
   }
 }
 
+/* El correo de la clínica es una sola «palabra» de 40 caracteres. Sin permiso
+   para partirse, ensanchaba la columna de contacto y el inicio medía 374 px en
+   una pantalla de 360: la página entera se deslizaba de lado. Medido el
+   25-sep-2026. `anywhere` y no `break-word`: sólo `anywhere` rebaja el ancho
+   mínimo con el que la rejilla reparte las columnas. */
+.correo {
+  overflow-wrap: anywhere;
+}
+
 /* -------- Tarjeta servicio ---------- */
 .service-card {
   background: #fff;

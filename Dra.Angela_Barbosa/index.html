@@ -120,7 +120,7 @@
   <!-- Tailwind compilado (reemplaza el CDN, no apto para producción). Se genera en build. -->
   <link rel="stylesheet" href="/assets/css/tailwind.css?v=20260917d" />
 
-  <link rel="stylesheet" href="/assets/css/styles.css?v=20260925a" />
+  <link rel="stylesheet" href="/assets/css/styles.css?v=20260925b" />
   <script src="/assets/js/content.js?v=20260917i"></script>
   <script src="/assets/js/app.js?v=20260918a"></script>
   <script defer src="/assets/js/alpine.min.js?v=3.14.9"></script>
@@ -561,7 +561,7 @@
             <span class="text-gold text-xl leading-none mt-1">◆</span>
             <div>
               <p class="admin-label text-[11px]">Email</p>
-              <a :href="'mailto:'+content.contact.email" class="hover:text-rosegold" x-text="content.contact.email"></a>
+              <a :href="'mailto:'+content.contact.email" class="correo hover:text-rosegold" x-text="content.contact.email"></a>
             </div>
           </li>
           <li class="flex gap-4 items-start">
@@ -635,7 +635,7 @@
           <p class="tracking-widest uppercase font-medium text-[11px] text-ivory/50 mb-4">Contacto directo</p>
           <ul class="space-y-2 text-sm text-ivory/80">
             <li x-text="content.contact.phone"></li>
-            <li x-text="content.contact.email"></li>
+            <li class="correo" x-text="content.contact.email"></li>
             <li x-text="content.contact.address"></li>
           </ul>
           <a

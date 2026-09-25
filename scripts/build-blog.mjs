@@ -28,7 +28,7 @@ const SITE = 'https://luxesmilee.com';
    luego canoniza en otra es la contradiccion que hace que Google ignore el
    canonical. La raiz sigue sirviendo lo mismo, no se rompe ningun enlace viejo. */
 const INICIO = `/${RUTA_FICHA}/`;
-const V = '20260925a'; // cache-bust de CSS
+const V = '20260925b'; // cache-bust de CSS
 const VJS = '20260918a'; // cache-bust de tracking.js (mantener en sync con index/landings)
 
 /* `LX_CONTENT` existe SOLO para que el detector pueda correr este build de verdad
