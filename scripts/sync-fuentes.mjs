@@ -33,14 +33,15 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const leerDisco = (p) => readFileSync(join(ROOT, p), 'utf8');
 
 const PAGINAS_CON_RED = ['index.html', 'diseno-de-sonrisa/index.html',
-  'pacientes-internacionales/index.html', 'en/smile-design/index.html'];
+  'pacientes-internacionales/index.html', 'en/smile-design/index.html',
+  'rehabilitacion-oral/index.html'];
 const RED_RE = /  <!-- RED DE SEGURIDAD DEL FADE-IN[\s\S]*?<\/script>/;
 
 /* El favicon: mismas lineas en todas las paginas escritas a mano. Las del blog
    las emite build-blog.mjs desde este mismo fragmento. El marcador `<!-- FAVICON`
    hace de ancla: si esta, se reemplaza; si no, se inserta detras del <title>, asi
    que una pagina nueva se cubre sola la primera vez que corre esto. */
-const PAGINAS_CON_FAVICON = ['index.html', 'diseno-de-sonrisa/index.html',
+const PAGINAS_CON_FAVICON = ['index.html', 'diseno-de-sonrisa/index.html', 'rehabilitacion-oral/index.html',
   'pacientes-internacionales/index.html', 'en/smile-design/index.html',
   'privacidad/index.html', 'wa/index.html',
   /* Dra.Angela_Barbosa/ y dra-angela-barbosa/ NO van aqui: desde el 18-sep-2026
@@ -152,6 +153,7 @@ function sincronizar(leer) {
   const PATRONES = [
     ['index.html',                           /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['diseno-de-sonrisa/index.html',         /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
+    ['rehabilitacion-oral/index.html',       /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['en/smile-design/index.html',           /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['pacientes-internacionales/index.html', /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['privacidad/index.html',                /(wa\.me\/)57\d{10}/g,               `$1${dig}`,    'wa.me'],
@@ -205,6 +207,9 @@ function sincronizar(leer) {
       ['privacidad/index.html', /\/assets\/img\/content\/logo-[A-Za-z0-9._-]+\.webp/g,
         () => fuente(datos?.brand?.logo, 'brand.logo'), 'logo'],
       ['diseno-de-sonrisa/index.html', /\/assets\/img\/content\/about-[A-Za-z0-9._-]+\.webp/g,
+        () => fuente(datos?.about?.image, 'about.image'), 'foto de la doctora'],
+      // El hero de /rehabilitacion-oral/ es la foto de la doctora con `src` estatico.
+      ['rehabilitacion-oral/index.html', /\/assets\/img\/content\/about-[A-Za-z0-9._-]+\.webp/g,
         () => fuente(datos?.about?.image, 'about.image'), 'foto de la doctora'],
     ];
     for (const [ruta, re, dame, etiqueta] of IMAGENES) {

@@ -169,6 +169,9 @@ console.log('\n3. cobertura: toda página con enlaces a WhatsApp tiene mecanismo
     // pare. Se declara igualmente porque este test comprueba que este DICHO.
     'Dra.Angela_Barbosa/index.html': 'copia generada del inicio: mismo contexto (app.js -> lxRuta)',
     'diseno-de-sonrisa/index.html': 'texto literal -> web / web_virtual / web_consultorio',
+    // Pagina de servicio (27-sep-2026). Como la landing, pasa la clave a lxRuta;
+    // usa la generica porque Zeus no tiene todavia una de rehabilitacion.
+    'rehabilitacion-oral/index.html': 'clave directa -> valoracion',
     'pacientes-internacionales/index.html': 'texto literal -> internacional',
     'en/smile-design/index.html': 'texto literal -> smile_design_en',
     'blog/index.html': 'texto literal -> valoracion',
