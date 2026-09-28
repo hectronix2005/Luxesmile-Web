@@ -28,7 +28,7 @@ const SITE = 'https://luxesmilee.com';
    luego canoniza en otra es la contradiccion que hace que Google ignore el
    canonical. La raiz sigue sirviendo lo mismo, no se rompe ningun enlace viejo. */
 const INICIO = `/${RUTA_FICHA}/`;
-const V = '20260925b'; // cache-bust de CSS
+const V = '20260927c'; // cache-bust de CSS
 const VJS = '20260927d'; // cache-bust de tracking.js (mantener en sync con index/landings)
 
 /* `LX_CONTENT` existe SOLO para que el detector pueda correr este build de verdad
@@ -374,6 +374,7 @@ function sitemap() {
     // lo mismo, pero solo una de las dos puede ser la indexada.
     { loc: `${SITE}/${RUTA_FICHA}/`, priority: '1.0', changefreq: 'monthly' },
     { loc: `${SITE}/diseno-de-sonrisa/`, priority: '0.9', changefreq: 'monthly' },
+    { loc: `${SITE}/rehabilitacion-oral/`, priority: '0.9', changefreq: 'monthly' },
     { loc: `${SITE}/pacientes-internacionales/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/en/smile-design/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/blog/`, priority: '0.7', changefreq: 'weekly' },
