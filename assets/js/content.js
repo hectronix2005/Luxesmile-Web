@@ -184,7 +184,7 @@ const DEFAULT_CONTENT = {
     // GENERADO por scripts/sync-fuentes.mjs desde content.json. No editar a mano:
     // es el fallback que ve quien entra si el fetch de content.json falla.
     whatsapp: "+57 3163903511",
-    whatsappMessage: "Hola Dra. Angela, me gustaría agendar una cita con usted en Luxe-Smile.",
+    whatsappMessage: "Hola Dra. Angela, me gustaría agendar una cita con usted en Luxe Smile.",
     phone: "+57 3163903511",
     email: "consultoriosespecialistasinspi@gmail.com",
     address: "Cl. 90 #14-16, Consultorio 508 · Chico, Chapinero · Bogotá",

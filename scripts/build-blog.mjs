@@ -29,7 +29,7 @@ const SITE = 'https://luxesmilee.com';
    canonical. La raiz sigue sirviendo lo mismo, no se rompe ningun enlace viejo. */
 const INICIO = `/${RUTA_FICHA}/`;
 const V = '20260925b'; // cache-bust de CSS
-const VJS = '20260918a'; // cache-bust de tracking.js (mantener en sync con index/landings)
+const VJS = '20260927d'; // cache-bust de tracking.js (mantener en sync con index/landings)
 
 /* `LX_CONTENT` existe SOLO para que el detector pueda correr este build de verdad
    —el CLI entero, no una funcion suelta— contra un content.json roto sin tocar el
@@ -140,7 +140,7 @@ const abs = (u) => {
 
 const waDigits = String(contact.whatsapp || '').replace(/\D/g, '');
 const waLink = `https://wa.me/${waDigits}?text=${encodeURIComponent(
-  'Hola, quiero agendar una valoración en Luxe-Smile.',
+  'Hola, quiero agendar una valoración en Luxe Smile.',
 )}`;
 
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];

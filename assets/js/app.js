@@ -114,7 +114,7 @@ function registerAndInitialize() {
     // sirve si tracking.js no llegó a cargar.
     waMe(context) {
       const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
-      const base = this.content.contact.whatsappMessage || 'Hola, quiero información sobre Luxe-Smile.';
+      const base = this.content.contact.whatsappMessage || 'Hola, quiero información sobre Luxe Smile.';
       let msg;
       if (context === 'hero') {
         msg = 'Hola, quiero información sobre diseño de sonrisa.';

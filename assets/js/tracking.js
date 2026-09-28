@@ -139,7 +139,7 @@
      Enrutarlas con la clave más parecida sería exactamente el fallo que el
      párrafo anterior describe. */
   var CLAVES = {
-    'Hola, quiero agendar una valoración en Luxe-Smile.': 'valoracion',
+    'Hola, quiero agendar una valoración en Luxe Smile.': 'valoracion',
     'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa.': 'web',
     'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa de forma virtual.': 'web_virtual',
     'Hola Dra. Angela, vengo de la web y quiero agendar mi valoración para un diseño de sonrisa presencial en el consultorio.': 'web_consultorio',

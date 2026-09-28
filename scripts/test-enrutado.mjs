@@ -103,7 +103,7 @@ function cargarApp({ conRuta, mensaje }) {
   vm.runInContext(readFileSync('assets/js/app.js', 'utf8'), ctx);
   init();
   comp.content = { contact: { whatsapp: '573163903511',
-    whatsappMessage: mensaje || 'Hola Dra. Angela, me gustaría agendar una cita con usted en Luxe-Smile.' } };
+    whatsappMessage: mensaje || 'Hola Dra. Angela, me gustaría agendar una cita con usted en Luxe Smile.' } };
   return comp;
 }
 
@@ -138,7 +138,7 @@ console.log('\n2. waLink del home (app.js)');
   ok(Object.keys(ESPERADO).every((c) => sin.waLink(c === 'undefined' ? undefined : c).startsWith('https://wa.me/')),
     'sin tracking.js: los seis caen a wa.me');
   ok(decodeURIComponent(sin.waLink('virtual').split('text=')[1])
-    === 'Hola Dra. Angela, me gustaría agendar una cita de forma virtual con usted en Luxe-Smile.',
+    === 'Hola Dra. Angela, me gustaría agendar una cita de forma virtual con usted en Luxe Smile.',
     'y con el texto de reserva intacto');
 
   // LA DOCTORA EDITA EL MENSAJE Y DEJA DE DECIR «una cita».
@@ -378,7 +378,7 @@ console.log('\n5. enlace de reserva');
     const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda, callado: true });
     await asentar();
     const h = t.listeners.find(([ev]) => ev === 'click')[1];
-    const a = enlaceFalso(`https://wa.me/573163903511?text=${encodeURIComponent('Hola, quiero agendar una valoración en Luxe-Smile.')}`);
+    const a = enlaceFalso(`https://wa.me/573163903511?text=${encodeURIComponent('Hola, quiero agendar una valoración en Luxe Smile.')}`);
     h({ target: { closest: (sel) => (sel.includes('wa.me') ? a : null) } });
     ok(enruta ? a.href.startsWith(R) : a.href.includes('wa.me'),
       `handler por texto, ${etq.padEnd(11)} -> ${enruta ? 'enruta' : 'deja wa.me'}`);
@@ -440,7 +440,7 @@ console.log('\n6. la coletilla no puede salir dos veces');
   // cosa y la asercion comprobaba otra, que es el mismo fallo que este fichero
   // existe para cazar. Por eso aqui el texto es el del diccionario y se
   // comprueba ADEMAS que enruto de verdad.
-  const DICC = 'Hola, quiero agendar una valoración en Luxe-Smile.';
+  const DICC = 'Hola, quiero agendar una valoración en Luxe Smile.';
   {
     const t = cargarTracking({ id: 'Cj0', tipo: 'g' }, { sonda: SANA, callado: true });
     await asentar();
@@ -529,7 +529,7 @@ console.log('\n7. la junta con la MEDICIÓN: un enlace ya enrutado sigue contand
   {
     const t = cargarTracking(null, { sonda: SANA, callado: true });
     await asentar();
-    const a = enlaceFalso(`https://wa.me/573163903511?text=${encodeURIComponent('Hola, quiero agendar una valoración en Luxe-Smile.')}`);
+    const a = enlaceFalso(`https://wa.me/573163903511?text=${encodeURIComponent('Hola, quiero agendar una valoración en Luxe Smile.')}`);
     const clicks = t.listeners.filter(([ev]) => ev === 'click').map(([, fn]) => fn);
     clicks[0]({ target: { closest: (sel) => (casa(a, sel) ? a : null) } });   // captura: enruta
     ok(a.href.startsWith(R), '   (el de captura lo enrutó primero)');
