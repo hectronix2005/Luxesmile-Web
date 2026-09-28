@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin · Luxe-Smile</title>
+  <title>Admin · Luxe Smile</title>
 
   <!-- FAVICON. Fuente única: la propaga scripts/sync-fuentes.mjs a las páginas
        escritas a mano y la emite scripts/build-blog.mjs en las generadas. Los
@@ -51,7 +51,7 @@
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260925b" />
-  <script src="../assets/js/content.js?v=20260917i"></script>
+  <script src="../assets/js/content.js?v=20260927a"></script>
   <script defer src="../assets/js/admin.js?v=20260917j"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script>window.__LUXE_ADMIN_VERSION__ = '20260917i';</script>
@@ -65,7 +65,7 @@
       @submit.prevent="needsSetup ? setupPassword() : login()"
       class="admin-card w-full max-w-md text-center"
     >
-      <p class="font-serif text-4xl mb-2">Luxe-Smile</p>
+      <p class="font-serif text-4xl mb-2">Luxe Smile</p>
       <p class="text-xs uppercase tracking-[0.25em] text-softblack/60 mb-8">Panel administrativo</p>
 
       <div x-show="needsSetup" class="text-left text-sm bg-porcelain border border-charcoal/10 rounded-lg p-4 mb-6" style="display:none">
@@ -100,7 +100,7 @@
     <!-- Header -->
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
       <div>
-        <p class="font-serif text-3xl leading-none">Luxe-Smile</p>
+        <p class="font-serif text-3xl leading-none">Luxe Smile</p>
         <p class="text-xs uppercase tracking-[0.25em] text-softblack/60 mt-1">Panel administrativo</p>
       </div>
       <div class="flex items-center gap-3">
@@ -547,7 +547,7 @@
         </div>
         <div>
           <label class="admin-label block mb-1">Título SEO del índice <code class="text-xs font-mono">&lt;title&gt;</code></label>
-          <input class="admin-input" x-model="content.blog.indexTitle" placeholder="Blog de Odontología Estética | Luxe-Smile Bogotá" />
+          <input class="admin-input" x-model="content.blog.indexTitle" placeholder="Blog de Odontología Estética | Luxe Smile Bogotá" />
           <p class="text-xs text-softblack/50 mt-1">Si está vacío, se usa el valor por defecto.</p>
         </div>
         <div>

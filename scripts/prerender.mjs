@@ -1,5 +1,5 @@
 /* =====================================================================
-   Luxe-Smile · Pre-render ligero para SEO
+   Luxe Smile · Pre-render ligero para SEO
    ---------------------------------------------------------------------
    Hornea en index.html (contenido estático) los textos SEO-clave que hoy
    pinta Alpine en el cliente, para que TODO crawler (incluidos los que no

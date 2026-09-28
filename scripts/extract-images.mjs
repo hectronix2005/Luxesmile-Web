@@ -1,5 +1,5 @@
 /* =====================================================================
-   Luxe-Smile · Extracción de imágenes base64 → archivos WebP
+   Luxe Smile · Extracción de imágenes base64 → archivos WebP
    ---------------------------------------------------------------------
    El admin guarda las imágenes como data:image base64 DENTRO de
    content.json (lo que infla el archivo a ~2.4 MB y bloquea el render).

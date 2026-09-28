@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   Luxe-Smile · Favicon derivado del logo
+   Luxe Smile · Favicon derivado del logo
    ---------------------------------------------------------------------
    Hasta el 18-sep-2026 el sitio NO tenía favicon: ninguna de las 21
    páginas declaraba uno y no existía /favicon.ico, así que cada pestaña
@@ -160,8 +160,8 @@ salida.set('favicon.ico', ico(await Promise.all(
   [16, 32, 48].map(async (lado) => ({ lado, buf: await icono(marca.buf, lado) })),
 )));
 salida.set('site.webmanifest', Buffer.from(JSON.stringify({
-  name: contenido?.brand?.name || 'Luxe-Smile',
-  short_name: contenido?.brand?.name || 'Luxe-Smile',
+  name: contenido?.brand?.name || 'Luxe Smile',
+  short_name: contenido?.brand?.name || 'Luxe Smile',
   icons: [
     { src: '/assets/img/favicon/icon-192.png', sizes: '192x192', type: 'image/png' },
     { src: '/assets/img/favicon/icon-512.png', sizes: '512x512', type: 'image/png' },

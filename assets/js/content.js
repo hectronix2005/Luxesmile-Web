@@ -1,5 +1,5 @@
 /* =====================================================================
-   Luxe-Smile · Contenido por defecto + capa de persistencia
+   Luxe Smile · Contenido por defecto + capa de persistencia
    --------------------------------------------------------------------
    Fuente de verdad pública: assets/data/content.json (en el repo).
    El admin commitea ese archivo vía GitHub API para publicar cambios.
@@ -118,7 +118,7 @@ const DEFAULT_CONTENT = {
     colors: { ...THEME_PRESETS[0].colors },
   },
   brand: {
-    name: 'Luxe-Smile',
+    name: 'Luxe Smile',
     tagline: 'Odontología estética de alta gama',
     doctor: 'Dra. Angela Barbosa',
     logo: '',
@@ -198,7 +198,7 @@ const DEFAULT_CONTENT = {
   },
   footer: {
     tagline: 'Odontología estética con alma. Sonrisas hechas a medida.',
-    copyright: '© 2026 Luxe-Smile · Dra. Angela Barbosa. Todos los derechos reservados.',
+    copyright: '© 2026 Luxe Smile · Dra. Angela Barbosa. Todos los derechos reservados.',
   },
   // El admin enlaza content.blog.title con x-model, y x-show no impide que Alpine
   // evalúe la expresión: sin esta clave, si el fetch de content.json falla, la

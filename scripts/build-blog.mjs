@@ -1,5 +1,5 @@
 /* =====================================================================
-   Luxe-Smile · Generador de páginas estáticas del blog (SEO)
+   Luxe Smile · Generador de páginas estáticas del blog (SEO)
    ---------------------------------------------------------------------
    A partir de assets/data/content.json genera, en HTML 100% estático:
      - /blog/<slug>/index.html   una página indexable por artículo
@@ -174,7 +174,7 @@ function head({ title, desc, url, image, imgW, imgH, imgAlt, jsonld }) {
   <link rel="canonical" href="${escAttr(url)}" />
   <meta name="robots" content="index, follow" />
   <meta property="og:type" content="${url.includes('/blog/') && url !== SITE + '/blog/' ? 'article' : 'website'}" />
-  <meta property="og:site_name" content="Luxe-Smile" />
+  <meta property="og:site_name" content="Luxe Smile" />
   <meta property="og:locale" content="es_CO" />
   <meta property="og:title" content="${escAttr(title)}" />
   <meta property="og:description" content="${escAttr(desc)}" />
@@ -208,8 +208,8 @@ ${PRECONNECT}
 function topbar() {
   return `<body class="blog-body">
   <header class="blog-topbar">
-    <a href="${INICIO}" class="blog-topbar-logo" aria-label="Luxe-Smile inicio">
-      <img src="${escAttr(brand.logo)}" alt="Luxe-Smile" />
+    <a href="${INICIO}" class="blog-topbar-logo" aria-label="Luxe Smile inicio">
+      <img src="${escAttr(brand.logo)}" alt="Luxe Smile" />
     </a>
     <a href="${INICIO}#contacto" class="btn-primary">Agenda tu cita</a>
   </header>`;
@@ -219,10 +219,10 @@ function footer() {
   const year = String(content.footer?.copyright || '').match(/\d{4}/)?.[0] || '2026';
   return `  <footer class="blog-footer">
     <div class="blog-container">
-      <p class="font-serif blog-footer-brand">Luxe-Smile</p>
+      <p class="font-serif blog-footer-brand">Luxe Smile</p>
       <p class="blog-footer-meta">${escText(brand.doctor || '')} · ${escText(contact.address || '')}</p>
       <p class="blog-footer-links"><a href="${INICIO}">Inicio</a> · <a href="/blog/">Blog</a> · <a href="${INICIO}#servicios">Servicios</a> · <a href="${INICIO}#contacto">Contacto</a></p>
-      <p class="blog-footer-copy">© ${year} Luxe-Smile. Todos los derechos reservados.</p>
+      <p class="blog-footer-copy">© ${year} Luxe Smile. Todos los derechos reservados.</p>
     </div>
   </footer>
   <a href="${escAttr(waLink)}" target="_blank" rel="noopener" class="wa-float" aria-label="Chatear por WhatsApp">
@@ -255,7 +255,7 @@ function articlePage(a) {
   // los 9 articulos se estaban cortando por culpa de estos 20 caracteres. Y la
   // marca «luxe smile» trae 50 impresiones en 3 meses, asi que no vale su
   // espacio a cualquier precio (Search Console, 17-sep-2026).
-  const SUFIJO = ' | Luxe-Smile Bogotá';
+  const SUFIJO = ' | Luxe Smile Bogotá';
   const title = (a.title.length + SUFIJO.length) <= 60 ? `${a.title}${SUFIJO}` : a.title;
   const desc = a.excerpt || blog.subtitle || '';
   const jsonld = [
@@ -266,10 +266,10 @@ function articlePage(a) {
       headline: a.title,
       description: desc,
       image: abs(a.image),
-      author: { '@type': 'Person', name: brand.doctor || 'Luxe-Smile' },
+      author: { '@type': 'Person', name: brand.doctor || 'Luxe Smile' },
       publisher: {
         '@type': 'Organization',
-        name: 'Luxe-Smile',
+        name: 'Luxe Smile',
         logo: { '@type': 'ImageObject', url: logoAbs },
       },
       datePublished: a.date,
@@ -318,15 +318,15 @@ ${footer()}`;
 
 function indexPage() {
   const url = `${SITE}/blog/`;
-  const title = blog.indexTitle || `Blog de Odontología Estética | Luxe-Smile Bogotá`;
+  const title = blog.indexTitle || `Blog de Odontología Estética | Luxe Smile Bogotá`;
   const desc = blog.metaDescription || blog.subtitle || 'Consejos, técnicas y tendencias en diseño de sonrisa, carillas y estética dental en Bogotá.';
   const jsonld = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: blog.title || 'Blog Luxe-Smile',
+    name: blog.title || 'Blog Luxe Smile',
     description: desc,
     url,
-    publisher: { '@type': 'Organization', name: 'Luxe-Smile', logo: { '@type': 'ImageObject', url: logoAbs } },
+    publisher: { '@type': 'Organization', name: 'Luxe Smile', logo: { '@type': 'ImageObject', url: logoAbs } },
     blogPost: articles.map((a) => ({
       '@type': 'BlogPosting',
       headline: a.title,

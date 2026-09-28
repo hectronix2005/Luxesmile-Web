@@ -1,5 +1,5 @@
 /* =====================================================================
-   Luxe-Smile · La direccion de la ficha de Google sirve el sitio entero
+   Luxe Smile · La direccion de la ficha de Google sirve el sitio entero
    ---------------------------------------------------------------------
    /Dra.Angela_Barbosa/ es la direccion que se reparte junto a la ficha de
    Google. Hasta el 18-sep-2026 era un puente: una pagina delgada que
@@ -83,7 +83,7 @@ ${MARCA}
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dra. Angela Barbosa — Luxe-Smile</title>
+  <title>Dra. Angela Barbosa — Luxe Smile</title>
   <!-- Alias en la grafia que teclearia una persona: minusculas y guion.
        /dra.angela_barbosa daria 404 (GitHub Pages distingue mayusculas) y
        Google lee «Angela_Barbosa» como un termino unico, no como dos.
@@ -105,7 +105,7 @@ ${FAVICON}
 </head>
 <body>
   <div class="caja">
-    <p>Dra. Angela Barbosa — Luxe-Smile, Chicó, Bogotá.</p>
+    <p>Dra. Angela Barbosa — Luxe Smile, Chicó, Bogotá.</p>
     <a href="${destino}">Ir al sitio</a>
   </div>
   <script>location.replace('${destino}');</script>
