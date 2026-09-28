@@ -446,7 +446,28 @@ console.log('\n11. la direccion de la ficha sirve el sitio y no rebota');
     const html = readFileSync(P, 'utf8');
 
     ok(!/http-equiv="refresh"/i.test(html), 'no rebota: sin meta refresh');
-    ok(!/location\.replace\(/.test(html), 'no rebota: sin location.replace');
+    // Lleva la misma linea que la raiz (build-ficha copia index.html), y esa
+    // linea SI redirige. No basta con buscar el texto: se EJECUTA con una
+    // direccion simulada. Aqui no debe moverse; en la raiz, si.
+    const destinos = (pagina, pathname) => {
+      const fuera = [];
+      for (const [, js] of pagina.matchAll(/<script>([^<]*location\.replace\([^<]*)<\/script>/g)) {
+        const location = { pathname, search: '?gclid=X&utm_source=g', hash: '#contacto',
+          replace: (u) => fuera.push(u) };
+        new Function('location', js)(location);
+      }
+      return fuera;
+    };
+    const aqui = destinos(html, '/Dra.Angela_Barbosa/');
+    ok(aqui.length === 0, aqui.length ? `rebota a ${aqui.join(', ')}` : 'no rebota: su redireccion no se dispara aqui');
+
+    // La raiz lleva al inicio de verdad, sin perder la atribucion ni el ancla.
+    const raiz = readFileSync('index.html', 'utf8');
+    for (const ruta of ['/', '/index.html']) {
+      const d = destinos(raiz, ruta);
+      ok(d.length === 1 && d[0] === '/Dra.Angela_Barbosa/?gclid=X&utm_source=g#contacto',
+         `${ruta} redirige a /Dra.Angela_Barbosa/ conservando ?gclid y #ancla (${d.join(', ') || 'no redirige'})`);
+    }
 
     // Que sea el sitio de verdad, no una pagina delgada con el mismo nombre.
     ok(/id="inicio"/.test(html) && html.length > 40000,
