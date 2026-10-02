@@ -52,7 +52,7 @@
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
   <link rel="stylesheet" href="../assets/css/styles.css?v=20260925b" />
   <script src="../assets/js/content.js?v=20260927d"></script>
-  <script defer src="../assets/js/admin.js?v=20260917j"></script>
+  <script defer src="../assets/js/admin.js?v=20261001a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script>window.__LUXE_ADMIN_VERSION__ = '20260917i';</script>
 </head>
@@ -699,6 +699,22 @@
             Cómo obtenerla: entra a <a href="https://business.google.com" target="_blank" rel="noopener" class="underline hover:text-rosegold">business.google.com</a>
             → tu negocio → <strong>Pedir reseñas</strong> → copia el enlace corto que aparece (formato <code>https://g.page/r/.../review</code>).
             Si no aparece esa opción, usa el formato con tu Place ID.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="admin-label block mb-2">Reseñas en Google</label>
+            <input class="admin-input" type="number" min="1" step="1" x-model.number="content.reviews.googleCount" placeholder="Ej: 9" />
+          </div>
+          <div>
+            <label class="admin-label block mb-2">Calificación</label>
+            <input class="admin-input" x-model="content.reviews.googleRating" placeholder="Ej: 5.0" />
+          </div>
+          <p class="col-span-2 text-xs text-softblack/60 leading-relaxed">
+            Cópialos de la ficha de Google cada vez que llegue una reseña. Es lo que el sitio le
+            declara a Google; el widget de abajo no lo actualiza (va días por detrás de Google).
+            La calificación lleva punto: <code>5.0</code>, <code>4.9</code>.
           </p>
         </div>
 

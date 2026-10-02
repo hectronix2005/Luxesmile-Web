@@ -242,6 +242,31 @@ function sincronizar(leer) {
     });
   }
 
+  /* 5b) Reseñas de Google -> el aggregateRating del JSON-LD.
+     El «8 reseñas» estaba escrito a mano en las tres páginas y la ficha llegó a 9
+     el 1-oct-2026 sin que nada lo moviera. La fuente es content.reviews (el panel
+     lo edita); el widget de Elfsight NO vale de fuente: va días por detrás de Google. */
+  {
+    const total = datos?.reviews?.googleCount, nota = datos?.reviews?.googleRating;
+    const okTotal = Number.isInteger(total) && total > 0;
+    const okNota = /^[1-5]\.\d$/.test(String(nota || ''));
+    if (!okTotal) fallos.push(`reviews.googleCount no es un entero positivo: ${JSON.stringify(total)}`);
+    if (!okNota) fallos.push(`reviews.googleRating no es «5.0» o similar: ${JSON.stringify(nota)}`);
+    if (okTotal && okNota) {
+      const RE = /("ratingValue":\s*")[^"]*(",\s*"reviewCount":\s*")[^"]*(")/g;
+      for (const ruta of ['index.html', 'diseno-de-sonrisa/index.html', 'rehabilitacion-oral/index.html']) {
+        editar(ruta, (s2) => {
+          RE.lastIndex = 0;
+          if (!RE.test(s2)) { fallos.push(`no encuentro el aggregateRating en ${ruta}`); return s2; }
+          RE.lastIndex = 0;
+          const nuevo = s2.replace(RE, `$1${nota}$2${total}$3`);
+          if (nuevo !== s2) cambios.push(`${ruta}  reseñas -> ${nota} (${total})`);
+          return nuevo;
+        });
+      }
+    }
+  }
+
   /* 6) Favicon -> todas las paginas escritas a mano */
   {
     const frag = leer('scripts/fragmentos/favicon.html').replace(/\n$/, '') + '\n';
@@ -313,6 +338,7 @@ function autotest() {
     ['logo de /privacidad/', 'privacidad/index.html', (s) => s.replace(/logo-[A-Za-z0-9]+\.webp/, 'logo-000000000000.webp')],
     ['galería de la landing', 'diseno-de-sonrisa/index.html', (s) => s.replace(/gallery-3-[A-Za-z0-9]+\.webp/, 'gallery-3-000000000000.webp')],
     ['foto de la doctora', 'diseno-de-sonrisa/index.html', (s) => s.replace(/about-[A-Za-z0-9]+\.webp/, 'about-000000000000.webp')],
+    ['reseñas del JSON-LD', 'rehabilitacion-oral/index.html', (s) => s.replace(/("reviewCount":\s*")\d+/, '$1999')],
   ];
   // Antes de nada: en limpio NO puede haber cambios. Si los hay, el resto no prueba nada.
   const limpio = sincronizar(leerDisco);

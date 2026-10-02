@@ -54,10 +54,13 @@ function cargarComponente(codigo) {
 }
 
 // Monta un panel en el estado "cargado sin sha" y devuelve si publicó.
-async function correr({ codigo, repoIgualAlBaseline, apiRota, blog, conSha }) {
+// Válidas: los casos que no prueban esta guarda tienen que pasarla.
+const RESENAS = { googleCount: 9, googleRating: '5.0' };
+
+async function correr({ codigo, repoIgualAlBaseline, apiRota, blog, conSha, reviews = RESENAS }) {
   const { fabrica, ctx } = cargarComponente(codigo);
 
-  const BASE = { brand: { doctor: 'Dra. Angela Barbosa' }, contact: { whatsapp: '+57 3163903511' } };
+  const BASE = { brand: { doctor: 'Dra. Angela Barbosa' }, contact: { whatsapp: '+57 3163903511' }, reviews };
   const EN_REPO = repoIgualAlBaseline ? BASE : { ...BASE, brand: { doctor: 'OTRA PERSONA' } };
 
   let escrituras = 0;
@@ -141,8 +144,8 @@ async function sellar({ codigo, cambio }) {
     { slug: 'tocado',  title: 'T', excerpt: 'e', content: '<p>a</p>', image: 'x.webp', date: '2026-05-01', updated: '2026-05-01' },
     { slug: 'intacto', title: 'U', excerpt: 'f', content: '<p>b</p>', image: 'y.webp', date: '2026-05-02', updated: '2026-05-02' },
   ];
-  app.content = { blog: { articles: structuredClone(previos) } };
-  app.snapshot = JSON.stringify({ blog: { articles: previos } });
+  app.content = { blog: { articles: structuredClone(previos) }, reviews: RESENAS };
+  app.snapshot = JSON.stringify({ blog: { articles: previos }, reviews: RESENAS });
   Object.assign(app.content.blog.articles[0], cambio);
   app.sellarArticulosEditados();
   const hoy = new Date().toISOString().slice(0, 10);
@@ -169,8 +172,8 @@ async function sellarAlPublicar({ codigo }) {
     { id: 2, slug: 'intacto', title: 'U', excerpt: 'f', content: '<p>b</p>', image: 'y.webp', date: '2026-05-02', updated: '2026-05-02' },
   ];
   app.gh = { owner: 'o', repo: 'r', token: 't', branch: 'main', path: 'p' };
-  app.content = { blog: { articles: structuredClone(previos) } };
-  app.snapshot = JSON.stringify({ blog: { articles: previos } });
+  app.content = { blog: { articles: structuredClone(previos) }, reviews: RESENAS };
+  app.snapshot = JSON.stringify({ blog: { articles: previos }, reviews: RESENAS });
   app.loadedSha = 'sha-cargado';
   app.content.blog.articles[0].content = '<p>reescrito entero</p>';
   app.verifyPublishedOnSite = async () => {};
@@ -201,6 +204,10 @@ const casos = [
   // posición, una validación que sólo mirase el primer artículo pasaba el examen.
   ['blog: el 2º sin imagen → NO publica',        { conSha: true, blog: [ok(), ok({ id: 2, slug: 'dos', image: '' })] }, false],
   ['blog: el 2º con slug raro → NO publica',     { conSha: true, blog: [ok(), ok({ id: 2, slug: 'con espacio' })] }, false],
+  // --- la guarda de las reseñas: un valor que pararía sync-fuentes NO se publica ---
+  ['reseñas: número vacío → NO publica',          { conSha: true, reviews: { googleCount: '', googleRating: '5.0' } }, false],
+  ['reseñas: calificación con coma → NO publica', { conSha: true, reviews: { googleCount: 9, googleRating: '5,0' } }, false],
+  ['reseñas: sin los campos → NO publica',        { conSha: true, reviews: {} }, false],
 ];
 
 let fallos = 0;

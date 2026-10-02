@@ -284,6 +284,14 @@ document.addEventListener('alpine:init', () => {
         this.flash(`No se publica: esto haría fallar la generación del sitio. ${malBlog.join(' · ')}`, 'err', 15000);
         return;
       }
+      // sync-fuentes copia estos dos valores al JSON-LD y PARA el build si no valen;
+      // con el build parado el Action no comitea nada (ver problemasDelBlog).
+      const rv = this.content.reviews || {};
+      if (!(Number.isInteger(rv.googleCount) && rv.googleCount > 0) || !/^[1-5]\.\d$/.test(String(rv.googleRating || ''))) {
+        this.tab = 'testimonials';
+        this.flash('No se publica: «Reseñas en Google» debe ser un número entero y «Calificación» algo como 5.0 o 4.9.', 'err', 15000);
+        return;
+      }
       if (!this.loadedSha && !(await this.recuperarSha())) return;
       this.sellarArticulosEditados();
       this.publishing = true;
