@@ -43,7 +43,7 @@ const RED_RE = /  <!-- RED DE SEGURIDAD DEL FADE-IN[\s\S]*?<\/script>/;
    que una pagina nueva se cubre sola la primera vez que corre esto. */
 const PAGINAS_CON_FAVICON = ['index.html', 'diseno-de-sonrisa/index.html', 'rehabilitacion-oral/index.html',
   'pacientes-internacionales/index.html', 'en/smile-design/index.html',
-  'privacidad/index.html', 'wa/index.html',
+  'privacidad/index.html', 'wa/index.html', 'resena/index.html',
   /* Dra.Angela_Barbosa/ y dra-angela-barbosa/ NO van aqui: desde el 18-sep-2026
      las genera scripts/build-ficha.mjs, que ya emite este mismo fragmento. Dos
      propagadores sobre el mismo fichero se pisan el uno al otro y el build deja

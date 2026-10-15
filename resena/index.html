@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Déjanos tu reseña — Luxe Smile</title>
+
+  <!-- FAVICON. Fuente única: la propaga scripts/sync-fuentes.mjs a las páginas
+       escritas a mano y la emite scripts/build-blog.mjs en las generadas. Los
+       ficheros los deriva del logo scripts/build-favicon.mjs — no editar a mano.
+       Rutas absolutas a propósito: las mismas líneas valen desde /, desde
+       /blog/x/ y desde /en/smile-design/.
+       Aquí NO va theme-color: cuatro páginas ya declaran el suyo, más claro, y
+       el navy de estos iconos pintaría la barra del móvil de otro color. El del
+       manifiesto es otra cosa: es el de la pantalla de inicio de Android. -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" type="image/png" href="/assets/img/favicon/icon-96.png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Página puente, no debe indexarse ni aparecer en resultados -->
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- =====================================================================
+       Luxe Smile · Enlace corto para pedir reseñas en Google
+       ---------------------------------------------------------------------
+       luxesmilee.com/resena/ es lo que va en el QR de recepción y en los
+       WhatsApp a pacientes: se dicta y se imprime mejor que el enlace de
+       Google, que lleva el place_id de la ficha. Lleva directo a la ventana
+       de las estrellas (con sesión de Google; sin sesión, Google pide entrar
+       primero). Comprobado el 14-oct-2026 que abre la ficha correcta.
+
+       Si la ficha cambiara de place_id, se cambia SOLO aquí: el QR impreso
+       apunta a /resena/ y sigue valiendo.
+       ===================================================================== -->
+  <meta http-equiv="refresh" content="0; url=https://search.google.com/local/writereview?placeid=ChIJOVdceuGbP44RjVWJS1Zugic" />
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #F7F8FA; color: #202630; }
+    @media (prefers-color-scheme: dark) { body { background: #161C26; color: #E7ECF2; } }
+    .caja { text-align: center; padding: 2rem 1.5rem; max-width: 24rem; }
+    p { margin: 0 0 1.25rem; font-size: 1rem; line-height: 1.5; }
+    a { display: inline-block; padding: .7rem 1.35rem; background: #1F3A57; color: #fff;
+      text-decoration: none; border-radius: 999px; font-weight: 600; font-size: .95rem; }
+  </style>
+</head>
+<body>
+  <div class="caja">
+    <p>Gracias por contarnos tu experiencia con la Dra. Angela Barbosa — Luxe Smile.</p>
+    <a href="https://search.google.com/local/writereview?placeid=ChIJOVdceuGbP44RjVWJS1Zugic">Dejar mi reseña en Google</a>
+  </div>
+  <script>location.replace('https://search.google.com/local/writereview?placeid=ChIJOVdceuGbP44RjVWJS1Zugic');</script>
+</body>
+</html>
