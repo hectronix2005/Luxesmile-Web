@@ -208,6 +208,10 @@ function sincronizar(leer) {
         () => fuente(datos?.brand?.logo, 'brand.logo'), 'logo'],
       ['diseno-de-sonrisa/index.html', /\/assets\/img\/content\/about-[A-Za-z0-9._-]+\.webp/g,
         () => fuente(datos?.about?.image, 'about.image'), 'foto de la doctora'],
+      // La foto principal de la landing: `src` fijo y preload en el <head> para que
+      // el movil no espere a Alpine (atenea, 7-nov). Casan los dos a la vez.
+      ['diseno-de-sonrisa/index.html', /\/assets\/img\/content\/hero-[A-Za-z0-9._-]+\.webp/g,
+        () => fuente(datos?.hero?.image, 'hero.image'), 'foto principal'],
       // El hero de /rehabilitacion-oral/ es la foto de la doctora con `src` estatico.
       ['rehabilitacion-oral/index.html', /\/assets\/img\/content\/about-[A-Za-z0-9._-]+\.webp/g,
         () => fuente(datos?.about?.image, 'about.image'), 'foto de la doctora'],
@@ -338,6 +342,8 @@ function autotest() {
     ['logo de /privacidad/', 'privacidad/index.html', (s) => s.replace(/logo-[A-Za-z0-9]+\.webp/, 'logo-000000000000.webp')],
     ['galería de la landing', 'diseno-de-sonrisa/index.html', (s) => s.replace(/gallery-3-[A-Za-z0-9]+\.webp/, 'gallery-3-000000000000.webp')],
     ['foto de la doctora', 'diseno-de-sonrisa/index.html', (s) => s.replace(/about-[A-Za-z0-9]+\.webp/, 'about-000000000000.webp')],
+    ['foto principal de la landing', 'diseno-de-sonrisa/index.html', (s) => s.replace(/hero-[A-Za-z0-9]+\.webp/, 'hero-000000000000.webp')],
+    ['preload de la foto principal', 'diseno-de-sonrisa/index.html', (s) => s.replace(/(rel="preload" as="image" href="\/assets\/img\/content\/)hero-[A-Za-z0-9]+\.webp/, '$1hero-000000000000.webp')],
     ['reseñas del JSON-LD', 'rehabilitacion-oral/index.html', (s) => s.replace(/("reviewCount":\s*")\d+/, '$1999')],
   ];
   // Antes de nada: en limpio NO puede haber cambios. Si los hay, el resto no prueba nada.

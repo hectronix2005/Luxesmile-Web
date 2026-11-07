@@ -160,6 +160,10 @@
   }
   </script>
 
+  <!-- La foto principal, lo primero que ve quien llega del anuncio: se pide ya,
+       sin esperar al CSS ni a Alpine. El nombre lo propaga sync-fuentes. -->
+  <link rel="preload" as="image" href="/assets/img/content/hero-1b766ff0825b.webp" fetchpriority="high" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -348,7 +352,12 @@
 
       <div>
         <div class="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/5]">
-          <img :src="content.hero.image" alt="Diseño de sonrisa Luxe Smile en Bogotá"
+          <!-- `src` fijo + fetchpriority: sin él la foto no se pedía hasta que
+               cargaban Alpine y content.json (atenea, 7-nov: aparecía a los 8,2 s en
+               el móvil). El nombre lo mantiene sync-fuentes desde content.hero.image;
+               :src sigue para que el panel pinte la versión viva. -->
+          <img src="/assets/img/content/hero-1b766ff0825b.webp" :src="content.hero.image"
+               alt="Diseño de sonrisa Luxe Smile en Bogotá" fetchpriority="high"
                class="w-full h-full object-cover" width="1280" height="817" />
         </div>
       </div>
