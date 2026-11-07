@@ -294,8 +294,40 @@ html {
 }
 
 
+/* Letra de reserva con la ANCHURA de Inter mientras llega Google Fonts. Sin ella el texto sale en
+   system-ui/Arial, que es más estrecha: al llegar Inter el párrafo del hero de /rehabilitacion-oral/ gana
+   una línea y todo baja 28 px (CLS 0,094, medido el 7-nov-2026). Valores medidos con canvas sobre el texto
+   de la página: Inter/Arial = 1,058 (400), Inter/Arial Bold = 1,0015 (600), Inter/Roboto = 1,073;
+   ascent/descent de Inter 0,969/0,241 divididos por size-adjust. Roboto es la del sistema en Android. */
+@font-face {
+  font-family: 'Inter Reserva';
+  src: local('Arial'), local('ArialMT');
+  font-weight: 100 500;
+  size-adjust: 105.8%;
+  ascent-override: 91.6%;
+  descent-override: 22.8%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Inter Reserva';
+  src: local('Arial Bold'), local('Arial-BoldMT');
+  font-weight: 600 900;
+  size-adjust: 100.2%;
+  ascent-override: 96.7%;
+  descent-override: 24.1%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Inter Reserva Android';
+  src: local('Roboto'), local('Roboto-Regular');
+  size-adjust: 107.3%;
+  ascent-override: 90.3%;
+  descent-override: 22.5%;
+  line-gap-override: 0%;
+}
+
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', 'Inter Reserva', 'Inter Reserva Android', system-ui, sans-serif;
   color: var(--charcoal);
   background: var(--ivory);
   -webkit-font-smoothing: antialiased;
