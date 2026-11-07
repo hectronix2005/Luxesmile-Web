@@ -144,29 +144,28 @@ const DEFAULT_CONTENT = {
     { label: 'Contacto', href: '#contacto' },
   ],
   hero: {
-    eyebrow: 'Odontología estética · Diseño de sonrisa',
-    title: 'Tu sonrisa,\nnuestra obra de arte.',
-    subtitle:
-      'Creamos sonrisas naturales y armónicas con tecnología de vanguardia y un trato íntimo, cálido y personalizado.',
-    ctaPrimary: 'Agenda en Consultorio',
-    ctaSecondary: 'Contáctanos',
-    supportLine: 'Primera valoración sin costo · Cupos limitados',
-    image:
-      'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1400&q=80',
+    // GENERADO por scripts/sync-fuentes.mjs: content.json fusionado sobre lo que había.
+    // Alpine pinta esto ANTES de cargar content.json; no editar a mano.
+    "eyebrow": "Odontología estética · Diseño de sonrisa",
+    "title": "La sonrisa que imaginas, \ncomienza aqui. ",
+    "subtitle": "Creamos sonrisas naturales y armónicas con tecnología de vanguardia y un trato íntimo, cálido y personalizado.",
+    "ctaPrimary": "Agenda tu cita",
+    "ctaSecondary": "Contáctanos",
+    "supportLine": "Primera valoración sin costo · Cupos limitados",
+    "image": "/assets/img/content/hero-1b766ff0825b.webp",
+    "imageWidth": 1280,
+    "imageHeight": 817,
   },
   about: {
-    title: 'Dra. Angela Barbosa',
-    subtitle: 'Especialista en Rehabilitación Oral y Estética · +10 años',
-    text:
-      'Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.',
-    credentials: [
-      'Odontóloga · Universidad Nacional',
-      'Especialista en Estética Dental y Diseño de Sonrisa',
-      'Entrenamiento avanzado en carillas de porcelana',
-      'Miembro activo de la Sociedad Colombiana de Odontología Estética',
-    ],
-    image:
-      'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=900&q=80',
+    // GENERADO por scripts/sync-fuentes.mjs: content.json fusionado sobre lo que había.
+    // Alpine pinta esto ANTES de cargar content.json; no editar a mano.
+    "title": "Dra. Angela Barbosa Gómez",
+    "subtitle": "Especialista en Rehabilitación Oral y Estética · +10 años",
+    "text": "Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.",
+    "credentials": ["Odontóloga Especialista en Prostodoncia Colegio Odontológico Colombiano","Entrenamiento avanzado en carillas de porcelana","Miembro activo de la Sociedad Colombiana de Prostodoncia ","Docente Universitario Colegio Odontologico Colombiano Unicoc "],
+    "image": "/assets/img/content/about-48c2420dd2ec.webp",
+    "imageWidth": 732,
+    "imageHeight": 823,
   },
   services: [
     { icon: '✦', title: 'Diseño de Sonrisa', desc: 'Planificación digital personalizada para lograr una sonrisa natural.' },

@@ -303,6 +303,44 @@ function sincronizar(leer) {
     return nuevo;
   });
 
+  /* 5a-ter) hero y about -> DEFAULT_CONTENT de content.js.
+     El mismo fallo que 5a-bis, pero peor (7-nov-2026): con content.json lento,
+     /diseno-de-sonrisa/ pintaba en el hero una FOTO DE STOCK de Unsplash en vez
+     de la de la doctora, y en #doctora cuatro credenciales de plantilla que no
+     son suyas («Universidad Nacional», «Sociedad Colombiana de Odontología
+     Estética»…). Además pedía esa imagen de 1400 px aunque luego no se usara.
+     Aquí NO se sustituye el bloque entero, se fusiona campo a campo, igual que
+     deepMerge() en el navegador: content.json no trae hero.supportLine y la
+     portada lo saca de DEFAULT_CONTENT. Copiar el bloque tal cual la borraría. */
+  for (const bloque of ['hero', 'about']) {
+    editar('assets/js/content.js', (js) => {
+      const remoto = datos?.[bloque];
+      if (!remoto || typeof remoto !== 'object') { fallos.push(`content.json no tiene ${bloque}`); return js; }
+      if (remoto.image && !/^\/assets\/img\/content\/[A-Za-z0-9._-]+\.webp$/.test(remoto.image)) {
+        fallos.push(`${bloque}.image no es una ruta a un .webp extraido: ${JSON.stringify(String(remoto.image).slice(0, 40))}`);
+        return js;
+      }
+      const re = new RegExp(`(\\n  ${bloque}: \\{\\n)([\\s\\S]*?)(\\n  \\},)`);
+      const m = js.match(re);
+      if (!m) { fallos.push(`no encuentro el bloque ${bloque} de DEFAULT_CONTENT`); return js; }
+      // El bloque se escribe como JSON línea a línea (clave también entre
+      // comillas), así se relee con JSON.parse y nunca se evalúa como código:
+      // una clave rara en content.json no puede colarse como JS en content.js.
+      let actual;
+      try {
+        const sinNotas = m[2].split('\n').filter((l) => !/^\s*\/\//.test(l)).join('\n');
+        actual = JSON.parse(`{${sinNotas.replace(/,\s*$/, '')}}`);
+      } catch (e) { fallos.push(`DEFAULT_CONTENT.${bloque} no es JSON línea a línea (¿editado a mano?): ${e.message}`); return js; }
+      const fusion = { ...actual, ...remoto };
+      const cuerpo = Object.entries(fusion).map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)},`).join('\n');
+      const nota = '    // GENERADO por scripts/sync-fuentes.mjs: content.json fusionado sobre lo que había.\n'
+                 + '    // Alpine pinta esto ANTES de cargar content.json; no editar a mano.\n';
+      const nuevo = js.replace(re, `$1${nota}${cuerpo}$3`);
+      if (nuevo !== js) cambios.push(`assets/js/content.js  DEFAULT_CONTENT.${bloque} (${Object.keys(fusion).length} campos)`);
+      return nuevo;
+    });
+  }
+
   /* 5b) Reseñas de Google -> el aggregateRating del JSON-LD.
      El «8 reseñas» estaba escrito a mano en las tres páginas y la ficha llegó a 9
      el 1-oct-2026 sin que nada lo moviera. La fuente es content.reviews (el panel
@@ -406,6 +444,8 @@ function autotest() {
     ['foto principal de la landing', 'diseno-de-sonrisa/index.html', (s) => s.replace(/hero-[A-Za-z0-9]+\.webp/, 'hero-000000000000.webp')],
     ['preload de la foto principal', 'diseno-de-sonrisa/index.html', (s) => s.replace(/(rel="preload" as="image" href="\/assets\/img\/content\/)hero-[A-Za-z0-9]+\.webp/, '$1hero-000000000000.webp')],
     ['reseñas del JSON-LD', 'rehabilitacion-oral/index.html', (s) => s.replace(/("reviewCount":\s*")\d+/, '$1999')],
+    ['foto de stock en DEFAULT_CONTENT.hero', 'assets/js/content.js', (s) => s.replace(/(\n  hero: \{[\s\S]*?\n    "image": )"[^"]*"/, '$1"https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1400"')],
+    ['credencial de plantilla en DEFAULT_CONTENT.about', 'assets/js/content.js', (s) => s.replace(/(\n  about: \{[\s\S]*?\n    "credentials": \[)"[^"]*"/, '$1"Odontóloga · Universidad Nacional"')],
   ];
   // Antes de nada: en limpio NO puede haber cambios. Si los hay, el resto no prueba nada.
   const limpio = sincronizar(leerDisco);
@@ -438,6 +478,8 @@ function autotest() {
     // hay nombre que propagar. Tiene que PARAR, no meter 2 MB en el HTML.
     ['una foto todavía en base64', (d) => { d.gallery[3].image = 'data:image/png;base64,iVBORw0KGg'; }],
     ['el logo todavía en base64',  (d) => { d.brand.logo = 'data:image/png;base64,iVBORw0KGg'; }],
+    ['la foto principal todavía en base64', (d) => { d.hero.image = 'data:image/png;base64,iVBORw0KGg'; }],
+    ['la foto de la doctora todavía en base64', (d) => { d.about.image = 'data:image/png;base64,iVBORw0KGg'; }],
     ['la galería con menos fotos que figuras tiene la página',
       (d) => { d.gallery = d.gallery.slice(0, 5); }],
   ];
