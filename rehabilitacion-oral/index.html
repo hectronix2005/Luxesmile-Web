@@ -172,7 +172,7 @@
 
   <!-- Mismo ajuste que la landing: su cabecera mide 80px en todos los anchos. -->
   <style>html{scroll-padding-top:6rem}</style>
-  <script src="../assets/js/content.js?v=20260927d"></script>
+  <script src="../assets/js/content.js?v=20261107a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <!-- Lógica propia de la página (autocontenida, sin depender de app.js). Es la
@@ -242,9 +242,12 @@
   <header class="fixed top-0 inset-x-0 z-40 backdrop-blur bg-ivory/80 border-b border-charcoal/5">
     <div class="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between h-20">
       <a href="/Dra.Angela_Barbosa/" class="flex items-center gap-3">
-        <template x-if="content.brand.logo">
-          <img :src="content.brand.logo" alt="" class="h-10 w-auto max-w-[140px] object-contain" />
-        </template>
+        <!-- Estático y no con x-if: insertarlo después de Alpine hacía crecer el
+             encabezado de 32 a 40 px en el móvil (salto de diseño, 7-nov). El nombre
+             del fichero lo propaga sync-fuentes desde content.brand.logo. -->
+        <img src="/assets/img/content/logo-90f38edf4736.webp" :src="content.brand.logo"
+             x-show="content.brand.logo" alt="" width="1399" height="300"
+             class="h-10 w-auto max-w-[140px] object-contain" />
         <span class="font-serif text-2xl tracking-tight" x-text="content.brand.name">Luxe Smile</span>
       </a>
       <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary hidden sm:inline-flex">
@@ -270,7 +273,7 @@
           Cuando faltan dientes, están muy desgastados o un tratamiento anterior hay que rehacerlo,
           la rehabilitación oral devuelve las dos cosas a la vez: poder morder y masticar con
           comodidad, y una sonrisa que se vea tuya. Te atiende directamente la
-          <span x-text="content.brand.doctor">Dra. Angela Barbosa</span>, especialista en
+          <span x-text="content.brand.doctor">Dra. Angela Barbosa Gómez</span>, especialista en
           rehabilitación oral y estética.
         </p>
 
@@ -604,7 +607,7 @@
   <footer class="py-10 border-t border-charcoal/5 text-center text-sm text-softblack/60">
     <p>
       <span class="font-serif text-lg text-charcoal" x-text="content.brand.name">Luxe Smile</span>
-      · <span x-text="content.brand.doctor">Dra. Angela Barbosa</span>
+      · <span x-text="content.brand.doctor">Dra. Angela Barbosa Gómez</span>
     </p>
     <p class="mt-2" x-text="content.contact.address"></p>
     <p class="mt-1"><a href="/Dra.Angela_Barbosa/" class="hover:text-rosegold underline">Volver al sitio principal</a></p>

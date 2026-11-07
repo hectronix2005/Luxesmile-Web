@@ -182,7 +182,7 @@
        (#casos #doctora #resenas #contacto) no dejen un hueco enorme.
        Va después del <link> para ganar por orden de fuente. -->
   <style>html{scroll-padding-top:6rem}</style>
-  <script src="../assets/js/content.js?v=20260927d"></script>
+  <script src="../assets/js/content.js?v=20261107a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <!-- Lógica propia de la landing (autocontenida, sin depender de app.js) -->
@@ -304,10 +304,13 @@
   <header class="fixed top-0 inset-x-0 z-40 backdrop-blur bg-ivory/80 border-b border-charcoal/5">
     <div class="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between h-20">
       <a href="/Dra.Angela_Barbosa/" class="flex items-center gap-3">
-        <template x-if="content.brand.logo">
-          <img :src="content.brand.logo" alt="" class="h-10 w-auto max-w-[140px] object-contain" />
-        </template>
-        <span class="font-serif text-2xl tracking-tight" x-text="content.brand.name"></span>
+        <!-- Estático y no con x-if: insertarlo después de Alpine hacía crecer el
+             encabezado de 32 a 40 px en el móvil (salto de diseño, 7-nov). El nombre
+             del fichero lo propaga sync-fuentes desde content.brand.logo. -->
+        <img src="/assets/img/content/logo-90f38edf4736.webp" :src="content.brand.logo"
+             x-show="content.brand.logo" alt="" width="1399" height="300"
+             class="h-10 w-auto max-w-[140px] object-contain" />
+        <span class="font-serif text-2xl tracking-tight" x-text="content.brand.name">Luxe Smile</span>
       </a>
       <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary hidden sm:inline-flex">
         Escríbenos por WhatsApp
@@ -329,7 +332,7 @@
         </h1>
         <p class="text-lg text-softblack/75 max-w-xl mb-8">
           Sonrisas naturales y armónicas planificadas digitalmente con la
-          <span x-text="content.brand.doctor"></span>. Carillas de porcelana,
+          <span x-text="content.brand.doctor">Dra. Angela Barbosa Gómez</span>. Carillas de porcelana,
           blanqueamiento e implantes, con un trato cálido y personalizado.
         </p>
 
@@ -427,7 +430,7 @@
 
       <p class="text-lg text-softblack/80 leading-relaxed">
         Lo que no es: un molde igual para todos. Aquí te atiende directamente la
-        <span x-text="content.brand.doctor">Dra. Angela Barbosa</span>, especialista en rehabilitación oral y estética, y el diseño se hace sobre tu rostro, no sobre un catálogo.
+        <span x-text="content.brand.doctor">Dra. Angela Barbosa Gómez</span>, especialista en rehabilitación oral y estética, y el diseño se hace sobre tu rostro, no sobre un catálogo.
       </p>
 
       <p class="mt-7 text-sm"><a href="/blog/diseno-sonrisa-vs-carillas/" class="text-rosegoldDark underline hover:no-underline">Diseño de sonrisa o carillas: en qué se diferencian →</a></p>
@@ -844,8 +847,8 @@
   <!-- ===================== FOOTER MÍNIMO ===================== -->
   <footer class="py-10 border-t border-charcoal/5 text-center text-sm text-softblack/60">
     <p>
-      <span class="font-serif text-lg text-charcoal" x-text="content.brand.name"></span>
-      · <span x-text="content.brand.doctor"></span>
+      <span class="font-serif text-lg text-charcoal" x-text="content.brand.name">Luxe Smile</span>
+      · <span x-text="content.brand.doctor">Dra. Angela Barbosa Gómez</span>
     </p>
     <p class="mt-2" x-text="content.contact.address"></p>
     <p class="mt-1"><a href="/Dra.Angela_Barbosa/" class="hover:text-rosegold underline">Volver al sitio principal</a></p>

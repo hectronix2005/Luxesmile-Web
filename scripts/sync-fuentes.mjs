@@ -212,6 +212,11 @@ function sincronizar(leer) {
       // el movil no espere a Alpine (atenea, 7-nov). Casan los dos a la vez.
       ['diseno-de-sonrisa/index.html', /\/assets\/img\/content\/hero-[A-Za-z0-9._-]+\.webp/g,
         () => fuente(datos?.hero?.image, 'hero.image'), 'foto principal'],
+      // El logo del encabezado de las dos landings de anuncios (antes con x-if).
+      ['diseno-de-sonrisa/index.html', /\/assets\/img\/content\/logo-[A-Za-z0-9._-]+\.webp/g,
+        () => fuente(datos?.brand?.logo, 'brand.logo'), 'logo'],
+      ['rehabilitacion-oral/index.html', /\/assets\/img\/content\/logo-[A-Za-z0-9._-]+\.webp/g,
+        () => fuente(datos?.brand?.logo, 'brand.logo'), 'logo'],
       // El hero de /rehabilitacion-oral/ es la foto de la doctora con `src` estatico.
       ['rehabilitacion-oral/index.html', /\/assets\/img\/content\/about-[A-Za-z0-9._-]+\.webp/g,
         () => fuente(datos?.about?.image, 'about.image'), 'foto de la doctora'],
@@ -245,6 +250,58 @@ function sincronizar(leer) {
       return nuevo;
     });
   }
+
+  /* 5a) Marca y doctora: el texto de los <span x-text="content.brand.*">.
+     Alpine los reescribe al arrancar. En el móvil lento arranca DESPUES del primer
+     pintado, y si el HTML traía otro texto (vacío, o «Dra. Angela Barbosa» sin el
+     Gómez) el párrafo del hero ganaba una línea y empujaba todo 28 px: el salto de
+     diseño (CLS 0,11-0,18) medido el 7-nov. Con el mismo texto no se mueve nada. */
+  {
+    const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const TEXTOS = { doctor: datos?.brand?.doctor, name: datos?.brand?.name };
+    for (const [k, v] of Object.entries(TEXTOS)) {
+      if (typeof v !== 'string' || !v.trim()) fallos.push(`brand.${k} está vacío: ${JSON.stringify(v)}`);
+    }
+    for (const ruta of ['diseno-de-sonrisa/index.html', 'rehabilitacion-oral/index.html']) {
+      editar(ruta, (s2) => {
+        const RE = /(<span\b[^>]*\bx-text="content\.brand\.(doctor|name)"[^>]*>)([^<]*)(<\/span>)/g;
+        let vistos = 0, tocados = 0;
+        const nuevo = s2.replace(RE, (todo, abre, k, texto, cierra) => {
+          vistos++;
+          const v = TEXTOS[k];
+          if (typeof v !== 'string' || !v.trim()) return todo;
+          const bueno = esc(v.trim());
+          if (texto !== bueno) tocados++;
+          return abre + bueno + cierra;
+        });
+        if (!vistos) fallos.push(`no encuentro ningún x-text de content.brand en ${ruta}`);
+        if (tocados) cambios.push(`${ruta}  ${tocados} texto(s) de marca/doctora`);
+        return nuevo;
+      });
+    }
+  }
+
+  /* 5a-bis) brand entero -> DEFAULT_CONTENT de content.js.
+     Alpine arranca con DEFAULT_CONTENT y DESPUÉS carga content.json. Ahí la
+     doctora era «Dra. Angela Barbosa» (sin Gómez) y el logo '': en el móvil
+     lento la página se pintaba, Alpine la acortaba y escondía el logo, y al
+     llegar content.json lo volvía a cambiar. Dos saltos de diseño por página. */
+  editar('assets/js/content.js', (js) => {
+    const b = datos?.brand;
+    if (!b || typeof b !== 'object') { fallos.push('content.json no tiene brand'); return js; }
+    const re = /(\n  brand: \{\n)([\s\S]*?)(\n  \},)/;
+    if (!re.test(js)) { fallos.push('no encuentro el bloque brand de DEFAULT_CONTENT'); return js; }
+    if (b.logo && !/^\/assets\/img\/content\/[A-Za-z0-9._-]+\.webp$/.test(b.logo)) {
+      fallos.push(`brand.logo no es una ruta a un .webp extraido: ${JSON.stringify(String(b.logo).slice(0, 40))}`);
+      return js;
+    }
+    const cuerpo = Object.entries(b).map(([k, v]) => `    ${k}: ${JSON.stringify(v)},`).join('\n');
+    const nota = '    // GENERADO por scripts/sync-fuentes.mjs desde content.json. No editar a mano:\n'
+               + '    // Alpine pinta esto ANTES de cargar content.json; si difiere, la página salta.\n';
+    const nuevo = js.replace(re, `$1${nota}${cuerpo}$3`);
+    if (nuevo !== js) cambios.push(`assets/js/content.js  DEFAULT_CONTENT.brand (${Object.keys(b).length} campos)`);
+    return nuevo;
+  });
 
   /* 5b) Reseñas de Google -> el aggregateRating del JSON-LD.
      El «8 reseñas» estaba escrito a mano en las tres páginas y la ficha llegó a 9
@@ -342,6 +399,10 @@ function autotest() {
     ['logo de /privacidad/', 'privacidad/index.html', (s) => s.replace(/logo-[A-Za-z0-9]+\.webp/, 'logo-000000000000.webp')],
     ['galería de la landing', 'diseno-de-sonrisa/index.html', (s) => s.replace(/gallery-3-[A-Za-z0-9]+\.webp/, 'gallery-3-000000000000.webp')],
     ['foto de la doctora', 'diseno-de-sonrisa/index.html', (s) => s.replace(/about-[A-Za-z0-9]+\.webp/, 'about-000000000000.webp')],
+    ['doctora en DEFAULT_CONTENT', 'assets/js/content.js', (s) => s.replace(/(\n    doctor: )"[^"]*"/, '$1"Dra. Angela Barbosa"')],
+    ['nombre de la doctora en el hero', 'rehabilitacion-oral/index.html', (s) => s.replace(/(x-text="content\.brand\.doctor">)[^<]*/, '$1Dra. Angela Barbosa')],
+    ['marca vacía en el encabezado', 'diseno-de-sonrisa/index.html', (s) => s.replace(/(x-text="content\.brand\.name">)[^<]*/, '$1')],
+    ['logo de la landing', 'diseno-de-sonrisa/index.html', (s) => s.replace(/logo-[A-Za-z0-9]+\.webp/, 'logo-000000000000.webp')],
     ['foto principal de la landing', 'diseno-de-sonrisa/index.html', (s) => s.replace(/hero-[A-Za-z0-9]+\.webp/, 'hero-000000000000.webp')],
     ['preload de la foto principal', 'diseno-de-sonrisa/index.html', (s) => s.replace(/(rel="preload" as="image" href="\/assets\/img\/content\/)hero-[A-Za-z0-9]+\.webp/, '$1hero-000000000000.webp')],
     ['reseñas del JSON-LD', 'rehabilitacion-oral/index.html', (s) => s.replace(/("reviewCount":\s*")\d+/, '$1999')],

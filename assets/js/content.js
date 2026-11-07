@@ -118,10 +118,14 @@ const DEFAULT_CONTENT = {
     colors: { ...THEME_PRESETS[0].colors },
   },
   brand: {
-    name: 'Luxe Smile',
-    tagline: 'Odontología estética de alta gama',
-    doctor: 'Dra. Angela Barbosa',
-    logo: '',
+    // GENERADO por scripts/sync-fuentes.mjs desde content.json. No editar a mano:
+    // Alpine pinta esto ANTES de cargar content.json; si difiere, la página salta.
+    name: "Luxe Smile",
+    tagline: "Odontología estética de alta gama !!",
+    doctor: "Dra. Angela Barbosa Gómez",
+    logo: "/assets/img/content/logo-90f38edf4736.webp",
+    logoWidth: 1399,
+    logoHeight: 300,
   },
   reviews: {
     // URL para que el visitante deje reseña en Google (se obtiene desde Google Business Profile
