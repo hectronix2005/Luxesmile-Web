@@ -9,6 +9,7 @@ module.exports = {
     './blog/**/*.html',
     './diseno-de-sonrisa/**/*.html',
     './rehabilitacion-oral/**/*.html',
+    './carillas/**/*.html',
     './en/**/*.html',
     // Cargaba el CSS compilado sin estar aqui: 13 utilidades suyas no se
     // compilaban y la pagina se servia sin ellas, sin error de nada (10-sep-2026).

@@ -767,5 +767,29 @@ console.log('\n15. `npm run build` y el Action corren lo mismo, en el mismo orde
   ok(!/paths:/.test(otro), '`test.yml` NO lleva filtros de ruta: corre en cada push');
 }
 
+// ── Borradores: nada con marcas de borrador llega a producción ──────────────
+// /carillas/ nació el 7-nov-2026 como borrador en una rama: solo con textos ya
+// publicados y con huecos para lo que decide la doctora (precio de resina, qué
+// casos son de carillas...). Esos huecos llevan `data-borrador` y se ven a
+// propósito en naranja. Si la rama se fusionara con alguno dentro, el paciente
+// leería «PENDIENTE DE LA DOCTORA». Este test para el despliegue antes.
+console.log('\nborradores: ninguna página lleva data-borrador');
+{
+  const conMarca = [];
+  (function andar(dir) {
+    for (const e of readdirSync(dir)) {
+      if (e === 'node_modules' || e === '.git' || e === '.github') continue;
+      const p = join(dir, e);
+      if (statSync(p).isDirectory()) { andar(p); continue; }
+      if (!e.endsWith('.html')) continue;
+      const n = (readFileSync(p, 'utf8').match(/\bdata-borrador\b/g) || []).length;
+      if (n) conMarca.push(`${p.replace(/^\.\//, '')} (${n})`);
+    }
+  })('.');
+  ok(conMarca.length === 0, conMarca.length
+    ? `con marcas de borrador sin resolver: ${conMarca.join(', ')} — no se publica hasta quitarlas`
+    : 'ninguna');
+}
+
 console.log(fallos ? `\nFALLOS: ${fallos}` : '\ntodo en verde');
 process.exit(fallos ? 1 : 0);

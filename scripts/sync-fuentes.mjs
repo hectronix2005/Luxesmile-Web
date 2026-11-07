@@ -34,7 +34,7 @@ const leerDisco = (p) => readFileSync(join(ROOT, p), 'utf8');
 
 const PAGINAS_CON_RED = ['index.html', 'diseno-de-sonrisa/index.html',
   'pacientes-internacionales/index.html', 'en/smile-design/index.html',
-  'rehabilitacion-oral/index.html'];
+  'rehabilitacion-oral/index.html', 'carillas/index.html'];
 const RED_RE = /  <!-- RED DE SEGURIDAD DEL FADE-IN[\s\S]*?<\/script>/;
 
 /* El favicon: mismas lineas en todas las paginas escritas a mano. Las del blog
@@ -42,6 +42,7 @@ const RED_RE = /  <!-- RED DE SEGURIDAD DEL FADE-IN[\s\S]*?<\/script>/;
    hace de ancla: si esta, se reemplaza; si no, se inserta detras del <title>, asi
    que una pagina nueva se cubre sola la primera vez que corre esto. */
 const PAGINAS_CON_FAVICON = ['index.html', 'diseno-de-sonrisa/index.html', 'rehabilitacion-oral/index.html',
+  'carillas/index.html',
   'pacientes-internacionales/index.html', 'en/smile-design/index.html',
   'privacidad/index.html', 'wa/index.html', 'resena/index.html',
   /* Dra.Angela_Barbosa/ y dra-angela-barbosa/ NO van aqui: desde el 18-sep-2026
@@ -154,6 +155,7 @@ function sincronizar(leer) {
     ['index.html',                           /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['diseno-de-sonrisa/index.html',         /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['rehabilitacion-oral/index.html',       /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
+    ['carillas/index.html',                  /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['en/smile-design/index.html',           /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['pacientes-internacionales/index.html', /("telephone":\s*")\+?57\d{10}(")/g, `$1+${dig}$2`, 'JSON-LD telephone'],
     ['privacidad/index.html',                /(wa\.me\/)57\d{10}/g,               `$1${dig}`,    'wa.me'],
@@ -217,6 +219,13 @@ function sincronizar(leer) {
         () => fuente(datos?.brand?.logo, 'brand.logo'), 'logo'],
       ['rehabilitacion-oral/index.html', /\/assets\/img\/content\/logo-[A-Za-z0-9._-]+\.webp/g,
         () => fuente(datos?.brand?.logo, 'brand.logo'), 'logo'],
+      // /carillas/ (borrador 7-nov): el mismo hero, logo y foto de la doctora que la landing.
+      ['carillas/index.html', /\/assets\/img\/content\/hero-[A-Za-z0-9._-]+\.webp/g,
+        () => fuente(datos?.hero?.image, 'hero.image'), 'foto principal'],
+      ['carillas/index.html', /\/assets\/img\/content\/logo-[A-Za-z0-9._-]+\.webp/g,
+        () => fuente(datos?.brand?.logo, 'brand.logo'), 'logo'],
+      ['carillas/index.html', /\/assets\/img\/content\/about-[A-Za-z0-9._-]+\.webp/g,
+        () => fuente(datos?.about?.image, 'about.image'), 'foto de la doctora'],
       // El hero de /rehabilitacion-oral/ es la foto de la doctora con `src` estatico.
       ['rehabilitacion-oral/index.html', /\/assets\/img\/content\/about-[A-Za-z0-9._-]+\.webp/g,
         () => fuente(datos?.about?.image, 'about.image'), 'foto de la doctora'],
@@ -262,7 +271,7 @@ function sincronizar(leer) {
     for (const [k, v] of Object.entries(TEXTOS)) {
       if (typeof v !== 'string' || !v.trim()) fallos.push(`brand.${k} está vacío: ${JSON.stringify(v)}`);
     }
-    for (const ruta of ['diseno-de-sonrisa/index.html', 'rehabilitacion-oral/index.html']) {
+    for (const ruta of ['diseno-de-sonrisa/index.html', 'rehabilitacion-oral/index.html', 'carillas/index.html']) {
       editar(ruta, (s2) => {
         const RE = /(<span\b[^>]*\bx-text="content\.brand\.(doctor|name)"[^>]*>)([^<]*)(<\/span>)/g;
         let vistos = 0, tocados = 0;
@@ -353,7 +362,7 @@ function sincronizar(leer) {
     if (!okNota) fallos.push(`reviews.googleRating no es «5.0» o similar: ${JSON.stringify(nota)}`);
     if (okTotal && okNota) {
       const RE = /("ratingValue":\s*")[^"]*(",\s*"reviewCount":\s*")[^"]*(")/g;
-      for (const ruta of ['index.html', 'diseno-de-sonrisa/index.html', 'rehabilitacion-oral/index.html']) {
+      for (const ruta of ['index.html', 'diseno-de-sonrisa/index.html', 'rehabilitacion-oral/index.html', 'carillas/index.html']) {
         editar(ruta, (s2) => {
           RE.lastIndex = 0;
           if (!RE.test(s2)) { fallos.push(`no encuentro el aggregateRating en ${ruta}`); return s2; }

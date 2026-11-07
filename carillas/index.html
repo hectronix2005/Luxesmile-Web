@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carillas Dentales en Bogotá · Dra. Angela Barbosa</title>
+
+  <!-- BORRADOR (7-nov-2026, rama wip/pagina-carillas). Solo lleva textos que ya
+       están publicados en la web: el FAQ y la tabla de /diseno-de-sonrisa/ y los
+       cuatro artículos de carillas del blog. Lo que falta lo decide la doctora y va
+       marcado con data-borrador; test-paginas NO deja publicar una página que aún
+       lleve esa marca. Antes de publicar: quitar las marcas y añadirla al sitemap
+       (scripts/build-blog.mjs). -->
+
+  <!-- FAVICON. Fuente única: la propaga scripts/sync-fuentes.mjs a las páginas
+       escritas a mano y la emite scripts/build-blog.mjs en las generadas. Los
+       ficheros los deriva del logo scripts/build-favicon.mjs — no editar a mano.
+       Rutas absolutas a propósito: las mismas líneas valen desde /, desde
+       /blog/x/ y desde /en/smile-design/.
+       Aquí NO va theme-color: cuatro páginas ya declaran el suyo, más claro, y
+       el navy de estos iconos pintaría la barra del móvil de otro color. El del
+       manifiesto es otra cosa: es el de la pantalla de inicio de Android. -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" type="image/png" href="/assets/img/favicon/icon-96.png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta
+    name="description"
+    content="Carillas de porcelana o de resina en el Chico, Bogotá, con la Dra. Angela Barbosa, rehabilitadora oral. Porcelana desde $6.000.000. Valoración sin costo."
+  />
+  <link rel="canonical" href="https://luxesmilee.com/carillas/" />
+  <meta name="theme-color" content="#FAF7F2" />
+
+  <!-- Seguimiento de conversiones (mismo tracking que el sitio principal) -->
+  <!-- PRECONNECT ZEUS. Fuente única: la propaga scripts/sync-fuentes.mjs y la
+       emite scripts/build-blog.mjs. No editar a mano.
+       Por qué: tracking.js pregunta a este host si el redirector responde, y
+       hasta que contesta los botones de WhatsApp son un wa.me directo — el
+       paciente llega, pero su clic no pasa por Zeus y no queda registrado.
+       Medido el 18-sep-2026: la sonda tarda 350-500 ms, y 240 de ellos son el
+       handshake TLS con un origen que el navegador aún no conoce. Esto lo
+       adelanta a la fase temprana de carga, en paralelo con todo lo demás.
+       En una conexión móvil lenta ese handshake son segundos, y ahí está el
+       corte de 2.500 ms que apaga el enrutado para toda la página.
+       `crossorigin` NO es decorativo: la sonda va con `credentials: 'omit'`,
+       o sea anónima, y sin este atributo el navegador abriría una conexión
+       distinta de la que precalentó. -->
+  <link rel="preconnect" href="https://zeus.codi.com.co" crossorigin />
+  <script src="../assets/js/tracking.js?v=20260927d"></script>
+
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Luxe Smile" />
+  <meta property="og:locale" content="es_CO" />
+  <meta property="og:url" content="https://luxesmilee.com/carillas/" />
+  <meta property="og:title" content="Carillas Dentales en Bogotá · Dra. Angela Barbosa" />
+  <meta property="og:description" content="Carillas de porcelana o de resina con la Dra. Angela Barbosa en el Chico, Bogotá. Primera valoración sin costo · Agenda por WhatsApp." />
+  <meta property="og:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="817" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Carillas Dentales en Bogotá · Dra. Angela Barbosa" />
+  <meta name="twitter:description" content="Carillas de porcelana o de resina con la Dra. Angela Barbosa en el Chico, Bogotá. Primera valoración sin costo." />
+  <meta name="twitter:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
+
+  <!-- Datos estructurados: servicio ofrecido por el negocio local -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Carillas Dentales",
+    "serviceType": "Carillas de porcelana y de resina",
+    "areaServed": ["Chico", "Chapinero", "Usaquén", "Bogotá Norte"],
+    "provider": {
+      "@type": "Dentist",
+      "name": "Luxe Smile — Dra. Angela Barbosa",
+      "alternateName": ["Luxe Smile Rehabilitación Oral y Estética: Dra. Angela Barbosa", "Luxe Smile", "Luxe Smiles", "LuxeSmile", "Dra Angela Barbosa Rehabilitación oral y Estética"],
+      "sameAs": ["https://www.instagram.com/luxesmilee_", "https://maps.google.com/?cid=2846959231365109133"],
+      "url": "https://luxesmilee.com/Dra.Angela_Barbosa/",
+      "telephone": "+573163903511",
+      "priceRange": "$$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Cl. 90 #14-16, Consultorio 508, Chico, Chapinero",
+        "addressLocality": "Bogotá",
+        "addressRegion": "Bogotá D.C.",
+        "addressCountry": "CO"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "9"
+      }
+    }
+  }
+  </script>
+
+  <!-- Datos estructurados: preguntas frecuentes. El texto de cada respuesta es EL
+       MISMO que se ve en #preguntas (salen de la misma lista al generar la página):
+       si divergen, Google lo trata como marcado engañoso. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "\u00bfCu\u00e1nto cuestan las carillas en Bogot\u00e1?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Las carillas de porcelana parten desde $6.000.000. El precio de tu caso depende de cu\u00e1ntos dientes entran en el plan, del material elegido y de si antes hay algo que tratar: en la valoraci\u00f3n sin costo sales con el plan y el presupuesto de tu caso."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfCu\u00e1nto duran las carillas?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Con buenos cuidados, las de porcelana duran entre 10 y 15 a\u00f1os o m\u00e1s, y las de resina entre 4 y 8 a\u00f1os aproximadamente. Lo que m\u00e1s acorta la vida de una carilla no suele ser el material: es el bruxismo sin tratar. Para eso est\u00e1 la placa de descarga al terminar el tratamiento, y en ciertos casos la toxina botul\u00ednica."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfHay que desgastar los dientes?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No siempre. Hay casos que se resuelven sin desgaste: la odontolog\u00eda de hoy es m\u00ednimamente invasiva. Pero los dise\u00f1os no son est\u00e1ndar, y qu\u00e9 necesita el tuyo sale de la valoraci\u00f3n. Cu\u00e1nto se va a desgastar se te dice antes de empezar, no durante."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfPonerse carillas duele?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El estudio, la planificaci\u00f3n digital y el mock-up no implican dolor. Si eres una persona nerviosa o notas alguna molestia, se trabaja con anestesia digital, que ayuda mucho con lo que pueda incomodarte."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfSe notan falsas?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Solo si se dise\u00f1an para verse as\u00ed. El objetivo aqu\u00ed es el contrario: que la sonrisa se vea tuya. Para eso existe la prueba en boca antes de lo definitivo \u2014 si algo se ve artificial, se corrige en esa etapa y no despu\u00e9s."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfCarillas o dise\u00f1o de sonrisa?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Las carillas son uno de los tratamientos que puede usar un dise\u00f1o de sonrisa. Si solo buscas corregir uno o dos dientes, quiz\u00e1 baste con carillas puntuales. Si quieres transformar tu sonrisa de forma integral y proporcionada a tu rostro, el dise\u00f1o de sonrisa es el camino. La valoraci\u00f3n lo define."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfQu\u00e9 pasa si una carilla se despega o se fractura?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Si se despega entera, sin romperse, a menudo puede volver a cementarse: gu\u00e1rdala y no intentes pegarla en casa con nada. Si se fractura, normalmente hay que hacer una nueva, y antes conviene corregir la causa \u2014un contacto mal repartido al morder o bruxismo sin controlar\u2014, porque si no la siguiente se rompe igual."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "\u00bfPuedo hacerlo si no vivo en Bogot\u00e1?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "S\u00ed. La valoraci\u00f3n inicial puede ser virtual y el plan se organiza para concentrar las citas presenciales en el menor n\u00famero de viajes posible."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- La foto principal se pide ya, sin esperar al CSS ni a Alpine (como en
+       /diseno-de-sonrisa/, 8e3787e). El nombre lo propaga sync-fuentes. -->
+  <link rel="preload" as="image" href="/assets/img/content/hero-1b766ff0825b.webp" fetchpriority="high" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind compilado (mismo build que el sitio principal) -->
+  <link rel="stylesheet" href="../assets/css/tailwind.css?v=20260927c" />
+
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20260925b" />
+
+  <!-- styles.css fija scroll-padding-top para el header del home (252px desktop
+       / 64px móvil). El header de esta landing mide 80px en todos los anchos,
+       así que se sobrescribe aquí para que los anclas de los sitelinks
+       (#casos #doctora #resenas #contacto) no dejen un hueco enorme.
+       Va después del <link> para ganar por orden de fuente. -->
+  <style>html{scroll-padding-top:6rem}</style>
+  <script src="../assets/js/content.js?v=20261107a"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Lógica propia de la página (autocontenida, como /rehabilitacion-oral/) -->
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('landing', () => ({
+        content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
+        leadSource: '',   // texto legible: sólo para el `wa.me` de reserva
+        origen: '',       // código estable para el redirector: 'ig' | 'google'
+
+        async init() {
+          document.querySelectorAll('[data-prerendered]').forEach(el => el.remove());
+          this.content = await window.LuxeContent.loadContent();
+          window.LuxeContent.applyTheme(this.content.theme);
+          this.detectSource();
+          this.$nextTick(() => window.LuxeContent.revelarAlEntrar());
+        },
+
+        // Igual que la landing: con identificador de clic no se añade nada,
+        // porque viaja en `g=` por Zeus o como `Ref:` en la reserva.
+        detectSource() {
+          const p = new URLSearchParams(location.search);
+          const utm = (p.get('utm_source') || '').toLowerCase();
+          if (p.get('gclid') || p.get('wbraid') || p.get('gbraid')) return;
+          if (utm === 'google' || utm === 'adwords') {
+            this.leadSource = 'Vengo de un anuncio de Google';
+            this.origen = 'google';
+          } else if (/instagram|^ig$|meta|facebook|fb/.test(utm)) {
+            this.leadSource = 'Vengo de Instagram';
+            this.origen = 'ig';
+          }
+        },
+
+        // La clave primero y la reserva calculada antes, como en la landing.
+        // `valoracion` es la clave genérica que Zeus ya tiene en su diccionario;
+        // una clave propia de carillas exige que Zeus la dé de alta antes.
+        waLink() {
+          const reserva = this.waMe();
+          return (window.lxRuta && window.lxRuta('valoracion', reserva, this.origen)) || reserva;
+        },
+
+        waMe() {
+          const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
+          let msg = 'Hola, quiero agendar una valoración en Luxe Smile.';
+          if (this.leadSource) msg += `\n\n(${this.leadSource})`;
+          return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
+        },
+
+        bookingOfficeLink() {
+          return this.content.contact.calendarOffice || this.waLink();
+        },
+        bookingLink() {
+          return this.content.contact.calendar || this.waLink();
+        },
+
+        stars(n) {
+          return '★'.repeat(n) + '☆'.repeat(Math.max(0, 5 - n));
+        },
+      }));
+    });
+  </script>
+</head>
+
+<body x-data="landing" class="bg-ivory text-charcoal">
+
+  <!-- ===================== HEADER MÍNIMO (sin menú que distraiga) ===================== -->
+  <header class="fixed top-0 inset-x-0 z-40 backdrop-blur bg-ivory/80 border-b border-charcoal/5">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between h-20">
+      <a href="/Dra.Angela_Barbosa/" class="flex items-center gap-3">
+        <!-- Estático y no con x-if: insertarlo después de Alpine hacía crecer el
+             encabezado de 32 a 40 px en el móvil (salto de diseño, 7-nov). El nombre
+             del fichero lo propaga sync-fuentes desde content.brand.logo. -->
+        <img src="/assets/img/content/logo-90f38edf4736.webp" :src="content.brand.logo"
+             x-show="content.brand.logo" alt="" width="1399" height="300"
+             class="h-10 w-auto max-w-[140px] object-contain" />
+        <span class="font-serif text-2xl tracking-tight" x-text="content.brand.name">Luxe Smile</span>
+      </a>
+      <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary hidden sm:inline-flex">
+        Escríbenos por WhatsApp
+      </a>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 hero-aura overflow-hidden">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 grid lg:grid-cols-2 gap-14 items-center">
+      <!-- Sin .reveal: es lo primero que ve quien llega del anuncio. -->
+      <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-5">
+          Carillas dentales · Chico, Chapinero · Bogotá
+        </p>
+        <h1 class="hero-title font-serif text-5xl md:text-6xl lg:text-[4.25rem] leading-[1.05] mb-6">
+          Carillas Dentales en <em>Bogotá</em>
+        </h1>
+        <p class="text-lg text-softblack/75 max-w-xl mb-8">
+          Carillas de porcelana o de resina para corregir el color, la forma, el tamaño o la
+          alineación de tus dientes, con la <span x-text="content.brand.doctor">Dra. Angela Barbosa Gómez</span>.
+          Ves y apruebas el resultado antes de empezar.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-3 mb-8">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 border border-gold/30">
+            <span class="text-gold text-lg">✦</span>
+            <span class="text-sm font-medium text-softblack">Primera valoración <strong>sin costo</strong></span>
+          </div>
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rosegold/10 border border-rosegold/25">
+            <span class="text-xs font-semibold tracking-wide text-rosegoldDark uppercase">Carillas de porcelana desde $6.000.000</span>
+          </div>
+        </div>
+        <p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿sigue valiendo «carillas de porcelana desde $6.000.000»? En esta página pasa a ser el precio de portada.</p>
+
+        <div class="flex flex-col sm:flex-row gap-4 mt-8">
+          <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary justify-center">
+            Agenda tu valoración personalizada
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <div class="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/5]">
+          <!-- `src` fijo + preload: la misma foto y el mismo mecanismo que /diseno-de-sonrisa/. -->
+          <img src="/assets/img/content/hero-1b766ff0825b.webp" :src="content.hero.image"
+               alt="Dra. Angela Barbosa, carillas dentales en Bogotá" fetchpriority="high"
+               class="w-full h-full object-cover" width="1280" height="817" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TRUST / STATS ===================== -->
+  <section class="py-14 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+      <template x-for="(s, i) in content.stats" :key="i">
+        <div class="reveal">
+          <div class="font-serif text-4xl text-rosegoldDark mb-1" x-text="s.value"></div>
+          <div class="text-sm text-softblack/70" x-text="s.label"></div>
+        </div>
+      </template>
+    </div>
+  </section>
+
+  <!-- ===================== QUE SON ===================== -->
+  <!-- Fuente: blog carillas-porcelana y diseno-sonrisa-vs-carillas. -->
+  <section id="que-son" class="py-20 lg:py-28">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">El tratamiento</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-7">¿Qué son las carillas?</h2>
+
+      <p class="text-lg text-softblack/80 leading-relaxed mb-5">
+        Son láminas finas de porcelana o de resina que se adhieren a la cara visible del diente
+        para corregir su color, forma, tamaño o alineación. Son una de las soluciones más
+        solicitadas en odontología estética por su resultado natural y su durabilidad.
+      </p>
+
+      <p class="text-lg text-softblack/80 leading-relaxed mb-4">Resuelven, sobre todo:</p>
+      <ul class="space-y-3 mb-7">
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Dientes manchados o con decoloraciones que no mejoran con blanqueamiento.</span></li>
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Pequeñas fracturas, desgastes o bordes irregulares.</span></li>
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Espacios entre dientes (diastemas).</span></li>
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Dientes ligeramente torcidos o de forma y tamaño desiguales.</span></li>
+      </ul>
+
+      <p class="text-lg text-softblack/80 leading-relaxed">
+        Aquí te atiende directamente la <span x-text="content.brand.doctor">Dra. Angela Barbosa Gómez</span>,
+        especialista en rehabilitación oral y estética, y las carillas se diseñan sobre tu rostro,
+        no sobre un catálogo.
+      </p>
+      <p class="mt-7 text-sm"><a href="/blog/carillas-porcelana/" class="text-rosegoldDark underline hover:no-underline">Carillas de porcelana: durabilidad y resultados reales →</a></p>
+    </div>
+  </section>
+
+  <!-- ===================== GALERÍA (BORRADOR) ===================== -->
+  <section id="casos" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="text-center mb-8">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Resultados reales</p>
+        <h2 class="font-serif text-4xl md:text-5xl">Sonrisas que hablan por sí solas</h2>
+      </div>
+      <div class="max-w-3xl mx-auto mb-8"><p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿cuáles de estos 8 casos son de carillas? Solo esos se quedan; los demás se quitan de esta página (siguen en /diseno-de-sonrisa/).</p></div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-0-f924e7c9b7a6.webp" alt="Caso 1 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">1</figcaption></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-1-6db91a46afcd.webp" alt="Caso 2 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">2</figcaption></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-2-514b7badc08a.webp" alt="Caso 3 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">3</figcaption></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-3-29840d47e206.webp" alt="Caso 4 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">4</figcaption></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-4-2723b02af56c.webp" alt="Caso 5 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">5</figcaption></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-5-5034621accf8.webp" alt="Caso 6 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">6</figcaption></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-6-afd3d628adb0.webp" alt="Caso 7 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">7</figcaption></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-7-8c2843938cc9.webp" alt="Caso 8 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">8</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== EL PROCESO ===================== -->
+  <!-- Fuente: blog carillas-porcelana («El procedimiento») y el proceso y el escáner
+       de /diseno-de-sonrisa/ (este último, redactado por la doctora). -->
+  <section id="proceso" class="py-20 lg:py-28">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Cómo funciona</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-9">El proceso, paso a paso</h2>
+
+      <ol class="space-y-7">
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegoldDark leading-none pt-1">1</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Valoración sin costo</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Hablamos de lo que no te gusta de tu sonrisa y de lo que esperas. Se revisa el estado
+              de dientes y encías, porque la salud oral va antes que la estética. Puede ser
+              presencial en el consultorio del Chico o virtual.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegoldDark leading-none pt-1">2</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Diseño y prueba en boca</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Sobre tus propias fotos se proyecta la nueva sonrisa, y luego se prueba en boca: es el
+              <strong>mock-up</strong>, una maqueta en dientes temporales para que apruebes el
+              resultado antes de lo definitivo.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegoldDark leading-none pt-1">3</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Preparación y registro</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Se prepara mínimamente el esmalte —o nada, si tu caso lo permite— y las impresiones se
+              toman con un <strong>escáner intraoral</strong>, sin pastas de silicona.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegoldDark leading-none pt-1">4</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Elaboración y cementado</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              El laboratorio elabora carillas personalizadas, y en la última cita se adhieren de
+              forma definitiva y se ajustan los detalles finales.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegoldDark leading-none pt-1">5</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Controles</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Citas de seguimiento e indicaciones de cuidado para que el resultado dure.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <p class="text-softblack/70 leading-relaxed mt-9">
+        El tratamiento suele completarse en pocas sesiones.
+      </p>
+      <div class="mt-4"><p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿cuántas citas y cuánto tiempo, de la valoración al cementado, para porcelana y para resina?</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== PORCELANA O RESINA ===================== -->
+  <!-- La tabla es la de /diseno-de-sonrisa/, tal cual: la doctora la confirmó
+       («dejala como esta», 17-sep-2026). -->
+  <section id="materiales" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-4xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">La decisión</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-6">Carillas de porcelana o de resina</h2>
+      <p class="text-lg text-softblack/80 leading-relaxed mb-9">
+        Es la pregunta que más nos hacen, y no tiene una respuesta única. Cada material gana en
+        cosas distintas:
+      </p>
+
+      <div class="overflow-x-auto rounded-2xl border border-charcoal/10">
+        <table class="w-full min-w-[34rem] text-left border-collapse">
+          <thead>
+            <tr class="bg-porcelain/60">
+              <th class="py-4 px-5 text-sm font-semibold"></th>
+              <th class="py-4 px-5 text-sm font-semibold">Porcelana (cerámica)</th>
+              <th class="py-4 px-5 text-sm font-semibold">Resina (composite)</th>
+            </tr>
+          </thead>
+          <tbody class="text-softblack/80">
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Aspecto</td>
+              <td class="py-4 px-5">Imita mejor la translucidez del diente natural</td>
+              <td class="py-4 px-5">Muy buen resultado, algo menos translúcido</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Duración</td>
+              <td class="py-4 px-5">La mayor de las dos</td>
+              <td class="py-4 px-5">Menor; se renueva o retoca con más frecuencia</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Manchas</td>
+              <td class="py-4 px-5">No se pigmenta con café, vino o cigarrillo</td>
+              <td class="py-4 px-5">Puede pigmentarse con el tiempo</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Citas</td>
+              <td class="py-4 px-5">Requiere laboratorio y varias citas</td>
+              <td class="py-4 px-5">Se resuelve en menos citas</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Si se fractura</td>
+              <td class="py-4 px-5">Se reemplaza la carilla</td>
+              <td class="py-4 px-5">Se puede reparar directamente en boca</td>
+            </tr>
+            <tr class="border-t border-charcoal/10">
+              <td class="py-4 px-5 font-medium text-charcoal">Inversión</td>
+              <td class="py-4 px-5">Más alta</td>
+              <td class="py-4 px-5">Más accesible</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-softblack/80 leading-relaxed mt-8">
+        Lo que decide no es solo el presupuesto: pesan cuánto esmalte conservas, si aprietas los
+        dientes por la noche, el color del que partes y qué tan estable es tu mordida. Eso se define
+        viéndote, no por teléfono.
+      </p>
+      <p class="mt-2 text-sm"><a href="/blog/carillas-resina-vs-porcelana/" class="text-rosegoldDark underline hover:no-underline">Comparativa completa: carillas de resina frente a porcelana →</a></p>
+    </div>
+  </section>
+
+  <!-- ===================== CUANDO NO CONVIENEN ===================== -->
+  <!-- Fuente: blog carillas-resina-vs-porcelana («Cuándo no conviene ninguna de las dos»). -->
+  <section id="cuando-no" class="py-20 lg:py-28">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Con criterio</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-7">Cuándo no conviene ponerlas</h2>
+      <p class="text-lg text-softblack/80 leading-relaxed mb-6">
+        Las carillas cubren la cara visible del diente; no arreglan lo que pasa debajo ni
+        alrededor. Hay situaciones en las que ponerlas sería tapar un problema:
+      </p>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80"><strong>Encías inflamadas o enfermedad periodontal activa.</strong> Primero se trata la encía: el margen de una carilla necesita una encía sana.</span></li>
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80"><strong>Dientes muy rotados o una mordida que no cierra bien.</strong> Ahí lo conservador es alinear antes, no compensar con material.</span></li>
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80"><strong>Bruxismo sin controlar.</strong> Se puede tratar, pero hacerlo después de poner las carillas es hacerlo tarde.</span></li>
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80"><strong>Poco esmalte remanente.</strong> Una carilla necesita una superficie a la que adherirse; si no la hay, la solución es otra.</span></li>
+      </ul>
+      <p class="text-lg text-softblack/80 leading-relaxed mt-7">
+        Que te digan que no es el momento de poner carillas no es una mala noticia: es lo que evita
+        rehacer el trabajo dentro de dos años.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== TESTIMONIOS ===================== -->
+  <section id="resenas" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5"
+          
+           x-show="content.testimonials && content.testimonials.length">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="text-center mb-12 reveal">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Testimonios</p>
+        <h2 class="font-serif text-4xl md:text-5xl">Lo que dicen nuestros pacientes</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Prerendered para crawlers -->
+        <blockquote data-prerendered class="bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Excelente experiencia. La doctora es muy profesional, amable y perfeccionista en cada detalle. Desde la primera cita transmite mucha confianza y el resultado del tratamiento superó mis expectativas."</p><footer class="text-sm"><span class="font-semibold">SINLIMITES COM</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
+        <blockquote data-prerendered class="bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Excelente servicio, llevo 1 año y no volví a sufrir con las carillas que tenía porque ahora uso las carillas en cerámica que la doctora me recomendó. La mejor decisión."</p><footer class="text-sm"><span class="font-semibold">Hector Neira</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
+        <blockquote data-prerendered class="bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Gracias a la Doctora Angela, hoy en día puedo comer y hablar tranquilamente, los implantes dentales fijados a mi prótesis cambiaron mi calidad de vida."</p><footer class="text-sm"><span class="font-semibold">Personal Financial Dreams</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
+        <template x-for="(t, i) in content.testimonials" :key="i">
+          <blockquote class="reveal bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5">
+            <div class="text-gold mb-3 tracking-widest" x-text="stars(t.rating || 5)"></div>
+            <p class="text-softblack/80 italic mb-5" x-text="'“' + t.text + '”'"></p>
+            <footer class="text-sm">
+              <span class="font-semibold" x-text="t.name"></span>
+              <span class="text-softblack/60" x-show="t.role" x-text="' · ' + t.role"></span>
+            </footer>
+          </blockquote>
+        </template>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ===================== LA DOCTORA ===================== -->
+  <section id="doctora" class="py-20 lg:py-28">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-14 items-center">
+      <div class="lg:col-span-5 reveal">
+        <div class="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
+          <img :src="content.about.image" :alt="content.about.title"
+               src="/assets/img/content/about-48c2420dd2ec.webp"
+               loading="lazy" decoding="async" class="w-full h-full object-cover" />
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 reveal">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-4">Quién te atiende</p>
+        <h2 class="font-serif text-4xl md:text-5xl mb-3" x-text="content.about.title">Dra. Angela Barbosa Gómez</h2>
+        <p class="font-serif italic text-lg text-softblack/70 mb-7" x-text="content.about.subtitle">Especialista en Rehabilitación Oral y Estética · +10 años</p>
+        <p class="text-softblack/80 leading-relaxed text-lg" x-text="content.about.text">Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.</p>
+
+        <ul class="mt-8 space-y-3">
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Odontóloga Especialista en Prostodoncia Colegio Odontológico Colombiano</span></li>
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Entrenamiento avanzado en carillas de porcelana</span></li>
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Miembro activo de la Sociedad Colombiana de Prostodoncia</span></li>
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Docente Universitario Colegio Odontologico Colombiano Unicoc</span></li>
+          <template x-for="cred in content.about.credentials" :key="cred">
+            <li class="flex items-start gap-3">
+              <span class="text-gold mt-1">◆</span>
+              <span class="text-softblack/80" x-text="cred"></span>
+            </li>
+          </template>
+        </ul>
+
+        <div class="mt-9">
+          <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary">
+            Agenda tu valoración con la Dra. Angela
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ===================== PREGUNTAS FRECUENTES ===================== -->
+  <section id="preguntas" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Dudas habituales</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-10">Preguntas frecuentes</h2>
+
+      <div class="space-y-8">
+        <div>
+          <!-- Fuente: FAQ de /diseno-de-sonrisa/ -->
+          <h3 class="font-serif text-2xl mb-2">¿Cuánto cuestan las carillas en Bogotá?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Las carillas de porcelana parten desde $6.000.000. El precio de tu caso depende de
+            cuántos dientes entran en el plan, del material elegido y de si antes hay algo que
+            tratar: en la valoración sin costo sales con el plan y el presupuesto de tu caso.
+          </p>
+          <div class="mt-3"><p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿precio «desde» de las carillas de resina? Si no quiere publicarlo, esta línea se quita.</p></div>
+          <p class="mt-2 text-sm"><a href="/blog/precio-diseno-sonrisa-bogota/" class="text-rosegoldDark underline hover:no-underline">Qué influye en el precio, explicado en detalle →</a></p>
+        </div>
+
+        <div>
+          <!-- Fuente: blog cuanto-dura-una-carilla-dental + FAQ de /diseno-de-sonrisa/ -->
+          <h3 class="font-serif text-2xl mb-2">¿Cuánto duran las carillas?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Con buenos cuidados, las de porcelana duran entre 10 y 15 años o más, y las de resina
+            entre 4 y 8 años aproximadamente. Lo que más acorta la vida de una carilla no suele ser
+            el material: es el bruxismo sin tratar. Para eso está la placa de descarga al terminar
+            el tratamiento, y en ciertos casos la toxina botulínica.
+          </p>
+          <p class="mt-2 text-sm"><a href="/blog/cuanto-dura-una-carilla-dental/" class="text-rosegoldDark underline hover:no-underline">Cuánto dura realmente una carilla dental →</a></p>
+        </div>
+
+        <div>
+          <!-- Fuente: FAQ de /diseno-de-sonrisa/ -->
+          <h3 class="font-serif text-2xl mb-2">¿Hay que desgastar los dientes?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            No siempre. Hay casos que se resuelven sin desgaste: la odontología de hoy es
+            mínimamente invasiva. Pero los diseños no son estándar, y qué necesita el tuyo sale de
+            la valoración. Cuánto se va a desgastar se te dice antes de empezar, no durante.
+          </p>
+        </div>
+
+        <div>
+          <!-- Fuente: FAQ de /diseno-de-sonrisa/ -->
+          <h3 class="font-serif text-2xl mb-2">¿Ponerse carillas duele?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            El estudio, la planificación digital y el mock-up no implican dolor. Si eres una persona
+            nerviosa o notas alguna molestia, se trabaja con anestesia digital, que ayuda mucho con
+            lo que pueda incomodarte.
+          </p>
+        </div>
+
+        <div>
+          <!-- Fuente: FAQ de /diseno-de-sonrisa/ -->
+          <h3 class="font-serif text-2xl mb-2">¿Se notan falsas?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Solo si se diseñan para verse así. El objetivo aquí es el contrario: que la sonrisa se
+            vea tuya. Para eso existe la prueba en boca antes de lo definitivo — si algo se ve
+            artificial, se corrige en esa etapa y no después.
+          </p>
+        </div>
+
+        <div>
+          <!-- Fuente: blog diseno-sonrisa-vs-carillas -->
+          <h3 class="font-serif text-2xl mb-2">¿Carillas o diseño de sonrisa?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Las carillas son uno de los tratamientos que puede usar un diseño de sonrisa. Si solo
+            buscas corregir uno o dos dientes, quizá baste con carillas puntuales. Si quieres
+            transformar tu sonrisa de forma integral y proporcionada a tu rostro, el diseño de
+            sonrisa es el camino. La valoración lo define.
+          </p>
+          <p class="mt-2 text-sm"><a href="/diseno-de-sonrisa/" class="text-rosegoldDark underline hover:no-underline">Cómo hacemos el diseño de sonrisa →</a></p>
+        </div>
+
+        <div>
+          <!-- Fuente: blog carillas-porcelana -->
+          <h3 class="font-serif text-2xl mb-2">¿Qué pasa si una carilla se despega o se fractura?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Si se despega entera, sin romperse, a menudo puede volver a cementarse: guárdala y no
+            intentes pegarla en casa con nada. Si se fractura, normalmente hay que hacer una nueva,
+            y antes conviene corregir la causa —un contacto mal repartido al morder o bruxismo sin
+            controlar—, porque si no la siguiente se rompe igual.
+          </p>
+        </div>
+
+        <div>
+          <!-- Fuente: FAQ de /diseno-de-sonrisa/ -->
+          <h3 class="font-serif text-2xl mb-2">¿Puedo hacerlo si no vivo en Bogotá?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Sí. La valoración inicial puede ser virtual y el plan se organiza para concentrar las
+            citas presenciales en el menor número de viajes posible.
+          </p>
+          <p class="mt-2 text-sm"><a href="/pacientes-internacionales/" class="text-rosegoldDark underline hover:no-underline">Si vienes de otro país: pacientes internacionales →</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PARA LEER MÁS ===================== -->
+  <!-- Título y extracto de cada artículo, tal como están publicados en el blog. -->
+  <section id="articulos" class="py-20 lg:py-28">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="text-center mb-12 reveal">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Para leer con calma</p>
+        <h2 class="font-serif text-4xl md:text-5xl">Todo sobre carillas, en el blog</h2>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <a href="/blog/carillas-porcelana/" class="reveal block bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5">
+          <h3 class="font-serif text-2xl mb-2">Carillas de Porcelana: durabilidad y resultados reales</h3>
+          <p class="text-softblack/75 leading-relaxed">Durabilidad, cuidados y en qué casos conviene la porcelana. Qué esperar de una carilla cerámica y qué la hace durar más.</p>
+          <span class="inline-block mt-4 text-sm text-rosegoldDark underline">Leer el artículo →</span>
+        </a>
+        <a href="/blog/carillas-resina-vs-porcelana/" class="reveal block bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5">
+          <h3 class="font-serif text-2xl mb-2">Carillas de Resina o Porcelana: ¿cuál te conviene?</h3>
+          <p class="text-softblack/75 leading-relaxed">Comparamos resina y porcelana en estética, duración, manchas y precio, y qué debe decidir tu caso más allá del presupuesto.</p>
+          <span class="inline-block mt-4 text-sm text-rosegoldDark underline">Leer el artículo →</span>
+        </a>
+        <a href="/blog/cuanto-dura-una-carilla-dental/" class="reveal block bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5">
+          <h3 class="font-serif text-2xl mb-2">¿Cuánto Dura una Carilla de Porcelana o Cerámica?</h3>
+          <p class="text-softblack/75 leading-relaxed">Cuánto duran las carillas de porcelana, cerámica y resina, qué acorta su vida y cómo alargarla. Lo que más influye no es el material.</p>
+          <span class="inline-block mt-4 text-sm text-rosegoldDark underline">Leer el artículo →</span>
+        </a>
+        <a href="/blog/diseno-sonrisa-vs-carillas/" class="reveal block bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5">
+          <h3 class="font-serif text-2xl mb-2">Diseño de Sonrisa o Carillas: en qué se diferencian</h3>
+          <p class="text-softblack/75 leading-relaxed">Un diseño de sonrisa es un plan; las carillas, uno de sus tratamientos. Qué necesitas tú y por qué no son lo mismo.</p>
+          <span class="inline-block mt-4 text-sm text-rosegoldDark underline">Leer el artículo →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA FINAL ===================== -->
+  <section id="contacto" class="py-24 lg:py-32 border-t border-charcoal/5">
+    <div class="max-w-3xl mx-auto px-6 text-center reveal">
+      <h2 class="font-serif text-4xl md:text-5xl mb-5">¿Lista para transformar tu sonrisa?</h2>
+      <p class="text-lg text-softblack/75 mb-4">
+        Agenda tu <strong>valoración personalizada</strong> en nuestro consultorio del Chico, Chapinero.
+        Te respondemos por WhatsApp.
+      </p>
+      <p class="text-sm text-softblack/60 mb-9" x-text="content.contact.address"></p>
+      <div class="max-w-xl mx-auto mb-8"><p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿hay financiación o pago a cuotas? Hoy la web no dice nada; si lo hay, va aquí y en el FAQ del precio.</p></div>
+
+      <!-- data-cta="agendar" hace que tracking.js dispare schedule_click. -->
+      <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary justify-center">
+        Escríbenos por WhatsApp
+      </a>
+
+      <p class="text-sm text-softblack/60 mt-8 mb-4">O reserva tu hora directamente:</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a :href="bookingOfficeLink()" data-cta="agendar" target="_blank" rel="noopener"
+           class="btn-ghost justify-center">
+          Agenda en consultorio
+        </a>
+        <a :href="bookingLink()" data-cta="agendar" target="_blank" rel="noopener"
+           class="btn-ghost justify-center">
+          Agenda virtual
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER MÍNIMO ===================== -->
+  <footer class="py-10 border-t border-charcoal/5 text-center text-sm text-softblack/60">
+    <p>
+      <span class="font-serif text-lg text-charcoal" x-text="content.brand.name">Luxe Smile</span>
+      · <span x-text="content.brand.doctor">Dra. Angela Barbosa Gómez</span>
+    </p>
+    <p class="mt-2" x-text="content.contact.address"></p>
+    <p class="mt-1"><a href="/Dra.Angela_Barbosa/" class="hover:text-rosegold underline">Volver al sitio principal</a></p>
+  </footer>
+
+  <!-- Botón flotante de WhatsApp -->
+  <a :href="waLink()" target="_blank" rel="noopener" class="wa-float" aria-label="Chatear por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path
+        d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.49 0 .16 5.33.16 11.9c0 2.1.55 4.14 1.6 5.94L0 24l6.34-1.66a11.84 11.84 0 0 0 5.72 1.46h.01c6.56 0 11.9-5.33 11.9-11.9 0-3.18-1.24-6.17-3.45-8.42ZM12.07 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.77.99 1-3.67-.23-.38a9.85 9.85 0 0 1-1.51-5.25c0-5.46 4.44-9.9 9.91-9.9 2.64 0 5.13 1.03 7 2.9a9.84 9.84 0 0 1 2.9 7c0 5.47-4.44 9.9-9.9 9.9Zm5.43-7.41c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.41-1.48a9.1 9.1 0 0 1-1.68-2.09c-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.22 5.1 4.51.71.31 1.27.5 1.7.64.72.23 1.37.2 1.88.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z"
+      />
+    </svg>
+  </a>
+  <!-- RED DE SEGURIDAD DEL FADE-IN. La vigila scripts/test-paginas.mjs, que además
+       comprueba que las cuatro páginas lleven exactamente esta misma copia. -->
+  <script data-lx="red-fade">
+  /* Las secciones nacen con opacity:0 y sólo las revela un IntersectionObserver que
+     monta Alpine. Si Alpine no arranca —la segunda causa del incidente del
+     7-jul-2026— el visitante ve una página en blanco y nada falla en voz alta.
+
+     Esto NO cambia la animación. Sólo actúa si no se ha revelado ni una sección
+     habiendo alguna dentro de la pantalla: ésa es la firma de que el mecanismo está
+     muerto, y no la de que el visitante aún no ha hecho scroll. Con la pestaña en
+     segundo plano no se toca nada, porque ahí el observador no dispara por diseño
+     del navegador y todo parecería roto. */
+  (function () {
+    var reloj = null;
+    function parar() { if (reloj) { clearInterval(reloj); reloj = null; } }
+    function mirar() {
+      if (document.visibilityState !== 'visible') return;
+      if (document.querySelector('.reveal.in-view')) return parar();
+      var e = document.querySelectorAll('.reveal');
+      if (!e.length) return parar();
+      var i, r, dentro = false;
+      for (i = 0; i < e.length; i++) {
+        r = e[i].getBoundingClientRect();
+        if (r.height > 0 && r.top < window.innerHeight && r.bottom > 0) { dentro = true; break; }
+      }
+      if (!dentro) return;
+      parar();
+      for (i = 0; i < e.length; i++) e[i].classList.add('in-view');
+      try { if (window.gtag) window.gtag('event', 'fade_red_de_seguridad'); } catch (err) {}
+    }
+    setTimeout(function () { mirar(); reloj = setInterval(mirar, 2000); setTimeout(parar, 30000); }, 4000);
+  })();
+  </script>
+</body>
+</html>
