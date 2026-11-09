@@ -374,6 +374,31 @@
           <p class="mt-3 text-sm"><a href="/diseno-de-sonrisa/" class="text-rosegoldDark underline hover:no-underline">Diseño de sonrisa y carillas →</a></p>
         </div>
       </div>
+
+      <!-- VÍDEOS: los mandó la Dra. Angela Barbosa por Google Chat el 7-nov-2026, sin texto;
+           publicados por decisión de Héctor el 8-nov. Recomprimidos SIN audio (H.264, 30 fps).
+           preload="none": no se descargan hasta pulsar play. La proporción va en style y no en
+           clases, porque tailwind.css se cachea con su ?v= y una clase nueva no llegaría a todos.
+           Los pies solo dicen lo que se ve: no afirman de quién es el caso. -->
+      <div class="mt-14">
+        <h3 class="font-serif text-2xl mb-6">Dos trabajos, de cerca</h3>
+        <div class="grid sm:grid-cols-2 gap-6 items-start max-w-3xl">
+          <figure>
+            <video class="block w-full rounded-2xl bg-porcelain" style="aspect-ratio:540/778"
+                   controls muted playsinline preload="none" poster="/assets/video/protesis-total.webp">
+              <source src="/assets/video/protesis-total.mp4" type="video/mp4" />
+            </video>
+            <figcaption class="mt-3 text-sm text-softblack/70">Prótesis total biocaracterizada, superior e inferior.</figcaption>
+          </figure>
+          <figure>
+            <video class="block w-full rounded-2xl bg-porcelain" style="aspect-ratio:464/832"
+                   controls muted playsinline preload="none" poster="/assets/video/arcada-completa.webp">
+              <source src="/assets/video/arcada-completa.mp4" type="video/mp4" />
+            </video>
+            <figcaption class="mt-3 text-sm text-softblack/70">Rehabilitación de una arcada completa, sobre el modelo de trabajo.</figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
   </section>
 
