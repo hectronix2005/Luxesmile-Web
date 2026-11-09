@@ -65,12 +65,19 @@ export function aAbsoluto(html) {
 }
 
 /** El HTML que le toca a /Dra.Angela_Barbosa/index.html. */
+/** El meta refresh con el que la raiz le dice a Google «el inicio es la ficha».
+ *  En la copia seria un bucle: la pagina se recargaria a si misma sin parar. */
+export const REFRESH_RAIZ = `  <meta http-equiv="refresh" content="0; url=/${RUTA_FICHA}/" />\n`;
+
 export function paginaFicha(inicio) {
-  const html = aAbsoluto(inicio);
-  /* El canonical sigue apuntando al inicio a proposito: dos direcciones
-     sirven lo mismo y solo una puede ser la indexada. Consolidar en la raiz
-     mantiene donde ya estan las senales. Cambiarlo es una linea, pero es una
-     decision de posicionamiento, no de codigo. */
+  /* El canonical se copia tal cual de index.html, que desde 9f0f796 ya apunta
+     a esta ruta. Lo unico que NO se copia es el refresh de la raiz. Si no esta
+     (alguien lo cambio), se aborta: copiar a ciegas un refresh distinto dejaria
+     la direccion de la ficha rebotando en bucle. */
+  if (!inicio.includes(REFRESH_RAIZ)) {
+    throw new Error(`index.html no lleva el refresh esperado:\n${REFRESH_RAIZ}`);
+  }
+  const html = aAbsoluto(inicio.replace(REFRESH_RAIZ, ''));
   return html.replace('<html lang="es">', `<html lang="es">\n${MARCA}`);
 }
 

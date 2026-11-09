@@ -6,8 +6,15 @@
        ficha de Google, y el canonical). GitHub Pages no hace 301, así que se redirige
        aquí, ANTES de la analítica para no contar dos visitas. Conserva ?utm/gclid y
        el #ancla. build-ficha copia este fichero a /Dra.Angela_Barbosa/: allí la
-       condición no se cumple y la línea no hace nada. -->
+       condición no se cumple y la línea no hace nada.
+       El meta refresh de debajo es para GOOGLE: el JS solo no le contó como
+       redirección (8-nov-2026, 6 semanas eligiendo la raíz como canónica), y un
+       refresh inmediato Google lo trata como redirección permanente. Va DESPUÉS del
+       script a propósito: en Chromium y WebKit gana el JS y se conservan ?gclid y
+       #ancla (probado); el refresh solo actúa sin JS. build-ficha QUITA esta línea
+       de la copia: allí sería un bucle. -->
   <script>if(/^\/(index\.html)?$/.test(location.pathname))location.replace('/Dra.Angela_Barbosa/'+location.search+location.hash);</script>
+  <meta http-equiv="refresh" content="0; url=/Dra.Angela_Barbosa/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Luxe Smile · Diseño de Sonrisa y Carillas en el Chico</title>
 

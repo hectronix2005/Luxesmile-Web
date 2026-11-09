@@ -463,6 +463,15 @@ console.log('\n11. la direccion de la ficha sirve el sitio y no rebota');
 
     // La raiz lleva al inicio de verdad, sin perder la atribucion ni el ancla.
     const raiz = readFileSync('index.html', 'utf8');
+    // Y se lo dice a Google con un refresh inmediato: el JS solo no le basto
+    // (8-nov-2026, seis semanas eligiendo la raiz). Debe ir DESPUES del script:
+    // si va antes, el refresh gana y se pierden ?gclid y #ancla.
+    const iScript = raiz.indexOf("location.replace('/Dra.Angela_Barbosa/'");
+    const iRefresh = raiz.search(/<meta http-equiv="refresh" content="0; url=\/Dra\.Angela_Barbosa\/"/);
+    ok(iRefresh > iScript && iScript > -1,
+       iRefresh < 0 ? 'la raiz no lleva el refresh a /Dra.Angela_Barbosa/'
+                    : iRefresh > iScript ? 'la raiz lleva el refresh a /Dra.Angela_Barbosa/, detras del script'
+                                         : 'el refresh de la raiz va ANTES del script: perderia ?gclid');
     for (const ruta of ['/', '/index.html']) {
       const d = destinos(raiz, ruta);
       ok(d.length === 1 && d[0] === '/Dra.Angela_Barbosa/?gclid=X&utm_source=g#contacto',
