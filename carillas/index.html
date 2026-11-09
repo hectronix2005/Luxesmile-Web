@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carillas Dentales en Bogotá · Dra. Angela Barbosa</title>
 
-  <!-- BORRADOR (7-nov-2026, rama wip/pagina-carillas). Solo lleva textos que ya
-       están publicados en la web: el FAQ y la tabla de /diseno-de-sonrisa/ y los
-       cuatro artículos de carillas del blog. Lo que falta lo decide la doctora y va
-       marcado con data-borrador; test-paginas NO deja publicar una página que aún
-       lleve esa marca. Antes de publicar: quitar las marcas y añadirla al sitemap
-       (scripts/build-blog.mjs). -->
+  <!-- /carillas/ (7-nov-2026, pedido de atenea para el anuncio «Carillas»). Textos ya
+       publicados (FAQ y tabla de /diseno-de-sonrisa/, artículos de carillas del blog) más
+       lo que confirmó la doctora por Google Chat el 7-nov: porcelana desde $6.000.000,
+       precio de resina sin publicar, las 8 fotos son de carillas, 3 citas y unos 6-7 días,
+       pago con tarjeta de crédito. test-paginas no deja publicar nada con marcas de borrador. -->
 
   <!-- FAVICON. Fuente única: la propaga scripts/sync-fuentes.mjs a las páginas
        escritas a mano y la emite scripts/build-blog.mjs en las generadas. Los
@@ -109,7 +108,7 @@
         "name": "\u00bfCu\u00e1nto cuestan las carillas en Bogot\u00e1?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Las carillas de porcelana parten desde $6.000.000. El precio de tu caso depende de cu\u00e1ntos dientes entran en el plan, del material elegido y de si antes hay algo que tratar: en la valoraci\u00f3n sin costo sales con el plan y el presupuesto de tu caso."
+          "text": "Las carillas de porcelana parten desde $6.000.000. El precio de tu caso depende de cu\u00e1ntos dientes entran en el plan, del material elegido y de si antes hay algo que tratar: en la valoraci\u00f3n sin costo sales con el plan y el presupuesto de tu caso. Puedes pagar con tarjeta de crédito."
         }
       },
       {
@@ -186,7 +185,7 @@
   <!-- Tailwind compilado (mismo build que el sitio principal) -->
   <link rel="stylesheet" href="../assets/css/tailwind.css?v=20260927c" />
 
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20260925b" />
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20261107c" />
 
   <!-- styles.css fija scroll-padding-top para el header del home (252px desktop
        / 64px móvil). El header de esta landing mide 80px en todos los anchos,
@@ -194,7 +193,7 @@
        (#casos #doctora #resenas #contacto) no dejen un hueco enorme.
        Va después del <link> para ganar por orden de fuente. -->
   <style>html{scroll-padding-top:6rem}</style>
-  <script src="../assets/js/content.js?v=20261107a"></script>
+  <script src="../assets/js/content.js?v=20261107b"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <!-- Lógica propia de la página (autocontenida, como /rehabilitacion-oral/) -->
@@ -304,7 +303,6 @@
             <span class="text-xs font-semibold tracking-wide text-rosegoldDark uppercase">Carillas de porcelana desde $6.000.000</span>
           </div>
         </div>
-        <p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿sigue valiendo «carillas de porcelana desde $6.000.000»? En esta página pasa a ser el precio de portada.</p>
 
         <div class="flex flex-col sm:flex-row gap-4 mt-8">
           <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary justify-center">
@@ -366,23 +364,22 @@
     </div>
   </section>
 
-  <!-- ===================== GALERÍA (BORRADOR) ===================== -->
+  <!-- ===================== GALERÍA (las 8 son de carillas, confirmado 7-nov) ===================== -->
   <section id="casos" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
     <div class="max-w-6xl mx-auto px-6 lg:px-10">
       <div class="text-center mb-8">
         <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Resultados reales</p>
         <h2 class="font-serif text-4xl md:text-5xl">Sonrisas que hablan por sí solas</h2>
       </div>
-      <div class="max-w-3xl mx-auto mb-8"><p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿cuáles de estos 8 casos son de carillas? Solo esos se quedan; los demás se quitan de esta página (siguen en /diseno-de-sonrisa/).</p></div>
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-0-f924e7c9b7a6.webp" alt="Caso 1 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">1</figcaption></figure>
-        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-1-6db91a46afcd.webp" alt="Caso 2 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">2</figcaption></figure>
-        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-2-514b7badc08a.webp" alt="Caso 3 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">3</figcaption></figure>
-        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-3-29840d47e206.webp" alt="Caso 4 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">4</figcaption></figure>
-        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-4-2723b02af56c.webp" alt="Caso 5 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">5</figcaption></figure>
-        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-5-5034621accf8.webp" alt="Caso 6 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">6</figcaption></figure>
-        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-6-afd3d628adb0.webp" alt="Caso 7 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">7</figcaption></figure>
-        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-7-8c2843938cc9.webp" alt="Caso 8 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /><figcaption data-borrador style="position:absolute;top:.5rem;left:.5rem;background:#7a2e10;color:#fff;font-weight:700;padding:.15rem .6rem;border-radius:999px">8</figcaption></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-0-f924e7c9b7a6.webp" alt="Antes y después de carillas, caso 1 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-1-6db91a46afcd.webp" alt="Antes y después de carillas, caso 2 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-2-514b7badc08a.webp" alt="Antes y después de carillas, caso 3 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-3-29840d47e206.webp" alt="Antes y después de carillas, caso 4 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-4-2723b02af56c.webp" alt="Antes y después de carillas, caso 5 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-5-5034621accf8.webp" alt="Antes y después de carillas, caso 6 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-6-afd3d628adb0.webp" alt="Antes y después de carillas, caso 7 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
+        <figure class="relative rounded-2xl overflow-hidden shadow-lg bg-porcelain aspect-square"><img src="/assets/img/content/gallery-7-8c2843938cc9.webp" alt="Antes y después de carillas, caso 8 — Luxe Smile" loading="lazy" class="w-full h-full object-cover" /></figure>
       </div>
     </div>
   </section>
@@ -450,15 +447,15 @@
       </ol>
 
       <p class="text-softblack/70 leading-relaxed mt-9">
-        El tratamiento suele completarse en pocas sesiones.
+        Son 3 citas, con porcelana o con resina, y el tratamiento dura unos 6 a 7 días.
       </p>
-      <div class="mt-4"><p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿cuántas citas y cuánto tiempo, de la valoración al cementado, para porcelana y para resina?</p></div>
     </div>
   </section>
 
   <!-- ===================== PORCELANA O RESINA ===================== -->
   <!-- La tabla es la de /diseno-de-sonrisa/, tal cual: la doctora la confirmó
-       («dejala como esta», 17-sep-2026). -->
+       («dejala como esta», 17-sep-2026). Salvo la fila «Citas»: el 7-nov dijo 3 citas en
+       los dos materiales, y aquí se iguala con el texto del proceso. -->
   <section id="materiales" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
     <div class="max-w-4xl mx-auto px-6 lg:px-10">
       <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">La decisión</p>
@@ -495,8 +492,8 @@
             </tr>
             <tr class="border-t border-charcoal/10">
               <td class="py-4 px-5 font-medium text-charcoal">Citas</td>
-              <td class="py-4 px-5">Requiere laboratorio y varias citas</td>
-              <td class="py-4 px-5">Se resuelve en menos citas</td>
+              <td class="py-4 px-5">3 citas; requiere laboratorio</td>
+              <td class="py-4 px-5">3 citas</td>
             </tr>
             <tr class="border-t border-charcoal/10">
               <td class="py-4 px-5 font-medium text-charcoal">Si se fractura</td>
@@ -629,8 +626,8 @@
             Las carillas de porcelana parten desde $6.000.000. El precio de tu caso depende de
             cuántos dientes entran en el plan, del material elegido y de si antes hay algo que
             tratar: en la valoración sin costo sales con el plan y el presupuesto de tu caso.
+            Puedes pagar con tarjeta de crédito.
           </p>
-          <div class="mt-3"><p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿precio «desde» de las carillas de resina? Si no quiere publicarlo, esta línea se quita.</p></div>
           <p class="mt-2 text-sm"><a href="/blog/precio-diseno-sonrisa-bogota/" class="text-rosegoldDark underline hover:no-underline">Qué influye en el precio, explicado en detalle →</a></p>
         </div>
 
@@ -754,7 +751,7 @@
         Te respondemos por WhatsApp.
       </p>
       <p class="text-sm text-softblack/60 mb-9" x-text="content.contact.address"></p>
-      <div class="max-w-xl mx-auto mb-8"><p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿hay financiación o pago a cuotas? Hoy la web no dice nada; si lo hay, va aquí y en el FAQ del precio.</p></div>
+      <p class="text-softblack/70 mb-8">Puedes pagar con tarjeta de crédito.</p>
 
       <!-- data-cta="agendar" hace que tracking.js dispare schedule_click. -->
       <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary justify-center">

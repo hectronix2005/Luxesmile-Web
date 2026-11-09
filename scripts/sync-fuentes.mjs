@@ -244,7 +244,9 @@ function sincronizar(leer) {
     }
     // La galeria va por indice: `gallery-3-…` se resuelve con content.gallery[3],
     // no por el orden en que aparezcan en el fichero.
-    editar('diseno-de-sonrisa/index.html', (s2) => {
+    // /carillas/ (8-nov) repite las 8 fotos: sin ella aquí, cambiar una foto desde el panel
+    // dejaba esa página pidiendo un fichero que el Action ya había borrado.
+    for (const ruta of ['diseno-de-sonrisa/index.html', 'carillas/index.html']) editar(ruta, (s2) => {
       const galeria = datos?.gallery || [];
       let tocados = 0;
       const nuevo = s2.replace(/\/assets\/img\/content\/gallery-(\d+)-[A-Za-z0-9._-]+\.webp/g, (todo, i) => {
@@ -255,7 +257,7 @@ function sincronizar(leer) {
         if (valor !== todo) tocados++;
         return valor;
       });
-      if (tocados) cambios.push(`diseno-de-sonrisa/index.html  ${tocados} imagen(es) de la galeria`);
+      if (tocados) cambios.push(`${ruta}  ${tocados} imagen(es) de la galeria`);
       return nuevo;
     });
   }
