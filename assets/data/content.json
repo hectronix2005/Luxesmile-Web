@@ -87,13 +87,15 @@
     {
       "icon": "✦",
       "title": "Diseño de Sonrisa",
-      "desc": "Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro."
+      "desc": "Planificación digital personalizada para lograr una sonrisa natural, armónica y proporcionada a tu rostro.",
+      "link": "/diseno-de-sonrisa/"
     },
     {
       "icon": "◈",
       "title": "Carillas de Porcelana",
       "desc": "Carillas ultrafinas que corrigen forma, color y alineación en pocas sesiones, con resultados del más alto nivel estético.",
-      "price": "desde $6.000.000"
+      "price": "desde $6.000.000",
+      "link": "/carillas/"
     },
     {
       "icon": "❋",
@@ -103,7 +105,8 @@
     {
       "icon": "◇",
       "title": "Rehabilitación de Alta Complejidad ",
-      "desc": "Tratamiento para reconstruir la dentadura completa o parcial cuando existe un deterioro Severo, pérdida de piezas, enfermedades periodontales avanzadas o traumas. "
+      "desc": "Tratamiento para reconstruir la dentadura completa o parcial cuando existe un deterioro Severo, pérdida de piezas, enfermedades periodontales avanzadas o traumas. ",
+      "link": "/rehabilitacion-oral/"
     },
     {
       "icon": "✧",

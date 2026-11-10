@@ -518,6 +518,32 @@ body {
 .service-card:hover::before {
   transform: scaleX(1);
 }
+/* Enlace a la página del tratamiento (9-nov-2026). El ::after lo estira sobre la
+   tarjeta entera: el hover ya la hacía parecer clicable, y ahora lo es. */
+.service-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--rosegold-dark);
+  border-radius: 999px;
+  color: var(--rosegold-dark);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+.service-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+.service-card:hover .service-link,
+.service-link:focus-visible {
+  background: var(--rosegold-dark);
+  color: #fff;
+}
 .service-icon {
   font-family: 'Cormorant Garamond', serif;
   font-size: 2rem;

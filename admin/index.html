@@ -50,7 +50,7 @@
   </script>
 
   <!-- Bumpear ?v=... cada vez que cambien los assets para invalidar caches del navegador -->
-  <link rel="stylesheet" href="../assets/css/styles.css?v=20261107c" />
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20261109a" />
   <script src="../assets/js/content.js?v=20261107b"></script>
   <script defer src="../assets/js/admin.js?v=20261001a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -474,6 +474,11 @@
             <div>
               <label class="admin-label block mb-1">Descripción</label>
               <textarea class="admin-textarea" rows="3" x-model="s.desc"></textarea>
+            </div>
+            <div>
+              <label class="admin-label block mb-1">Enlace a la página del tratamiento (opcional)</label>
+              <input class="admin-input" x-model="s.link" placeholder="/carillas/" />
+              <p class="text-xs text-softblack/50 mt-1">Solo rutas del sitio, empezando por «/». Si lo dejas vacío, la tarjeta no lleva botón.</p>
             </div>
           </div>
         </template>

@@ -70,6 +70,10 @@ const h1 = titleLines
 region('h1', h1);
 
 /* ---- Servicios: tarjetas estáticas (data-prerendered → se limpian antes de Alpine) ---- */
+/* `link` lo escribe quien edita el admin y acaba en un href: solo rutas internas
+   (/carillas/), nunca javascript: ni otro dominio. La misma regla va en el x-if
+   de la plantilla de index.html. */
+const ENLACE_SERVICIO = /^\/[a-z0-9\/-]*$/;
 const services = (content.services || [])
   .map(
     (s) =>
@@ -77,6 +81,7 @@ const services = (content.services || [])
       `<h3 class="font-serif text-2xl mb-3">${esc(s.title)}</h3>` +
       `<p class="text-softblack/70 leading-relaxed text-sm">${esc(s.desc)}</p>` +
       (s.price ? `<p class="mt-3 text-xs font-semibold tracking-wide text-rosegoldDark uppercase">${esc(s.price)}</p>` : '') +
+      (ENLACE_SERVICIO.test(s.link || '') ? `<a href="${esc(s.link)}" class="service-link">Conoce el tratamiento <span aria-hidden="true">→</span></a>` : '') +
       `</div>`,
   )
   .join('');
