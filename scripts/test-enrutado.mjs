@@ -175,6 +175,8 @@ console.log('\n3. cobertura: toda página con enlaces a WhatsApp tiene mecanismo
     // Borrador del 7-nov-2026: mismo mecanismo que rehabilitacion (Zeus no tiene
     // todavia una clave de carillas).
     'carillas/index.html': 'clave directa -> valoracion',
+    // Borrador del 21-nov-2026: igual que carillas.
+    'toxina-botulinica/index.html': 'clave directa -> valoracion',
     'pacientes-internacionales/index.html': 'texto literal -> internacional',
     'en/smile-design/index.html': 'texto literal -> smile_design_en',
     'blog/index.html': 'texto literal -> valoracion',

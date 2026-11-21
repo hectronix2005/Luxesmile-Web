@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bruxismo y Toxina Botulínica en Bogotá · Dra. Angela Barbosa</title>
+
+  <!-- FAVICON. Fuente única: la propaga scripts/sync-fuentes.mjs a las páginas
+       escritas a mano y la emite scripts/build-blog.mjs en las generadas. Los
+       ficheros los deriva del logo scripts/build-favicon.mjs — no editar a mano.
+       Rutas absolutas a propósito: las mismas líneas valen desde /, desde
+       /blog/x/ y desde /en/smile-design/.
+       Aquí NO va theme-color: cuatro páginas ya declaran el suyo, más claro, y
+       el navy de estos iconos pintaría la barra del móvil de otro color. El del
+       manifiesto es otra cosa: es el de la pantalla de inicio de Android. -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" type="image/png" href="/assets/img/favicon/icon-96.png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- /toxina-botulinica/ (BORRADOR 21-nov-2026, idea de Héctor: unir la odontología
+       con la toxina: bruxismo → perfilado de mandíbula → sonrisa gingival → resto del
+       rostro). Lo general sale de la literatura revisada el 21-nov (revisiones de
+       2023-2025 sobre bruxismo, masetero y sonrisa gingival). Lo que solo puede decir
+       la doctora (si la aplica ella, en qué zonas, formación, marca, precio y cada
+       cuánto se repite) se le preguntó por Google Chat el 21-nov 14:49 UTC y va
+       marcado como hueco de borrador: test-paginas NO deja publicar la página con alguno.
+       ANUNCIOS: Google Ads y Meta restringen los nombres de medicamentos con receta
+       (también en la landing). Esta página es para búsqueda orgánica y redes; si se
+       anuncia, el anuncio habla de bruxismo / perfilado y va a otra landing. -->
+
+  <meta
+    name="description"
+    content="Toxina botulínica para bruxismo, dolor de mandíbula, perfilado mandibular y sonrisa gingival en el Chico, Bogotá, con la Dra. Angela Barbosa, rehabilitadora oral. Valoración sin costo."
+  />
+  <link rel="canonical" href="https://luxesmilee.com/toxina-botulinica/" />
+  <meta name="theme-color" content="#FAF7F2" />
+
+  <!-- PRECONNECT ZEUS. Fuente única: la propaga scripts/sync-fuentes.mjs y la
+       emite scripts/build-blog.mjs. No editar a mano.
+       Por qué: tracking.js pregunta a este host si el redirector responde, y
+       hasta que contesta los botones de WhatsApp son un wa.me directo — el
+       paciente llega, pero su clic no pasa por Zeus y no queda registrado.
+       Medido el 18-sep-2026: la sonda tarda 350-500 ms, y 240 de ellos son el
+       handshake TLS con un origen que el navegador aún no conoce. Esto lo
+       adelanta a la fase temprana de carga, en paralelo con todo lo demás.
+       En una conexión móvil lenta ese handshake son segundos, y ahí está el
+       corte de 2.500 ms que apaga el enrutado para toda la página.
+       `crossorigin` NO es decorativo: la sonda va con `credentials: 'omit'`,
+       o sea anónima, y sin este atributo el navegador abriría una conexión
+       distinta de la que precalentó. -->
+  <link rel="preconnect" href="https://zeus.codi.com.co" crossorigin />
+  <script src="../assets/js/tracking.js?v=20260927d"></script>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Luxe Smile" />
+  <meta property="og:locale" content="es_CO" />
+  <meta property="og:url" content="https://luxesmilee.com/toxina-botulinica/" />
+  <meta property="og:title" content="Bruxismo y Toxina Botulínica en Bogotá · Dra. Angela Barbosa" />
+  <meta property="og:description" content="Bruxismo, dolor de mandíbula, perfilado mandibular y sonrisa gingival, con criterio odontológico. Primera valoración sin costo · Agenda por WhatsApp." />
+  <meta property="og:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="817" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bruxismo y Toxina Botulínica en Bogotá · Dra. Angela Barbosa" />
+  <meta name="twitter:description" content="Bruxismo, dolor de mandíbula, perfilado mandibular y sonrisa gingival, con criterio odontológico. Primera valoración sin costo." />
+  <meta name="twitter:image" content="https://luxesmilee.com/assets/img/og-cover.jpg" />
+
+  <!-- Datos estructurados: servicio ofrecido por el negocio local -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Toxina botulínica en odontología",
+    "serviceType": "Toxina botulínica para bruxismo, perfilado mandibular y sonrisa gingival",
+    "areaServed": ["Chico", "Chapinero", "Usaquén", "Bogotá Norte"],
+    "provider": {
+      "@type": "Dentist",
+      "name": "Luxe Smile — Dra. Angela Barbosa",
+      "alternateName": ["Luxe Smile Rehabilitación Oral y Estética: Dra. Angela Barbosa", "Luxe Smile", "Luxe Smiles", "LuxeSmile", "Dra Angela Barbosa Rehabilitación oral y Estética"],
+      "sameAs": ["https://www.instagram.com/luxesmilee_", "https://maps.google.com/?cid=2846959231365109133"],
+      "url": "https://luxesmilee.com/Dra.Angela_Barbosa/",
+      "telephone": "+573163903511",
+      "priceRange": "$$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Cl. 90 #14-16, Consultorio 508, Chico, Chapinero",
+        "addressLocality": "Bogotá",
+        "addressRegion": "Bogotá D.C.",
+        "addressCountry": "CO"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "9"
+      }
+    }
+  }
+  </script>
+
+  <!-- Datos estructurados: preguntas frecuentes. El texto de cada respuesta es EL
+       MISMO que se ve en #preguntas: si divergen, Google lo trata como marcado
+       engañoso. Las preguntas con datos pendientes de la doctora (precio, cada cuánto
+       se repite) NO están aquí todavía: se añaden cuando se rellenen. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "¿La toxina botulínica cura el bruxismo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Relaja durante unos meses los músculos que aprietan la mandíbula y por eso baja la fuerza con la que aprietas y, en muchos pacientes, el dolor. Pero el hábito sigue ahí: por eso se combina con la placa de descarga y con el control de la mordida, no la sustituye."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Es lo mismo que el bótox?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Bótox es el nombre comercial de una de las marcas de toxina botulínica tipo A; mucha gente lo usa para referirse a todas. Lo importante no es la marca sino que el producto tenga registro sanitario del INVIMA y que lo aplique un profesional que conozca la anatomía de la zona."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Duele la aplicación?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Se hace con agujas muy finas y la mayoría de los pacientes lo describe como una molestia breve. Son unos minutos y puedes volver a tus actividades el mismo día."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Me va a cambiar la expresión de la cara?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "En el bruxismo se trabaja sobre los músculos de la masticación, no sobre los de la expresión, y la dosis se ajusta para que puedas comer y hablar con normalidad. El efecto estético más frecuente es un contorno de la mandíbula algo más fino, porque el masetero se relaja."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Quién no debería aplicársela?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No se aplica durante el embarazo o la lactancia, con infección en la zona ni en personas con enfermedades neuromusculares como la miastenia gravis. También hay que revisar algunos medicamentos que toma el paciente. Por eso la valoración va siempre primero."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preload" as="image" href="/assets/img/content/hero-1b766ff0825b.webp" fetchpriority="high" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="../assets/css/tailwind.css?v=20260927c" />
+  <link rel="stylesheet" href="../assets/css/styles.css?v=20261109a" />
+  <style>html{scroll-padding-top:6rem}</style>
+  <script src="../assets/js/content.js?v=20261107b"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Lógica propia de la página (autocontenida, como /carillas/) -->
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('landing', () => ({
+        content: structuredClone(window.LuxeContent.DEFAULT_CONTENT),
+        leadSource: '',
+        origen: '',
+
+        async init() {
+          document.querySelectorAll('[data-prerendered]').forEach(el => el.remove());
+          this.content = await window.LuxeContent.loadContent();
+          window.LuxeContent.applyTheme(this.content.theme);
+          this.detectSource();
+          this.$nextTick(() => window.LuxeContent.revelarAlEntrar());
+        },
+
+        detectSource() {
+          const p = new URLSearchParams(location.search);
+          const utm = (p.get('utm_source') || '').toLowerCase();
+          if (p.get('gclid') || p.get('wbraid') || p.get('gbraid')) return;
+          if (utm === 'google' || utm === 'adwords') {
+            this.leadSource = 'Vengo de un anuncio de Google';
+            this.origen = 'google';
+          } else if (/instagram|^ig$|meta|facebook|fb/.test(utm)) {
+            this.leadSource = 'Vengo de Instagram';
+            this.origen = 'ig';
+          }
+        },
+
+        // Clave genérica `valoracion`, como /carillas/: Zeus no tiene una de toxina.
+        waLink() {
+          const reserva = this.waMe();
+          return (window.lxRuta && window.lxRuta('valoracion', reserva, this.origen)) || reserva;
+        },
+
+        waMe() {
+          const num = (this.content.contact.whatsapp || '').replace(/\D/g, '');
+          let msg = 'Hola, quiero agendar una valoración en Luxe Smile.';
+          if (this.leadSource) msg += `\n\n(${this.leadSource})`;
+          return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
+        },
+
+        bookingOfficeLink() {
+          return this.content.contact.calendarOffice || this.waLink();
+        },
+        bookingLink() {
+          return this.content.contact.calendar || this.waLink();
+        },
+        stars(n) {
+          return '★'.repeat(n) + '☆'.repeat(Math.max(0, 5 - n));
+        },
+      }));
+    });
+  </script>
+</head>
+
+<body x-data="landing" class="bg-ivory text-charcoal">
+
+  <!-- ===================== HEADER MÍNIMO ===================== -->
+  <header class="fixed top-0 inset-x-0 z-40 backdrop-blur bg-ivory/80 border-b border-charcoal/5">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 flex items-center justify-between h-20">
+      <a href="/Dra.Angela_Barbosa/" class="flex items-center gap-3">
+        <img src="/assets/img/content/logo-90f38edf4736.webp" :src="content.brand.logo"
+             x-show="content.brand.logo" alt="" width="1399" height="300"
+             class="h-10 w-auto max-w-[140px] object-contain" />
+        <span class="font-serif text-2xl tracking-tight" x-text="content.brand.name">Luxe Smile</span>
+      </a>
+      <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary hidden sm:inline-flex">
+        Escríbenos por WhatsApp
+      </a>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 hero-aura overflow-hidden">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 grid lg:grid-cols-2 gap-14 items-center">
+      <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-5">
+          Toxina botulínica · Chico, Chapinero · Bogotá
+        </p>
+        <h1 class="hero-title font-serif text-5xl md:text-6xl lg:text-[4.25rem] leading-[1.05] mb-6">
+          Toxina botulínica con <em>criterio odontológico</em>
+        </h1>
+        <p class="text-lg text-softblack/75 max-w-xl mb-8">
+          Para el bruxismo, el dolor de mandíbula, un contorno mandibular más fino y la sonrisa
+          gingival. Los músculos que mueven tu mandíbula y tu sonrisa son el día a día de la
+          rehabilitación oral: la aplicación se planea pensando en tu mordida, no solo en tu cara.
+        </p>
+
+        <p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem;margin-bottom:1.5rem"><strong>PENDIENTE DE LA DOCTORA:</strong> confirmar que la aplica ella misma y en qué zonas. Si hay precio «desde», va aquí como segunda etiqueta (como en /carillas/).</p>
+
+        <div class="flex flex-wrap items-center gap-3 mb-8">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 border border-gold/30">
+            <span class="text-gold text-lg">✦</span>
+            <span class="text-sm font-medium text-softblack">Primera valoración <strong>sin costo</strong></span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 mt-8">
+          <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary justify-center">
+            Agenda tu valoración personalizada
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <div class="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/5]">
+          <img src="/assets/img/content/hero-1b766ff0825b.webp" :src="content.hero.image"
+               alt="Dra. Angela Barbosa, toxina botulínica para bruxismo en Bogotá" fetchpriority="high"
+               class="w-full h-full object-cover" width="1280" height="817" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== POR QUÉ CON UN ODONTÓLOGO ===================== -->
+  <section id="por-que" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">El enfoque</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-7">El mismo músculo, dos resultados</h2>
+      <p class="text-lg text-softblack/80 leading-relaxed mb-5">
+        La toxina botulínica relaja durante unos meses el músculo donde se aplica. En la cara, los
+        músculos más fuertes son los que cierran la mandíbula: el masetero y el temporal. Cuando
+        aprietas o rechinas los dientes, son ellos los que desgastan el esmalte, fracturan
+        restauraciones y cargan la articulación.
+      </p>
+      <p class="text-lg text-softblack/80 leading-relaxed mb-5">
+        Relajar el masetero baja esa fuerza. Y como es un músculo que se ve, el mismo tratamiento
+        afina el contorno de la mandíbula. Por eso tiene sentido que lo planee quien trata tu
+        mordida: sabe cuánta fuerza necesitas para comer con normalidad y cuánta está de más.
+      </p>
+      <p class="text-lg text-softblack/80 leading-relaxed">
+        Antes de aplicarla revisamos tus dientes, el desgaste, la articulación y la mordida. Si el
+        problema es otro, o si la toxina no es para ti, te lo decimos.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== USOS ===================== -->
+  <section id="usos" class="py-20 lg:py-28">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="text-center mb-12">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Para qué se usa</p>
+        <h2 class="font-serif text-4xl md:text-5xl">De la función a la estética</h2>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5">
+          <h3 class="font-serif text-2xl mb-2">Bruxismo y dolor de mandíbula</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Si te levantas con la mandíbula cansada, dolor de cabeza en las sienes o notas los dientes
+            desgastados, puede ser bruxismo. La toxina en los músculos de la masticación reduce la
+            fuerza con la que aprietas y, en muchos pacientes, el dolor. Se combina con la placa de
+            descarga: protege tus dientes, tus carillas y tus coronas.
+          </p>
+        </div>
+        <div class="bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5">
+          <h3 class="font-serif text-2xl mb-2">Perfilado de mandíbula</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Un masetero muy desarrollado, a menudo por apretar los dientes durante años, ensancha la
+            parte baja de la cara. Al relajarlo, el músculo reduce su volumen y el contorno se ve más
+            fino y ovalado. Es el tratamiento sin cirugía más usado para esa zona.
+          </p>
+        </div>
+        <div class="bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5">
+          <h3 class="font-serif text-2xl mb-2">Sonrisa gingival</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Cuando al sonreír se ve demasiada encía, a veces la causa es un labio superior que sube
+            de más. Una dosis pequeña en el músculo que lo eleva suaviza ese gesto, sin cirugía.
+            Funciona mejor en los casos leves y moderados, y en la valoración vemos si tu caso es
+            de músculo, de encía o de diente.
+          </p>
+        </div>
+        <div class="bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5">
+          <h3 class="font-serif text-2xl mb-2">Y el resto del rostro</h3>
+          <p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿aplica también en frente, entrecejo y patas de gallo? Si sí, aquí va un párrafo corto: «La misma técnica y el mismo conocimiento de los músculos de la cara…». Si no, esta tarjeta se quita.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CÓMO ES ===================== -->
+  <section id="proceso" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Cómo funciona</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-9">Paso a paso</h2>
+      <ol class="space-y-7">
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegoldDark leading-none pt-1">1</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Valoración sin costo</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Revisamos el desgaste de tus dientes, la articulación, la mordida y los músculos. Te
+              explicamos si la toxina es para ti, qué esperar y qué otras opciones hay.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegoldDark leading-none pt-1">2</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Aplicación</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              Unos minutos en el consultorio, con agujas muy finas. Puedes volver a tus actividades el
+              mismo día.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegoldDark leading-none pt-1">3</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Efecto y control</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              El efecto empieza a notarse en pocos días y se completa hacia las dos semanas. Ahí
+              revisamos el resultado y ajustamos si hace falta.
+            </p>
+          </div>
+        </li>
+        <li class="flex gap-5">
+          <span class="font-serif text-3xl text-rosegoldDark leading-none pt-1">4</span>
+          <div>
+            <h3 class="font-semibold text-lg mb-1">Mantenimiento</h3>
+            <p class="text-softblack/80 leading-relaxed">
+              El efecto es temporal: el músculo recupera su fuerza poco a poco y la aplicación se repite.
+            </p>
+            <p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem;margin-top:.75rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿cada cuánto recomienda repetirla? (en los estudios, la fuerza baja unos 3 meses y el efecto en la sonrisa gingival dura de 3 a 6 meses).</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== CON CRITERIO ===================== -->
+  <section id="criterio" class="py-20 lg:py-28">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Con criterio clínico</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-6">Lo que la toxina no hace</h2>
+      <ul class="space-y-3 mb-7">
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80"><strong>No cura el bruxismo.</strong> Baja la fuerza mientras dura el efecto; el hábito sigue ahí. Por eso se combina con la placa de descarga y con el control de la mordida.</span></li>
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80"><strong>No arregla una mordida mal repartida.</strong> Si un contacto entre dientes está sobrecargado, hay que corregirlo; si no, el problema vuelve.</span></li>
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80"><strong>No es para todo el mundo.</strong> No se aplica en embarazo o lactancia, con infección en la zona ni en enfermedades neuromusculares como la miastenia gravis.</span></li>
+        <li class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80"><strong>No vale cualquier producto.</strong> Usamos toxina con registro sanitario del INVIMA, que ha alertado sobre productos falsificados vendidos con fines estéticos.</span></li>
+      </ul>
+      <p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿qué marca usa? Si quiere, se nombra aquí («Usamos X, con registro INVIMA»).</p>
+    </div>
+  </section>
+
+  <!-- ===================== LA ARTICULACIÓN CON LOS TRATAMIENTOS ===================== -->
+  <section id="carillas" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Para que tu sonrisa dure</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-6">Bruxismo, carillas y coronas</h2>
+      <p class="text-lg text-softblack/80 leading-relaxed mb-5">
+        Lo que más acorta la vida de una carilla o de una corona no suele ser el material: es el
+        bruxismo sin tratar. Una fuerza que no se controla termina despegando o fracturando la
+        restauración, y si no se corrige la causa, la siguiente se rompe igual.
+      </p>
+      <p class="text-lg text-softblack/80 leading-relaxed">
+        Por eso, en un diseño de sonrisa o en una rehabilitación, controlar el bruxismo es parte del
+        plan: la placa de descarga al terminar y, en ciertos casos, la toxina botulínica.
+      </p>
+      <div class="mt-7 flex flex-col gap-2 text-sm">
+        <a href="/diseno-de-sonrisa/" class="text-rosegoldDark underline hover:no-underline">Diseño de sonrisa →</a>
+        <a href="/carillas/" class="text-rosegoldDark underline hover:no-underline">Carillas de porcelana y de resina →</a>
+        <a href="/rehabilitacion-oral/" class="text-rosegoldDark underline hover:no-underline">Rehabilitación oral →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TESTIMONIOS ===================== -->
+  <section id="resenas" class="py-20 lg:py-28"
+          
+           x-show="content.testimonials && content.testimonials.length">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10">
+      <div class="text-center mb-12 reveal">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Testimonios</p>
+        <h2 class="font-serif text-4xl md:text-5xl">Lo que dicen nuestros pacientes</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Prerendered para crawlers -->
+        <blockquote data-prerendered class="bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Excelente experiencia. La doctora es muy profesional, amable y perfeccionista en cada detalle. Desde la primera cita transmite mucha confianza y el resultado del tratamiento superó mis expectativas."</p><footer class="text-sm"><span class="font-semibold">SINLIMITES COM</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
+        <blockquote data-prerendered class="bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Excelente servicio, llevo 1 año y no volví a sufrir con las carillas que tenía porque ahora uso las carillas en cerámica que la doctora me recomendó. La mejor decisión."</p><footer class="text-sm"><span class="font-semibold">Hector Neira</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
+        <blockquote data-prerendered class="bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Gracias a la Doctora Angela, hoy en día puedo comer y hablar tranquilamente, los implantes dentales fijados a mi prótesis cambiaron mi calidad de vida."</p><footer class="text-sm"><span class="font-semibold">Personal Financial Dreams</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
+        <template x-for="(t, i) in content.testimonials" :key="i">
+          <blockquote class="reveal bg-porcelain/50 rounded-2xl p-7 shadow-sm border border-charcoal/5">
+            <div class="text-gold mb-3 tracking-widest" x-text="stars(t.rating || 5)"></div>
+            <p class="text-softblack/80 italic mb-5" x-text="'“' + t.text + '”'"></p>
+            <footer class="text-sm">
+              <span class="font-semibold" x-text="t.name"></span>
+              <span class="text-softblack/60" x-show="t.role" x-text="' · ' + t.role"></span>
+            </footer>
+          </blockquote>
+        </template>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== LA DOCTORA ===================== -->
+  <section id="doctora" class="py-20 lg:py-28 bg-porcelain/50 border-y border-charcoal/5">
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-14 items-center">
+      <div class="lg:col-span-5 reveal">
+        <div class="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
+          <img :src="content.about.image" :alt="content.about.title"
+               src="/assets/img/content/about-48c2420dd2ec.webp"
+               loading="lazy" decoding="async" class="w-full h-full object-cover" />
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 reveal">
+        <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-4">Quién te atiende</p>
+        <h2 class="font-serif text-4xl md:text-5xl mb-3" x-text="content.about.title">Dra. Angela Barbosa Gómez</h2>
+        <p class="font-serif italic text-lg text-softblack/70 mb-7" x-text="content.about.subtitle">Especialista en Rehabilitación Oral y Estética · +10 años</p>
+        <p class="text-softblack/80 leading-relaxed text-lg" x-text="content.about.text">Con más de una década transformando sonrisas, la Dra. Angela combina ciencia, arte y detalle. Cada paciente recibe un plan de tratamiento único, pensado para resaltar su rostro, cuidar su salud oral y devolverle la confianza de sonreír sin límites.</p>
+
+        <ul class="mt-8 space-y-3">
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Odontóloga Especialista en Prostodoncia Colegio Odontológico Colombiano</span></li>
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Entrenamiento avanzado en carillas de porcelana</span></li>
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Miembro activo de la Sociedad Colombiana de Prostodoncia</span></li>
+          <li data-prerendered class="flex items-start gap-3"><span class="text-gold mt-1">◆</span><span class="text-softblack/80">Docente Universitario Colegio Odontologico Colombiano Unicoc</span></li>
+          <template x-for="cred in content.about.credentials" :key="cred">
+            <li class="flex items-start gap-3">
+              <span class="text-gold mt-1">◆</span>
+              <span class="text-softblack/80" x-text="cred"></span>
+            </li>
+          </template>
+        </ul>
+        <p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem;margin-top:1.25rem"><strong>PENDIENTE DE LA DOCTORA:</strong> ¿tiene formación o certificación en toxina botulínica? Si sí, se añade aquí como una línea más.</p>
+
+        <div class="mt-9">
+          <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary">
+            Agenda tu valoración con la Dra. Angela
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PREGUNTAS FRECUENTES ===================== -->
+  <section id="preguntas" class="py-20 lg:py-28">
+    <div class="max-w-3xl mx-auto px-6 lg:px-10">
+      <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Dudas habituales</p>
+      <h2 class="font-serif text-4xl md:text-5xl mb-10">Preguntas frecuentes</h2>
+
+      <div class="space-y-8">
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿La toxina botulínica cura el bruxismo?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            No. Relaja durante unos meses los músculos que aprietan la mandíbula y por eso baja la
+            fuerza con la que aprietas y, en muchos pacientes, el dolor. Pero el hábito sigue ahí: por
+            eso se combina con la placa de descarga y con el control de la mordida, no la sustituye.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Es lo mismo que el bótox?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Bótox es el nombre comercial de una de las marcas de toxina botulínica tipo A; mucha gente
+            lo usa para referirse a todas. Lo importante no es la marca sino que el producto tenga
+            registro sanitario del INVIMA y que lo aplique un profesional que conozca la anatomía de la
+            zona.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Cuánto cuesta?</h3>
+          <p data-borrador style="border:2px dashed #b4532a;background:#fff4ec;color:#7a2e10;padding:.75rem 1rem;border-radius:.75rem;font-size:.95rem"><strong>PENDIENTE DE LA DOCTORA:</strong> precio «desde», por zona o por sesión. Cuando esté, esta respuesta pasa también al FAQPage del &lt;head&gt;.</p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Duele la aplicación?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            Se hace con agujas muy finas y la mayoría de los pacientes lo describe como una molestia
+            breve. Son unos minutos y puedes volver a tus actividades el mismo día.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Me va a cambiar la expresión de la cara?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            En el bruxismo se trabaja sobre los músculos de la masticación, no sobre los de la
+            expresión, y la dosis se ajusta para que puedas comer y hablar con normalidad. El efecto
+            estético más frecuente es un contorno de la mandíbula algo más fino, porque el masetero se
+            relaja.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl mb-2">¿Quién no debería aplicársela?</h3>
+          <p class="text-softblack/80 leading-relaxed">
+            No se aplica durante el embarazo o la lactancia, con infección en la zona ni en personas con
+            enfermedades neuromusculares como la miastenia gravis. También hay que revisar algunos
+            medicamentos que toma el paciente. Por eso la valoración va siempre primero.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA FINAL ===================== -->
+  <section id="contacto" class="py-24 lg:py-32 border-t border-charcoal/5">
+    <div class="max-w-3xl mx-auto px-6 text-center reveal">
+      <h2 class="font-serif text-4xl md:text-5xl mb-5">¿Aprietas los dientes?</h2>
+      <p class="text-lg text-softblack/75 mb-4">
+        Agenda tu <strong>valoración sin costo</strong> en nuestro consultorio del Chico, Chapinero.
+        Te respondemos por WhatsApp.
+      </p>
+      <p class="text-sm text-softblack/60 mb-9" x-text="content.contact.address"></p>
+
+      <a :href="waLink()" target="_blank" rel="noopener" class="btn-primary justify-center">
+        Escríbenos por WhatsApp
+      </a>
+
+      <p class="text-sm text-softblack/60 mt-8 mb-4">O reserva tu hora directamente:</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a :href="bookingOfficeLink()" data-cta="agendar" target="_blank" rel="noopener"
+           class="btn-ghost justify-center">
+          Agenda en consultorio
+        </a>
+        <a :href="bookingLink()" data-cta="agendar" target="_blank" rel="noopener"
+           class="btn-ghost justify-center">
+          Agenda virtual
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER MÍNIMO ===================== -->
+  <footer class="py-10 border-t border-charcoal/5 text-center text-sm text-softblack/60">
+    <p>
+      <span class="font-serif text-lg text-charcoal" x-text="content.brand.name">Luxe Smile</span>
+      · <span x-text="content.brand.doctor">Dra. Angela Barbosa Gómez</span>
+    </p>
+    <p class="mt-2" x-text="content.contact.address"></p>
+    <p class="mt-1"><a href="/Dra.Angela_Barbosa/" class="hover:text-rosegold underline">Volver al sitio principal</a></p>
+  </footer>
+
+  <!-- Botón flotante de WhatsApp -->
+  <a :href="waLink()" target="_blank" rel="noopener" class="wa-float" aria-label="Chatear por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path
+        d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.49 0 .16 5.33.16 11.9c0 2.1.55 4.14 1.6 5.94L0 24l6.34-1.66a11.84 11.84 0 0 0 5.72 1.46h.01c6.56 0 11.9-5.33 11.9-11.9 0-3.18-1.24-6.17-3.45-8.42ZM12.07 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.77.99 1-3.67-.23-.38a9.85 9.85 0 0 1-1.51-5.25c0-5.46 4.44-9.9 9.91-9.9 2.64 0 5.13 1.03 7 2.9a9.84 9.84 0 0 1 2.9 7c0 5.47-4.44 9.9-9.9 9.9Zm5.43-7.41c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.41-1.48a9.1 9.1 0 0 1-1.68-2.09c-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.22 5.1 4.51.71.31 1.27.5 1.7.64.72.23 1.37.2 1.88.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z"
+      />
+    </svg>
+  </a>
+  <!-- RED DE SEGURIDAD DEL FADE-IN. La vigila scripts/test-paginas.mjs, que además
+       comprueba que las cuatro páginas lleven exactamente esta misma copia. -->
+  <script data-lx="red-fade">
+  /* Las secciones nacen con opacity:0 y sólo las revela un IntersectionObserver que
+     monta Alpine. Si Alpine no arranca —la segunda causa del incidente del
+     7-jul-2026— el visitante ve una página en blanco y nada falla en voz alta.
+
+     Esto NO cambia la animación. Sólo actúa si no se ha revelado ni una sección
+     habiendo alguna dentro de la pantalla: ésa es la firma de que el mecanismo está
+     muerto, y no la de que el visitante aún no ha hecho scroll. Con la pestaña en
+     segundo plano no se toca nada, porque ahí el observador no dispara por diseño
+     del navegador y todo parecería roto. */
+  (function () {
+    var reloj = null;
+    function parar() { if (reloj) { clearInterval(reloj); reloj = null; } }
+    function mirar() {
+      if (document.visibilityState !== 'visible') return;
+      if (document.querySelector('.reveal.in-view')) return parar();
+      var e = document.querySelectorAll('.reveal');
+      if (!e.length) return parar();
+      var i, r, dentro = false;
+      for (i = 0; i < e.length; i++) {
+        r = e[i].getBoundingClientRect();
+        if (r.height > 0 && r.top < window.innerHeight && r.bottom > 0) { dentro = true; break; }
+      }
+      if (!dentro) return;
+      parar();
+      for (i = 0; i < e.length; i++) e[i].classList.add('in-view');
+      try { if (window.gtag) window.gtag('event', 'fade_red_de_seguridad'); } catch (err) {}
+    }
+    setTimeout(function () { mirar(); reloj = setInterval(mirar, 2000); setTimeout(parar, 30000); }, 4000);
+  })();
+  </script>
+</body>
+</html>
