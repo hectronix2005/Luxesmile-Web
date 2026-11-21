@@ -376,6 +376,8 @@ function sitemap() {
     { loc: `${SITE}/diseno-de-sonrisa/`, priority: '0.9', changefreq: 'monthly' },
     { loc: `${SITE}/rehabilitacion-oral/`, priority: '0.9', changefreq: 'monthly' },
     { loc: `${SITE}/carillas/`, priority: '0.9', changefreq: 'monthly' },
+    // Publicada el 21-nov-2026 con el texto de la doctora (bruxismo y tercio superior).
+    { loc: `${SITE}/toxina-botulinica/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/pacientes-internacionales/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/en/smile-design/`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${SITE}/blog/`, priority: '0.7', changefreq: 'weekly' },
