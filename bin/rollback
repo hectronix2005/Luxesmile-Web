@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+# bin/rollback — vuelve producción (GitHub Pages) a una versión etiquetada.
+#
+#   bin/rollback --seco              dice qué haría con la versión anterior, sin tocar nada
+#   bin/rollback --seco v2026.11.22-1
+#   bin/rollback                     vuelve a la versión anterior a la desplegada
+#   bin/rollback v2026.11.22-1       vuelve a esa versión
+#   bin/rollback --auto --esperado <sha>   lo usa el workflow de versiones tras una sonda roja
+#
+# Cómo: el despliegue normal es un push a main (Pages publica solo), así que el rollback
+# es también un push a main —nunca forzado—: un commit nuevo «rollback: …» cuyo sitio es
+# idéntico al de la versión elegida. Las herramientas (.github/, bin/, CLAUDE.md) se quedan
+# como están en main. Después espera a Pages, pasa la sonda y avisa.
+#
+# Qué NO hace: este sitio no tiene base de datos; el contenido que edita la doctora en el
+# panel es assets/data/content.json y vuelve atrás con el resto del sitio (lo publicado
+# después sigue en el historial de git). Si una versión necesitara algo fuera del repo
+# (DNS, ajustes de Pages), no lo toca: eso lo decide Héctor.
+set -uo pipefail
+RAIZ="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$RAIZ" || exit 1
+# shellcheck source=bin/_versiones.sh
+. bin/_versiones.sh
+
+SECO=0; AUTO=0; DESTINO=""; ESPERADO=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --seco|--dry-run) SECO=1 ;;
+    --auto) AUTO=1 ;;
+    --esperado) ESPERADO="${2:?falta el commit}"; shift ;;
+    -h|--help) sed -n '2,19p' "$0"; exit 0 ;;
+    v*) DESTINO="$1" ;;
+    *) echo "rollback: argumento desconocido: $1 (mira bin/rollback --help)" >&2; exit 64 ;;
+  esac
+  shift
+done
+
+say() { printf 'rollback: %s\n' "$*" >&2; }
+
+# Avisos a la flota. Nada de esto puede romper el rollback: si la flota no responde,
+# se sigue (en GitHub Actions no hay ni bandeja ni ssh; queda el aviso del workflow).
+avisar() { # avisar <título> <detalle>
+  local titulo="$1" detalle="$2" bandeja="$HOME/RubymineProjects/Ultron/monitor/bandeja.sh"
+  [ -n "${GITHUB_ACTIONS:-}" ] && echo "::warning title=${titulo//:/ -}::$detalle"
+  if [ -f "$bandeja" ] && printf 'De: Luxe Web (bin/rollback)\nAsunto: %s\n\n%s\n' "$titulo" "$detalle" \
+       | bash "$bandeja" dejar-en air Ultron - >/dev/null 2>&1; then
+    return 0
+  fi
+  if command -v ssh >/dev/null 2>&1 && [ -z "${GITHUB_ACTIONS:-}" ]; then
+    # La ~ se expande en el Air, por eso va dentro de la orden remota.
+    ssh -o BatchMode=yes -o ConnectTimeout=5 air \
+      "python3 ~/RubymineProjects/Ultron/web/wt_push.py --tag rollback $(printf '%q' "$titulo") $(printf '%q' "$detalle")" >/dev/null 2>&1 \
+      || say "no pude avisar a la flota (sigue el rollback)"
+  fi
+  return 0
+}
+
+git fetch --quiet --force --tags origin main || { say "no pude hablar con origin"; exit 1; }
+MAIN="$(git rev-parse origin/main)"
+ACTUAL="$(version_de "$MAIN" || true)"
+
+# El automático solo deshace el commit que la sonda vio fallar, y solo si es contenido nuevo.
+if [ "$AUTO" = 1 ]; then
+  if [ -n "$ESPERADO" ] && [ "$MAIN" != "$(git rev-parse --verify "$ESPERADO^{commit}" 2>/dev/null)" ]; then
+    say "main se movió (${MAIN:0:7}, la sonda falló en ${ESPERADO:0:7}): no deshago un commit que nadie probó"
+    avisar "Luxe Web - sonda ROJA y main ya cambió" "Falló ${ESPERADO:0:7}; main está en ${MAIN:0:7}. No hago rollback: lo juzgará la siguiente sonda."
+    exit 1
+  fi
+  if [ -n "$ACTUAL" ]; then
+    say "main sirve el sitio de $ACTUAL, que ya pasó la sonda: el fallo no viene del contenido; no hago rollback"
+    avisar "Luxe Web - sonda ROJA sin cambio de contenido" "main ${MAIN:0:7} sirve el sitio de $ACTUAL, que ya pasó la sonda. Será Pages, DNS o red. No hago rollback: hace falta Héctor."
+    exit 1
+  fi
+fi
+
+# El automático no encadena rollbacks: si lo que falla ya es un rollback, para y avisa.
+if [ "$AUTO" = 1 ] && git log -1 --format=%s "$MAIN" | grep -q '^rollback:'; then
+  say "main (${MAIN:0:7}) ya es un rollback y su sonda falla: no encadeno otro"
+  avisar "Luxe Web - sonda ROJA tras un rollback" "main ${MAIN:0:7} es un rollback y la sonda no pasa. No se hace otro rollback: hace falta Héctor."
+  exit 1
+fi
+
+if [ -z "$DESTINO" ]; then
+  DESTINO="$(version_anterior "$MAIN" || true)"
+  if [ -z "$DESTINO" ]; then
+    say "no hay versión anterior a ${ACTUAL:-${MAIN:0:7}}: etiquetas → $(etiquetas_ordenadas | tr '\n' ' ')"
+    exit 1
+  fi
+fi
+
+# 1. Que la versión exista (en origin, no solo aquí).
+if ! git ls-remote --exit-code --tags origin "refs/tags/$DESTINO" >/dev/null 2>&1; then
+  say "la etiqueta $DESTINO no existe en origin"; exit 1
+fi
+OBJ="$(git rev-parse --verify "$DESTINO^{commit}")" || { say "no puedo leer $DESTINO"; exit 1; }
+
+echo "Producción ahora : main ${MAIN:0:7} — versión ${ACTUAL:-sin etiqueta}"
+if command -v gh >/dev/null 2>&1; then
+  pages="$(gh api "repos/${LUXE_REPO:-hectronix2005/Luxesmile-Web}/pages/builds/latest" --jq '"\(.commit[0:7]) \(.status)"' 2>/dev/null || true)"
+  [ -n "$pages" ] && echo "Pages publica    : $pages"
+fi
+echo "Volver a         : $DESTINO (${OBJ:0:7}, $(git log -1 --format='%ad %s' --date=short "$OBJ"))"
+echo "Base de datos    : no hay (sitio estático); content.json vuelve con el resto del sitio"
+echo "Cambiaría        :"
+git diff --stat "$MAIN" "$OBJ" -- . ':(exclude).github' ':(exclude)bin' ':(exclude)CLAUDE.md' | tail -15 | sed 's/^/  /'
+if [ "$(huella_sitio "$MAIN")" = "$(huella_sitio "$OBJ")" ]; then
+  echo "Producción ya sirve el sitio de $DESTINO: no hay nada que hacer."
+  exit 0
+fi
+
+if [ "$SECO" = 1 ]; then
+  echo "En seco: la etiqueta existe; no se ha tocado nada."
+  exit 0
+fi
+
+# 2. Desplegar ESA versión por el mismo camino que siempre: un push a main.
+TMP="$(mktemp -d)"
+# shellcheck disable=SC2329  # la llama el trap
+limpiar() { git worktree remove --force "$TMP" >/dev/null 2>&1; rm -rf "$TMP"; }
+trap limpiar EXIT
+git worktree add --quiet --detach "$TMP" "$MAIN" || { say "no pude preparar la copia temporal"; exit 1; }
+(
+  # Cada orden con «|| exit 1»: dentro de «( … ) || { … }» bash ignora set -e.
+  cd "$TMP" || exit 1
+  git read-tree -u --reset "$OBJ" || exit 1                       # el sitio de la versión elegida…
+  git rm -r -q --cached --ignore-unmatch .github bin CLAUDE.md >/dev/null || exit 1
+  rm -rf .github bin CLAUDE.md || exit 1
+  for p in .github bin CLAUDE.md; do                              # …con las herramientas de main
+    if git cat-file -e "$MAIN:$p" 2>/dev/null; then git checkout "$MAIN" -- "$p" || exit 1; fi
+  done
+  quien=(-c "user.name=${GIT_AUTHOR_NAME:-$(git config user.name || echo luxe-rollback)}"
+         -c "user.email=${GIT_AUTHOR_EMAIL:-$(git config user.email || echo 41898282+github-actions[bot]@users.noreply.github.com)}")
+  modo="a mano"; [ "$AUTO" = 1 ] && modo="automático tras sonda roja"
+  git "${quien[@]}" commit -q -m "rollback: vuelta a $DESTINO" \
+    -m "Rollback $modo desde ${ACTUAL:-${MAIN:0:7}} (main ${MAIN:0:7})." \
+    -m "Rollback-A: $DESTINO
+Rollback-Desde: $MAIN" || exit 1
+  [ "$(git rev-parse HEAD)" != "$MAIN" ] || exit 1
+  git push --quiet origin HEAD:main || exit 1                     # sin --force: si main se movió, falla
+) || {
+  say "no pude publicar el rollback a $DESTINO (¿main cambió mientras tanto?)"
+  avisar "Luxe Web - rollback a $DESTINO FALLÓ" "No se pudo hacer push a main. Producción sigue en ${ACTUAL:-${MAIN:0:7}}."
+  exit 1
+}
+NUEVO="$(git -C "$TMP" rev-parse HEAD)"
+say "publicado ${NUEVO:0:7} (sitio de $DESTINO); espero a Pages y paso la sonda"
+
+# 3. Sonda.
+if salida="$(bin/sonda --espera 900)"; then
+  probado="$(printf '%s\n' "$salida" | sed -n 's/^SHA=//p' | tail -1)"
+  say "sonda en verde (${probado:0:7})"
+  avisar "Luxe Web - rollback a $DESTINO hecho" "Producción vuelve a servir $DESTINO (commit ${NUEVO:0:7}); sonda en verde. Antes: ${ACTUAL:-${MAIN:0:7}}."
+  exit 0
+fi
+say "la sonda NO pasa tras el rollback a $DESTINO"
+avisar "Luxe Web - rollback a $DESTINO con sonda ROJA" "Se publicó ${NUEVO:0:7} (sitio de $DESTINO) pero la sonda no pasa. Hace falta Héctor."
+exit 1

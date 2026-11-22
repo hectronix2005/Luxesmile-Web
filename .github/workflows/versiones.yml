@@ -1,0 +1,86 @@
+name: Versiones (sonda, etiqueta y rollback automático)
+
+# Producción es GitHub Pages en modo «legacy»: cada push a main se publica solo, sin
+# workflow propio. Este flujo va DETRÁS de esa publicación:
+#   1. bin/sonda espera a que Pages construya la cabeza de main y pide el sitio.
+#   2. En verde → bin/etiquetar crea vAAAA.MM.DD-N y su Release (si falla, solo avisa).
+#   3. Pages publicó pero el sitio no responde → bin/rollback --auto, UNA vez, y rojo.
+#      Si Pages ni siquiera publicó (errored/tiempo), sigue sirviendo la versión
+#      anterior: no hay nada que deshacer, solo se avisa en rojo.
+#
+# Los commits del bot de Build los sube GITHUB_TOKEN y no disparan `push`; por eso
+# también escucha el final de ese flujo. Si dos ejecuciones ven la misma cabeza, la
+# segunda la encuentra ya etiquetada y no hace nada.
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ['Build (imágenes WebP + pre-render SEO)']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write   # etiqueta, Release y, si hace falta, el push del rollback
+  pages: read       # estado de los builds de Pages
+  actions: read     # saber si Build sigue en marcha (su commit está por llegar)
+
+concurrency:
+  group: versiones
+  cancel-in-progress: false
+
+jobs:
+  versiones:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Sonda (espera a que Pages publique main)
+        id: sonda
+        run: |
+          set +e
+          salida="$(bin/sonda --espera 900)"
+          codigo=$?
+          echo "codigo=$codigo" >> "$GITHUB_OUTPUT"
+          echo "sha=$(printf '%s\n' "$salida" | sed -n 's/^SHA=//p' | tail -1)" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Etiquetar la versión
+        if: steps.sonda.outputs.codigo == '0'
+        continue-on-error: true
+        env:
+          SHA: ${{ steps.sonda.outputs.sha }}
+        run: bin/etiquetar "$SHA"
+
+      # Antes de deshacer nada, otra prueba 2 minutos después: un corte de segundos de
+      # Pages, del DNS o del runner no justifica quitar contenido de la doctora.
+      - name: Rollback automático (una sola vez)
+        if: steps.sonda.outputs.codigo == '1'
+        env:
+          SHA: ${{ steps.sonda.outputs.sha }}
+        run: |
+          sleep 120
+          if bin/sonda --solo-http; then
+            echo "::warning::La sonda falló y a los 2 minutos pasa: no hago rollback"
+            exit 1
+          fi
+          echo "::error::La sonda falla con el sitio ya publicado (${SHA:0:7}): vuelvo a la versión anterior"
+          bin/rollback --auto --esperado "$SHA" || echo "::error::El rollback automático no se hizo o falló: hace falta Héctor"
+          exit 1
+
+      - name: Pages no publicó
+        if: steps.sonda.outputs.codigo == '2'
+        run: |
+          echo "::error::GitHub Pages no publicó la cabeza de main (sigue la versión anterior); no hay rollback que hacer"
+          exit 1
+
+      - name: Sonda con un resultado inesperado
+        if: steps.sonda.outputs.codigo != '0' && steps.sonda.outputs.codigo != '1' && steps.sonda.outputs.codigo != '2'
+        run: |
+          echo "::error::bin/sonda salió con ${{ steps.sonda.outputs.codigo }}"
+          exit 1
