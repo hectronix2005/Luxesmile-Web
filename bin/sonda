@@ -11,6 +11,7 @@
 #
 # Salida:  0  en verde; imprime «SHA=<commit probado>» en stdout (lo demás va a stderr)
 #          1  Pages construyó el commit, pero el sitio NO responde bien  → se puede hacer rollback
+#             (también imprime «SHA=<commit que falló>»)
 #          2  Pages no llegó a publicar el commit (errored o tiempo agotado). Pages deja
 #             publicada la versión anterior, así que un rollback no arreglaría nada.
 #
@@ -72,12 +73,20 @@ while :; do
   cabeza="$(gh api "repos/$REPO/commits/main" --jq .sha 2>/dev/null || true)"
   build="$(gh api "repos/$REPO/pages/builds/latest" --jq '[.commit, .status] | @tsv' 2>/dev/null || true)"
   b_sha="$(printf '%s' "$build" | cut -f1)"; b_estado="$(printf '%s' "$build" | cut -f2)"
+  # Mientras Build esté en marcha en main, su commit está por llegar: la cabeza de ahora
+  # aún no es la versión terminada (imágenes en base64, HTML sin pre-renderizar).
+  pend="$(gh api "repos/$REPO/actions/workflows/prerender.yml/runs?branch=main&per_page=5" \
+    --jq '[.workflow_runs[] | select(.status != "completed")] | length' 2>/dev/null || echo 0)"
+  if [ "${pend:-0}" != 0 ] && [ "$(date +%s)" -lt "$limite" ]; then
+    log "Build en marcha en main; espero su commit"; sleep 15; continue
+  fi
   if [ -n "$cabeza" ] && [ "$b_sha" = "$cabeza" ]; then
     case "$b_estado" in
       built)
         log "Pages publicó ${cabeza:0:7}; pruebo el sitio"
         if http; then echo "SHA=$cabeza"; exit 0; fi
         log "Pages publicó ${cabeza:0:7} pero el sitio NO responde bien"
+        echo "SHA=$cabeza"   # el commit que falló: el rollback solo actúa si main sigue ahí
         exit 1 ;;
       errored)
         # Un push del bot de Build justo detrás deja «errored» el anterior y llega en

@@ -30,9 +30,11 @@ admin y dominio está en `README.md`.
   despliegue normal); `.github/`, `bin/` y este fichero se quedan como en `main`. Luego
   espera a Pages, pasa la sonda y avisa a Ultron (carta por la bandeja; si falla,
   `wt_push.py` en el Air).
-- **Automático.** Si Pages publicó y la sonda falla, el workflow llama a
-  `bin/rollback --auto` una sola vez y termina en rojo. No encadena: si lo que falla ya es un
-  rollback, para. Si Pages no llegó a publicar (`errored` o tiempo agotado), sigue servida la
+- **Automático.** Si Pages publicó y la sonda falla (y vuelve a fallar 2 minutos después),
+  el workflow llama a `bin/rollback --auto` una sola vez y termina en rojo. No actúa si
+  `main` cambió desde el commit que falló, si ese commit sirve un sitio que ya pasó la sonda
+  (el fallo no es del contenido) ni si ya es un rollback. La sonda espera a que termine
+  `Build` antes de juzgar la cabeza de `main`. Si Pages no llegó a publicar (`errored` o tiempo agotado), sigue servida la
   versión anterior y solo se marca en rojo.
 - **Qué NO hace.** No restaura nada fuera del repo (DNS en Netlify, ajustes de Pages). El
   contenido que la doctora publicó después de esa versión desaparece del sitio con el

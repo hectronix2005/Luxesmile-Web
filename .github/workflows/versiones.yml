@@ -22,6 +22,7 @@ on:
 permissions:
   contents: write   # etiqueta, Release y, si hace falta, el push del rollback
   pages: read       # estado de los builds de Pages
+  actions: read     # saber si Build sigue en marcha (su commit está por llegar)
 
 concurrency:
   group: versiones
@@ -52,17 +53,34 @@ jobs:
       - name: Etiquetar la versión
         if: steps.sonda.outputs.codigo == '0'
         continue-on-error: true
-        run: bin/etiquetar "${{ steps.sonda.outputs.sha }}"
+        env:
+          SHA: ${{ steps.sonda.outputs.sha }}
+        run: bin/etiquetar "$SHA"
 
+      # Antes de deshacer nada, otra prueba 2 minutos después: un corte de segundos de
+      # Pages, del DNS o del runner no justifica quitar contenido de la doctora.
       - name: Rollback automático (una sola vez)
         if: steps.sonda.outputs.codigo == '1'
+        env:
+          SHA: ${{ steps.sonda.outputs.sha }}
         run: |
-          echo "::error::La sonda falla con el sitio ya publicado: vuelvo a la versión anterior"
-          bin/rollback --auto || echo "::error::El rollback automático también falló: hace falta Héctor"
+          sleep 120
+          if bin/sonda --solo-http; then
+            echo "::warning::La sonda falló y a los 2 minutos pasa: no hago rollback"
+            exit 1
+          fi
+          echo "::error::La sonda falla con el sitio ya publicado (${SHA:0:7}): vuelvo a la versión anterior"
+          bin/rollback --auto --esperado "$SHA" || echo "::error::El rollback automático no se hizo o falló: hace falta Héctor"
           exit 1
 
       - name: Pages no publicó
         if: steps.sonda.outputs.codigo == '2'
         run: |
           echo "::error::GitHub Pages no publicó la cabeza de main (sigue la versión anterior); no hay rollback que hacer"
+          exit 1
+
+      - name: Sonda con un resultado inesperado
+        if: steps.sonda.outputs.codigo != '0' && steps.sonda.outputs.codigo != '1' && steps.sonda.outputs.codigo != '2'
+        run: |
+          echo "::error::bin/sonda salió con ${{ steps.sonda.outputs.codigo }}"
           exit 1
