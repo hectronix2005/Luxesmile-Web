@@ -60,21 +60,7 @@ function registerAndInitialize() {
   },
 
     loadElfsightIfNeeded() {
-      if (!this.content?.reviews?.elfsightWidgetId) return;
-      const inject = () => {
-        if (document.querySelector('script[data-elfsight-platform]')) return;
-        const s = document.createElement('script');
-        s.src = 'https://static.elfsight.com/platform/platform.js';
-        s.defer = true;
-        s.setAttribute('data-elfsight-platform', '');
-        document.head.appendChild(s);
-      };
-      const target = document.getElementById('testimonios');
-      if (!target || !('IntersectionObserver' in window)) { inject(); return; }
-      const obs = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) { obs.disconnect(); inject(); }
-      }, { rootMargin: '200px' });
-      obs.observe(target);
+      window.LuxeContent.cargarResenas(this.content, document.getElementById('testimonios'));
     },
 
     // LA CLAVE ES EL CONTEXTO, NO EL TEXTO.

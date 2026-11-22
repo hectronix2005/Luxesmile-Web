@@ -329,6 +329,31 @@ function revelarAlEntrar() {
   els.forEach((el) => io.observe(el));
 }
 
+/* --------------------- Reseñas de Google (Elfsight) --------------------- */
+/* El inicio y las cuatro landings de servicio muestran el mismo carrusel de
+   Elfsight. Hasta el 22-nov-2026 las landings pintaban una lista fija de
+   content.json que nadie actualizaba desde abril —la doctora veía «los mismos
+   comentarios de siempre»—, con una reseña que ni siquiera estaba en Google.
+   platform.js se inyecta solo cuando la sección se acerca a la pantalla: cada
+   carga del widget gasta vistas del plan gratuito, y si se agotan el widget
+   deja de verse en TODAS las páginas. */
+function cargarResenas(content, seccion) {
+  if (!content?.reviews?.elfsightWidgetId) return;
+  const inject = () => {
+    if (document.querySelector('script[data-elfsight-platform]')) return;
+    const s = document.createElement('script');
+    s.src = 'https://static.elfsight.com/platform/platform.js';
+    s.defer = true;
+    s.setAttribute('data-elfsight-platform', '');
+    document.head.appendChild(s);
+  };
+  if (!seccion || !('IntersectionObserver' in window)) { inject(); return; }
+  const obs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) { obs.disconnect(); inject(); }
+  }, { rootMargin: '200px' });
+  obs.observe(seccion);
+}
+
 /* --------------------- Carga de contenido --------------------- */
 async function fetchRemoteContent() {
   const url = `${CONTENT_URL}?v=${Date.now()}`;
@@ -631,6 +656,7 @@ window.LuxeContent = {
   importContentJSON,
   deepMerge,
   revelarAlEntrar,
+  cargarResenas,
   paginasPublicas,
   diagnosticoDePixel,
 };

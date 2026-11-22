@@ -172,7 +172,7 @@
 
   <!-- Mismo ajuste que la landing: su cabecera mide 80px en todos los anchos. -->
   <style>html{scroll-padding-top:6rem}</style>
-  <script src="../assets/js/content.js?v=20261107b"></script>
+  <script src="../assets/js/content.js?v=20261122a"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <!-- Lógica propia de la página (autocontenida, sin depender de app.js). Es la
@@ -189,7 +189,10 @@
           this.content = await window.LuxeContent.loadContent();
           window.LuxeContent.applyTheme(this.content.theme);
           this.detectSource();
-          this.$nextTick(() => window.LuxeContent.revelarAlEntrar());
+          this.$nextTick(() => {
+            window.LuxeContent.revelarAlEntrar();
+            window.LuxeContent.cargarResenas(this.content, document.getElementById('resenas'));
+          });
         },
 
         // Igual que la landing: con identificador de clic no se añade nada,
@@ -549,26 +552,17 @@
 
   <!-- ===================== TESTIMONIOS ===================== -->
   <section id="resenas" class="py-20 lg:py-28"
-           x-show="content.testimonials && content.testimonials.length">
+           x-show="content.reviews?.elfsightWidgetId">
     <div class="max-w-6xl mx-auto px-6 lg:px-10">
       <div class="text-center mb-12 reveal">
         <p class="text-xs uppercase tracking-[0.3em] text-rosegoldDark mb-3">Testimonios</p>
         <h2 class="font-serif text-4xl md:text-5xl">Lo que dicen nuestros pacientes</h2>
       </div>
-      <div class="grid md:grid-cols-3 gap-6">
-        <!-- Prerendered para crawlers -->
-        <blockquote data-prerendered class="bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Gracias a la Doctora Angela, hoy en día puedo comer y hablar tranquilamente, los implantes dentales fijados a mi prótesis cambiaron mi calidad de vida."</p><footer class="text-sm"><span class="font-semibold">Personal Financial Dreams</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
-        <blockquote data-prerendered class="bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Excelente experiencia. La doctora es muy profesional, amable y perfeccionista en cada detalle. Desde la primera cita transmite mucha confianza y el resultado del tratamiento superó mis expectativas."</p><footer class="text-sm"><span class="font-semibold">SINLIMITES COM</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
-        <blockquote data-prerendered class="bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5"><div class="text-gold mb-3 tracking-widest">★★★★★</div><p class="text-softblack/80 italic mb-5">"Excelente servicio, llevo 1 año y no volví a sufrir con las carillas que tenía porque ahora uso las carillas en cerámica que la doctora me recomendó. La mejor decisión."</p><footer class="text-sm"><span class="font-semibold">Hector Neira</span><span class="text-softblack/60"> · Cliente verificado</span></footer></blockquote>
-        <template x-for="(t, i) in content.testimonials" :key="i">
-          <blockquote class="reveal bg-ivory rounded-2xl p-7 shadow-sm border border-charcoal/5">
-            <div class="text-gold mb-3 tracking-widest" x-text="stars(t.rating || 5)"></div>
-            <p class="text-softblack/80 italic mb-5" x-text="'“' + t.text + '”'"></p>
-            <footer class="text-sm">
-              <span class="font-semibold" x-text="t.name"></span>
-              <span class="text-softblack/60" x-show="t.role" x-text="' · ' + t.role"></span>
-            </footer>
-          </blockquote>
+      <div class="max-w-5xl mx-auto">
+        <!-- Carrusel de reseñas vivas de Google (Elfsight), el mismo del inicio.
+             Lo inyecta LuxeContent.cargarResenas() al acercarse la sección. -->
+        <template x-if="content.reviews?.elfsightWidgetId">
+          <div :class="'elfsight-app-' + content.reviews.elfsightWidgetId" data-elfsight-app-lazy></div>
         </template>
       </div>
     </div>
