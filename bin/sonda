@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# bin/sonda — ¿producción sirve bien lo que hay en main?
+#
+#   bin/sonda                 espera a que GitHub Pages construya la cabeza de main y la prueba
+#   bin/sonda --solo-http     solo las peticiones HTTP (sin mirar Pages)
+#   bin/sonda --espera 900    segundos máximos de espera a Pages (por defecto 900)
+#
+# Producción es GitHub Pages en modo «legacy»: cada push a main se construye y se publica
+# solo. La sonda sigue a la cabeza de main (si llega otro commit mientras espera, p. ej. el
+# del bot de Build, pasa a esperar ese) y, cuando Pages la tiene «built», pide las páginas.
+#
+# Salida:  0  en verde; imprime «SHA=<commit probado>» en stdout (lo demás va a stderr)
+#          1  Pages construyó el commit, pero el sitio NO responde bien  → se puede hacer rollback
+#          2  Pages no llegó a publicar el commit (errored o tiempo agotado). Pages deja
+#             publicada la versión anterior, así que un rollback no arreglaría nada.
+#
+# Solo lectura: GET a la API de GitHub y al sitio. Compatible con el bash 3.2 de macOS.
+set -uo pipefail
+
+REPO="${LUXE_REPO:-hectronix2005/Luxesmile-Web}"
+SITIO="${LUXE_SITIO:-https://luxesmilee.com}"
+ESPERA=900
+SOLO_HTTP=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --espera) ESPERA="${2:?falta el número de segundos}"; shift 2 ;;
+    --solo-http) SOLO_HTTP=1; shift ;;
+    -h|--help) sed -n '2,17p' "$0"; exit 0 ;;
+    *) echo "sonda: opción desconocida: $1" >&2; exit 64 ;;
+  esac
+done
+
+log() { printf 'sonda: %s\n' "$*" >&2; }
+
+# Una página está bien si da 200 y lleva su marca. Tres intentos por página.
+pedir() { # pedir <ruta> <marca>
+  local ruta="$1" marca="$2" i cuerpo codigo
+  for i in 1 2 3; do
+    cuerpo="$(mktemp)"
+    codigo="$(curl -sS -L --max-time 20 -o "$cuerpo" -w '%{http_code}' "$SITIO$ruta?sonda=$(date +%s)" 2>/dev/null || echo 000)"
+    if [ "$codigo" = 200 ] && grep -q -- "$marca" "$cuerpo"; then
+      rm -f "$cuerpo"; log "OK  $codigo $ruta"; return 0
+    fi
+    rm -f "$cuerpo"; log "mal $codigo $ruta (intento $i/3)"; sleep 10
+  done
+  return 1
+}
+
+http() {
+  local fallo=0
+  pedir "/" "Luxe" || fallo=1
+  pedir "/Dra.Angela_Barbosa/" "Luxe" || fallo=1
+  pedir "/assets/data/content.json" '"brand"' || fallo=1
+  return $fallo
+}
+
+gh_listo() {
+  command -v gh >/dev/null 2>&1 || return 1
+  [ -n "${GH_TOKEN:-}" ] && return 0
+  gh auth status >/dev/null 2>&1
+}
+
+if [ "$SOLO_HTTP" = 1 ] || ! gh_listo; then
+  [ "$SOLO_HTTP" = 1 ] || log "sin gh autenticado: solo pruebo HTTP, no qué commit sirve Pages"
+  if http; then echo "SHA=desconocido"; exit 0; fi
+  exit 1
+fi
+
+limite=$(( $(date +%s) + ESPERA ))
+cabeza_errored=""; desde_errored=0
+while :; do
+  cabeza="$(gh api "repos/$REPO/commits/main" --jq .sha 2>/dev/null || true)"
+  build="$(gh api "repos/$REPO/pages/builds/latest" --jq '[.commit, .status] | @tsv' 2>/dev/null || true)"
+  b_sha="$(printf '%s' "$build" | cut -f1)"; b_estado="$(printf '%s' "$build" | cut -f2)"
+  if [ -n "$cabeza" ] && [ "$b_sha" = "$cabeza" ]; then
+    case "$b_estado" in
+      built)
+        log "Pages publicó ${cabeza:0:7}; pruebo el sitio"
+        if http; then echo "SHA=$cabeza"; exit 0; fi
+        log "Pages publicó ${cabeza:0:7} pero el sitio NO responde bien"
+        exit 1 ;;
+      errored)
+        # Un push del bot de Build justo detrás deja «errored» el anterior y llega en
+        # ~20 s. Solo es un fallo si la cabeza sigue siendo la misma 4 minutos después.
+        if [ "$cabeza_errored" != "$cabeza" ]; then cabeza_errored="$cabeza"; desde_errored=$(date +%s); fi
+        if [ $(( $(date +%s) - desde_errored )) -ge 240 ]; then
+          log "Pages dio «errored» para ${cabeza:0:7}; sigue publicada la versión anterior"
+          exit 2
+        fi ;;
+    esac
+  fi
+  if [ "$(date +%s)" -ge "$limite" ]; then
+    log "tiempo agotado esperando a Pages (cabeza ${cabeza:0:7}, último build ${b_sha:0:7} $b_estado)"
+    exit 2
+  fi
+  sleep 15
+done
