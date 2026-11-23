@@ -2,15 +2,25 @@
    Luxe Smile · Contenido por defecto + capa de persistencia
    --------------------------------------------------------------------
    Fuente de verdad pública: assets/data/content.json (en el repo).
-   El admin commitea ese archivo vía GitHub API para publicar cambios.
+   Se cambia con commits a main (el panel admin se retiró el 23-nov-2026).
    DEFAULT_CONTENT actúa como fallback si el fetch falla.
    ===================================================================== */
 
 const CACHE_KEY = 'luxesmile_cache_v2';         // snapshot del último fetch (offline fallback)
-const GH_CFG_KEY = 'luxesmile_gh_config_v1';    // config de GitHub API (token + repo)
-const ADMIN_PW_KEY = 'luxesmile_admin_pw_v1';   // contraseña del panel (por navegador)
 
-// URL del JSON resuelta relativa a este script (funciona desde / y desde /admin/)
+/* El panel admin (retirado el 23-nov-2026) guardaba en el localStorage de cada
+   navegador un token de GitHub con permiso de escritura y la contraseña del
+   panel. Borrar el código no los borra de los navegadores donde se configuró:
+   esto los quita en cuanto ese navegador vuelve a abrir cualquier página. */
+try {
+  localStorage.removeItem('luxesmile_gh_config_v1');
+  localStorage.removeItem('luxesmile_admin_pw_v1');
+  localStorage.removeItem('luxesmile_ga_client_id');
+  localStorage.removeItem('luxesmile_ga_property_id');
+  sessionStorage.removeItem('luxesmile_admin_ok');
+} catch (e) {}
+
+// URL del JSON resuelta relativa a este script (funciona desde cualquier carpeta)
 const SCRIPT_URL = document.currentScript ? document.currentScript.src : null;
 const CONTENT_URL = SCRIPT_URL
   ? new URL('../data/content.json', SCRIPT_URL).href
@@ -226,82 +236,6 @@ function deepMerge(base, override) {
   return override !== undefined ? override : base;
 }
 
-/* --------------------- Diagnóstico de etiquetado --------------------- */
-/* Vivía copiado en admin.js y en marketing.js, y las dos copias sólo se
-   diferenciaban en dónde guardan el resultado. El 17-sep-2026 arreglé la lista de
-   páginas en una de las dos y la otra se quedó con cinco páginas de quince: el
-   fallo exacto que produce siempre tener la misma lógica en dos sitios. Aquí hay
-   una sola, devuelve datos y cada panel los guarda donde le convenga.
-
-   `base` es el prefijo para llegar a la raíz del sitio desde la página que llama
-   ('../' desde /admin/ y desde /marketing/). */
-async function paginasPublicas(base) {
-  try {
-    const xml = await fetch(base + 'sitemap.xml?ts=' + Date.now()).then((r) => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.text();
-    });
-    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-    if (!locs.length) throw new Error('sitemap sin URLs');
-    return {
-      paginas: locs.map((u) => {
-        const ruta = u.replace(/^https?:\/\/[^/]+/, '') || '/';
-        return { label: ruta === '/' ? 'Home' : ruta, url: base + ruta.replace(/^\//, '') };
-      }),
-      aviso: '',
-    };
-  } catch (e) {
-    // Que falle el sitemap no puede dejar el diagnóstico mudo, pero tampoco puede
-    // fingir que miró el sitio entero: se dice que mira menos.
-    return {
-      paginas: [
-        { label: 'Home', url: base + 'index.html' },
-        { label: '/diseno-de-sonrisa/', url: base + 'diseno-de-sonrisa/index.html' },
-        { label: '/pacientes-internacionales/', url: base + 'pacientes-internacionales/index.html' },
-        { label: '/en/smile-design/', url: base + 'en/smile-design/index.html' },
-        { label: '/blog/', url: base + 'blog/index.html' },
-      ],
-      aviso: `No se pudo leer el sitemap (${e.message}); se revisan solo las páginas principales.`,
-    };
-  }
-}
-
-async function diagnosticoDePixel(base) {
-  const src = await fetch(base + 'assets/js/tracking.js?ts=' + Date.now()).then((r) => r.text());
-  const pick = (key) => {
-    const m = new RegExp(key + "\\s*:\\s*'([^']*)'").exec(src);
-    return m ? m[1] : '';
-  };
-  const esPlantilla = (v) => !v || /XXX|TU_PIXEL_ID/i.test(v);
-  const ids = {
-    ga4: pick('ga4'), googleAds: pick('googleAds'), metaPixel: pick('metaPixel'),
-    whatsapp: pick('whatsapp'), agenda: pick('agenda'), llamada: pick('llamada'),
-  };
-  ids.problems = Object.entries(ids).filter(([, v]) => esPlantilla(v)).map(([k]) => k);
-
-  const { paginas, aviso } = await paginasPublicas(base);
-  const pages = [];
-  for (const page of paginas) {
-    const row = { label: page.label, ok: false, tracking: false, wa: 0, agenda: 0, error: '' };
-    try {
-      const html = await fetch(page.url + '?ts=' + Date.now()).then((r) => {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.text();
-      });
-      row.tracking = /tracking\.js/.test(html);
-      // El sitio monta los CTA con Alpine (:href="waLink()"), así que la URL
-      // resuelta no está en el HTML estático: se acepta cualquiera de las formas.
-      row.wa = (html.match(/wa\.me|api\.whatsapp\.com|waLink\(/g) || []).length;
-      row.agenda = (html.match(/calendar\.app\.google|data-cta="agendar"|bookingLink\(|bookingOfficeLink\(/g) || []).length;
-      row.ok = row.tracking && row.wa > 0;
-    } catch (e) {
-      row.error = e.message || 'no se pudo leer';
-    }
-    pages.push(row);
-  }
-  return { ids, pages, aviso };
-}
-
 /* --------------------- Fade-in de secciones --------------------- */
 /* Vivía copiada cuatro veces —app.js y las tres páginas autocontenidas— byte a
    byte idéntica. Cuatro copias de la misma lógica son cuatro sitios donde
@@ -399,242 +333,6 @@ function avisar(evento, motivo) {
   try { if (window.gtag) window.gtag('event', evento, { motivo: motivo }); } catch (e) {}
 }
 
-/* --------------------- Config GitHub API --------------------- */
-async function getGithubConfig() {
-  // Primero intenta cargar desde archivo en producción
-  try {
-    const res = await fetch('/assets/data/github-config.json');
-    if (res.ok) {
-      const fileConfig = await res.json();
-      /* OJO: github-config.json ES PUBLICO —se sirve en el dominio y esta
-         commiteado en un repo publico—. Hoy su `token` esta vacio y por eso
-         esta rama no se toma nunca. Si alguien lo rellena para ahorrarse
-         configurar cada navegador, ese token queda legible por cualquiera con
-         permiso de escritura sobre el repo, al instante y sin que nada avise.
-         El sitio para el que se pone es justamente el peor sitio donde ponerlo.
-         Revisado el 17-sep-2026: se mantiene la rama por decision de Hector,
-         con el aviso puesto tambien dentro del propio fichero. */
-      if (fileConfig.token) {
-        return fileConfig; // Usa el token del archivo si existe
-      }
-    }
-  } catch (e) {
-    console.debug('github-config.json no disponible, usando localStorage');
-  }
-
-  // Fallback a localStorage
-  try {
-    return JSON.parse(localStorage.getItem(GH_CFG_KEY) || '{}');
-  } catch {
-    return {};
-  }
-}
-function setGithubConfig(cfg) {
-  localStorage.setItem(GH_CFG_KEY, JSON.stringify(cfg));
-}
-function clearGithubConfig() {
-  localStorage.removeItem(GH_CFG_KEY);
-}
-
-/* --------------------- Publicación vía GitHub API --------------------- */
-function utf8ToBase64(str) {
-  return btoa(unescape(encodeURIComponent(str)));
-}
-
-async function githubRequest(path, opts = {}) {
-  const cfg = await getGithubConfig();
-  if (!cfg.token) throw new Error('Falta el token de GitHub.');
-  // Trim defensivo: previene 401 cuando el token tiene espacios o saltos invisibles
-  // por copy-paste desde algunos gestores de contraseñas.
-  const token = String(cfg.token).trim();
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    Accept: 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
-    ...(opts.headers || {}),
-  };
-  if (opts.body && typeof opts.body !== 'string') {
-    headers['Content-Type'] = 'application/json';
-    opts.body = JSON.stringify(opts.body);
-  }
-  const res = await fetch(`https://api.github.com${path}`, { ...opts, headers });
-  const text = await res.text();
-  let data;
-  try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-  if (!res.ok) {
-    const msg = data?.message || `HTTP ${res.status}`;
-    const err = new Error(msg);
-    err.status = res.status;
-    if (res.status === 401) err.code = 'BAD_CREDENTIALS';
-    else if (res.status === 403) err.code = 'FORBIDDEN';
-    else if (res.status === 404) err.code = 'NOT_FOUND';
-    throw err;
-  }
-  return data;
-}
-
-async function testGithubConnection() {
-  const cfg = await getGithubConfig();
-  if (!cfg.owner || !cfg.repo) throw new Error('Completa owner y repo.');
-  await githubRequest(`/repos/${cfg.owner}/${cfg.repo}`);
-  const branch = cfg.branch || 'main';
-  const path = cfg.path || 'assets/data/content.json';
-  await githubRequest(`/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${branch}`);
-  return true;
-}
-
-function base64ToUtf8(b64) {
-  return decodeURIComponent(escape(atob(b64.replace(/\s/g, ''))));
-}
-
-// Lee content.json directamente del repo vía API (siempre fresco, sin pasar por el CDN de Pages).
-// Devuelve { data, sha } para permitir detección de conflictos al publicar.
-// Para archivos > 1 MB la API contents devuelve content vacío; en ese caso bajamos
-// el blob crudo, que sí soporta archivos grandes.
-async function fetchContentViaAPI() {
-  const cfg = await getGithubConfig();
-  if (!cfg.owner || !cfg.repo) throw new Error('Falta configuración de GitHub.');
-  const branch = cfg.branch || 'main';
-  const path = cfg.path || 'assets/data/content.json';
-  const meta = await githubRequest(
-    `/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}?ref=${branch}`,
-  );
-  let json;
-  if (meta.content) {
-    json = base64ToUtf8(meta.content);
-  } else if (meta.sha) {
-    const blobUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/git/blobs/${meta.sha}`;
-    const r = await fetch(blobUrl, {
-      headers: {
-        Authorization: `Bearer ${cfg.token}`,
-        Accept: 'application/vnd.github.raw',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status} al leer blob`);
-    json = await r.text();
-  } else {
-    throw new Error('Respuesta inesperada de GitHub (sin content ni sha).');
-  }
-  if (!json) throw new Error('Archivo vacío en el repo.');
-  return { data: JSON.parse(json), sha: meta.sha };
-}
-
-async function publishContent(data, expectedSha) {
-  const cfg = await getGithubConfig();
-  if (!cfg.owner || !cfg.repo || !cfg.token) {
-    throw new Error('Configura GitHub primero (pestaña Publicación).');
-  }
-  const branch = cfg.branch || 'main';
-  const path = cfg.path || 'assets/data/content.json';
-  const apiPath = `/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
-
-  // SHA actual en el repo
-  let currentSha;
-  try {
-    const current = await githubRequest(`${apiPath}?ref=${branch}`);
-    currentSha = current.sha;
-  } catch (e) {
-    if (!/not found/i.test(e.message)) throw e;
-  }
-
-  // Detección de conflicto: si cargamos el admin con sha X pero el repo ahora está en Y,
-  // otra sesión cambió algo. No pisamos sin avisar.
-  if (expectedSha && currentSha && currentSha !== expectedSha) {
-    const err = new Error(
-      'El contenido en GitHub cambió desde que abriste el panel. ' +
-      'Pulsa "Recargar desde repo" para ver los cambios nuevos y vuelve a aplicar los tuyos.',
-    );
-    err.code = 'STALE';
-    throw err;
-  }
-
-  // Marca de tiempo para que el admin pueda verificar que el sitio público
-  // ya está sirviendo esta misma versión (no una cacheada por el CDN de Pages).
-  const publishedAt = new Date().toISOString();
-  data._publishedAt = publishedAt;
-
-  const json = JSON.stringify(data, null, 2) + '\n';
-  const body = {
-    message: `admin: update content (${new Date().toISOString().slice(0, 16).replace('T', ' ')})`,
-    content: utf8ToBase64(json),
-    branch,
-  };
-  if (currentSha) body.sha = currentSha;
-
-  const result = await githubRequest(apiPath, { method: 'PUT', body });
-  // Igual que en loadContent: esto va DESPUÉS de que el PUT haya funcionado, así
-  // que si peta —y con los base64 dentro peta por cuota— el error subía como si
-  // hubiese fallado la publicación. Y no había fallado: se veía «Error al
-  // publicar» con el contenido ya en GitHub, y al reintentar salía el aviso de
-  // conflicto, porque el sha de verdad ya era otro.
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); }
-  catch (e) { avisar('cache_no_cabe_al_publicar', String(e && e.name || e)); }
-  return { result, newSha: result?.content?.sha, publishedAt };
-}
-
-// Hace polling al content.json público (con cache-buster) hasta que aparezca
-// la marca _publishedAt esperada — confirma que GitHub Pages ya está sirviendo
-// la versión recién publicada. Llama a onProgress(seconds) cada intento.
-// Resuelve { ok: true } cuando coincide, { ok: false, reason: 'timeout' } si pasan timeoutMs.
-async function waitForPublished(expectedPublishedAt, { timeoutMs = 180000, intervalMs = 8000, onProgress } = {}) {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    const elapsed = Math.round((Date.now() - start) / 1000);
-    if (onProgress) onProgress(elapsed);
-    try {
-      const url = `${CONTENT_URL}?t=${Date.now()}`;
-      const r = await fetch(url, { cache: 'no-store' });
-      if (r.ok) {
-        const fresh = await r.json();
-        if (fresh._publishedAt === expectedPublishedAt) {
-          return { ok: true, elapsed };
-        }
-      }
-    } catch { /* reintentar */ }
-    await new Promise((res) => setTimeout(res, intervalMs));
-  }
-  return { ok: false, reason: 'timeout', elapsed: Math.round((Date.now() - start) / 1000) };
-}
-
-/* --------------------- Contraseña admin --------------------- */
-// Vive SOLO en localStorage, por navegador. Antes se leía primero de
-// assets/data/github-config.json, que GitHub Pages sirve en abierto (HTTP 200):
-// la contraseña quedaba publicada. Devuelve null si no hay ninguna definida
-// para que login() nunca pueda hacer match contra cadena vacía.
-async function getAdminPassword() {
-  return localStorage.getItem(ADMIN_PW_KEY) || null;
-}
-function hasAdminPassword() {
-  return !!localStorage.getItem(ADMIN_PW_KEY);
-}
-function setAdminPassword(pw) {
-  localStorage.setItem(ADMIN_PW_KEY, pw);
-}
-
-/* --------------------- Export / Import JSON --------------------- */
-function exportContentJSON(data) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const stamp = new Date().toISOString().slice(0, 10);
-  a.href = url;
-  a.download = `luxesmile-contenido-${stamp}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-function importContentJSON(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      try { resolve(JSON.parse(reader.result)); }
-      catch (e) { reject(e); }
-    };
-    reader.onerror = () => reject(reader.error);
-    reader.readAsText(file);
-  });
-}
-
 window.LuxeContent = {
   CONTENT_URL,
   DEFAULT_CONTENT,
@@ -642,23 +340,9 @@ window.LuxeContent = {
   applyTheme,
   hexToRgbTriplet,
   loadContent,
-  fetchContentViaAPI,
-  publishContent,
-  waitForPublished,
-  testGithubConnection,
-  getGithubConfig,
-  setGithubConfig,
-  clearGithubConfig,
-  getAdminPassword,
-  hasAdminPassword,
-  setAdminPassword,
-  exportContentJSON,
-  importContentJSON,
   deepMerge,
   revelarAlEntrar,
   cargarResenas,
-  paginasPublicas,
-  diagnosticoDePixel,
 };
 
 /* Aplica tema desde cache local al instante, antes de que Alpine inicialice,
