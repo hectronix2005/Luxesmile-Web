@@ -191,7 +191,7 @@ console.log('\n3. cobertura: toda página con enlaces a WhatsApp tiene mecanismo
   const htmls = [];
   (function andar(dir) {
     for (const e of readdirSync(dir)) {
-      if (e === 'node_modules' || e === '.git' || e === 'admin') continue;
+      if (e === 'node_modules' || e === '.git') continue;
       const p = join(dir, e);
       if (statSync(p).isDirectory()) andar(p);
       else if (e.endsWith('.html')) htmls.push(p.replace(/^\.\//, ''));

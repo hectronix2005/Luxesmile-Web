@@ -50,7 +50,7 @@ const PAGINAS_CON_FAVICON = ['index.html', 'diseno-de-sonrisa/index.html', 'reha
      propagadores sobre el mismo fichero se pisan el uno al otro y el build deja
      de converger. Su cobertura la sigue comprobando test-paginas.mjs §9, que
      recorre TODOS los .html del repo, no una lista. */
-  'admin/index.html', 'marketing/index.html', 'admin.html'];
+  ];
 /* El ancla TIENE que llegar hasta la ultima linea del fragmento. La primera
    version ofrecia `-->` como alternativa y, siendo perezoso el cuantificador,
    paraba en el `-->` del propio comentario: reemplazaba solo el comentario y

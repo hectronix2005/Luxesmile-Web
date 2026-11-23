@@ -1,6 +1,6 @@
 name: Build (imágenes WebP + pre-render SEO)
 
-# Cuando el admin publica (cambia content.json con imágenes base64), este flujo:
+# Cuando cambia content.json (por commit; puede traer imágenes base64), este flujo:
 #   1. Extrae las imágenes base64 a archivos .webp y reescribe content.json a rutas.
 #   2. Regenera el contenido SEO estático de index.html.
 # Luego commitea los cambios. El commit lo hace GITHUB_TOKEN, que por diseño NO
@@ -53,7 +53,7 @@ jobs:
       # ni el Action. Llevaba desde el 15-sep sin correr una sola vez, y tenía un
       # fallo esperándole dentro. Un detector que no se ejecuta cuesta lo mismo
       # que uno que nunca se pone rojo.
-      - name: Comprobaciones (enrutado a WhatsApp + guardas del admin)
+      - name: Comprobaciones (npm test)
         run: npm test
 
       - name: Extraer imágenes base64 → WebP

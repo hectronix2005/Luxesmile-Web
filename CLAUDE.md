@@ -6,8 +6,11 @@ admin y dominio está en `README.md`.
 ## Despliegue
 
 - Producción es **GitHub Pages en modo «legacy»** desde `main` (raíz). **Unir a `main`
-  despliega solo**; no hay comando de despliegue. El panel admin también publica haciendo
-  commits a `main` (`assets/data/content.json`).
+  despliega solo**; no hay comando de despliegue.
+- **No hay panel admin desde el 23-nov-2026** (retirado por seguridad: login en el navegador
+  y token de GitHub en `localStorage`). El contenido (`assets/data/content.json`) se cambia
+  con commits. `scripts/test-paginas.mjs` §5 se pone rojo si vuelve un login en el navegador o
+  una escritura a la API de GitHub desde el JS servido.
 - El flujo `Build` (`.github/workflows/prerender.yml`) puede añadir un commit del bot detrás
   del tuyo; Pages publica el último.
 - No hay base de datos: todo el contenido vive en el repo.
@@ -37,6 +40,6 @@ admin y dominio está en `README.md`.
   `Build` antes de juzgar la cabeza de `main`. Si Pages no llegó a publicar (`errored` o tiempo agotado), sigue servida la
   versión anterior y solo se marca en rojo.
 - **Qué NO hace.** No restaura nada fuera del repo (DNS en Netlify, ajustes de Pages). El
-  contenido que la doctora publicó después de esa versión desaparece del sitio con el
-  rollback (sigue en el historial de git): avísale si tiene que volver a publicarlo.
+  contenido cambiado después de esa versión desaparece del sitio con el rollback (sigue en
+  el historial de git).
 - Nunca se prueba con un rollback real: solo `bin/rollback --seco`.
